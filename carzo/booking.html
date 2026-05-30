@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Carzo - Book your premium rental car. Input pickup and drop details to get started.">
+    <title>Carzo — Book Your Car</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Step progress tracker styling */
+        .step-progress {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 40px auto 30px;
+            max-width: 600px;
+            padding: 0 20px;
+        }
+        .step-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+        }
+        .step-number {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: var(--color-border);
+            color: var(--color-text-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 0.95rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 2px solid transparent;
+        }
+        .step-text {
+            font-size: 0.72rem;
+            font-weight: 800;
+            color: var(--color-text-secondary);
+            margin-top: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            transition: all 0.3s ease;
+        }
+        .step-item--active .step-number {
+            background: var(--color-primary);
+            color: var(--color-white);
+            box-shadow: 0 0 18px rgba(235, 103, 14, 0.45);
+        }
+        .step-item--active .step-text {
+            color: var(--color-primary);
+        }
+        .step-item--completed .step-number {
+            background: var(--color-secondary);
+            color: var(--color-white);
+            box-shadow: 0 0 18px rgba(42, 53, 130, 0.45);
+        }
+        .step-item--completed .step-text {
+            color: var(--color-secondary);
+        }
+        .step-line {
+            flex: 1;
+            height: 3px;
+            background: var(--color-border);
+            margin: -20px 16px 0 16px;
+            position: relative;
+            z-index: 1;
+            transition: all 0.3s ease;
+        }
+        .step-line--active {
+            background: var(--color-primary);
+        }
+        .step-line--completed {
+            background: var(--color-secondary);
+        }
+
+        /* Payment Tab Button styling */
+        .pay-tab {
+            flex: 1;
+            padding: 12px 16px;
+            border-radius: 10px;
+            border: 1.5px solid var(--color-border);
+            background: var(--color-bg);
+            color: var(--color-text-secondary);
+            font-weight: 700;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            text-align: center;
+        }
+        .pay-tab:hover {
+            border-color: var(--color-primary);
+            color: var(--color-primary);
+            background: var(--color-white);
+        }
+        .pay-tab--active {
+            background: rgba(108, 92, 231, 0.08) !important;
+            border-color: var(--color-secondary) !important;
+            color: var(--color-secondary) !important;
+        }
+
+        /* Animations */
+        @keyframes pulseSuccess {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(46, 204, 113, 0.4); }
+            70% { transform: scale(1.05); box-shadow: 0 0 0 15px rgba(46, 204, 113, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(46, 204, 113, 0); }
+        }
+        @keyframes shakeError {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-6px); }
+            20%, 40%, 60%, 80% { transform: translateX(6px); }
+        }
+        .fade-in {
+            animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @media (max-width: 768px) {
+            .booking-page {
+                padding-top: 90px !important;
+            }
+            .booking-title {
+                font-size: 1.7rem !important;
+                padding: 0 16px;
+            }
+            .booking-subtitle {
+                font-size: 0.85rem !important;
+                padding: 0 16px;
+                margin-bottom: 20px !important;
+            }
+            .booking-card {
+                padding: 20px 16px !important;
+                border-radius: var(--radius-lg) !important;
+            }
+            .booking-layout {
+                gap: 20px !important;
+                padding-bottom: 40px !important;
+            }
+            #full-width-outcome-layout {
+                padding: 0 12px 60px !important;
+            }
+            .step-progress {
+                margin: 20px auto 20px !important;
+            }
+            .step-number {
+                width: 32px !important;
+                height: 32px !important;
+                font-size: 0.85rem !important;
+            }
+            .step-text {
+                font-size: 0.65rem !important;
+            }
+            .step-line {
+                margin: -16px 8px 0 8px !important;
+            }
+        }
+    </style>
+</head>
+
+<body style="background:var(--color-bg);">
+
+    <!-- ===================== NAVBAR ===================== -->
+    <header class="navbar navbar--scrolled navbar--always-white" id="navbar">
+        <div class="navbar__inner">
+            <a href="index.html" class="navbar__logo" id="logo">
+                <div class="navbar__logo-icon" style="background:var(--color-primary); color:var(--color-white); border-radius:8px; display:flex; align-items:center; justify-content:center; width:32px; height:32px;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5"/>
+                        <polyline points="12 22 12 12 22 8.5"/>
+                        <line x1="12" y1="12" x2="2" y2="8.5"/>
+                    </svg>
+                </div>
+                <span>Carzo</span>
+            </a>
+            <nav class="navbar__links" id="nav-links">
+                <a href="index.html" class="navbar__link">Home</a>
+                <a href="cars.html" class="navbar__link">All Cars</a>
+                <a href="list-car.html" class="navbar__link">List Your Car</a>
+                <a href="locations.html" class="navbar__link">Near by locations</a>
+                <a href="about.html" class="navbar__link">About US</a>
+                <a href="contact.html" class="navbar__link">Contact Us</a>
+            </nav>
+            <div class="navbar__actions">
+                <div class="navbar__auth" id="navbar-auth" style="display: none;">
+                    <a href="login.html" class="btn-auth btn-auth--login">Log In</a>
+                    <a href="signup.html" class="btn-auth btn-auth--signup">Sign Up</a>
+                </div>
+                <div class="navbar__profile-dropdown" id="profile-dropdown" style="display: none;">
+                    <button class="navbar__profile-btn" id="profile-btn" aria-label="Profile Menu">
+                        <div class="navbar__profile-avatar" id="navbar-avatar">MS</div>
+                    </button>
+                    <div class="navbar__profile-menu" id="profile-menu">
+                        <div class="navbar__profile-header">
+                            <span class="navbar__profile-name" id="navbar-profile-name">Mayan Sharma</span>
+                            <span class="navbar__profile-email" id="navbar-profile-email">mayan@example.com</span>
+                        </div>
+                        <div class="navbar__profile-divider"></div>
+                        <a href="admin.html" class="navbar__profile-item" style="color:var(--color-primary); font-weight:700;">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="3"/>
+                                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                            </svg>
+                            Admin Panel
+                        </a>
+                        <a href="dashboard.html" class="navbar__profile-item">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect width="7" height="9" x="3" y="3" rx="1"/>
+                                <rect width="7" height="5" x="14" y="3" rx="1"/>
+                                <rect width="7" height="9" x="14" y="12" rx="1"/>
+                                <rect width="7" height="5" x="3" y="16" rx="1"/>
+                            </svg>
+                            Dashboard
+                        </a>
+                        <a href="profile.html" class="navbar__profile-item">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
+                                <circle cx="12" cy="7" r="4"/>
+                            </svg>
+                            Edit Profile
+                        </a>
+                        <a href="booking-management.html" class="navbar__profile-item">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect width="18" height="18" x="3" y="4" rx="2" ry="2"/>
+                                <line x1="16" x2="16" y1="2" y2="6"/>
+                                <line x1="8" x2="8" y1="2" y2="6"/>
+                                <line x1="3" x2="21" y1="10" y2="10"/>
+                            </svg>
+                            My Bookings
+                        </a>
+                        <a href="#" class="navbar__profile-item" id="logout-btn">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                                <polyline points="16 17 21 12 16 7"/>
+                                <line x1="21" x2="9" y1="12" y2="12"/>
+                            </svg>
+                            Logout
+                        </a>
+                    </div>
+                </div>
+                <button class="navbar__icon-btn navbar__hamburger" id="hamburger" aria-label="Menu">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                         stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="3" y1="6" x2="21" y2="6" />
+                        <line x1="3" y1="12" x2="21" y2="12" />
+                        <line x1="3" y1="18" x2="21" y2="18" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- ===================== BOOKING SECTION ===================== -->
+    <main class="booking-page" style="padding-top: 110px;">
+        <h1 class="booking-title" style="text-align: center; font-size: 2.2rem; font-weight: 800; color: var(--color-black); margin-bottom: 8px; letter-spacing: -0.02em;">Complete Your Booking</h1>
+        <p class="booking-subtitle" style="text-align: center; color: #dc2626; font-size: 0.95rem; max-width: 800px; margin: 0 auto 12px; font-weight: 600; line-height: 1.55;">
+            <strong>Mandatory Document Notice:</strong> They have to bring an ID (Aadhaar Card) &amp; driving license with them at handover. Mismatching or missing documents will void the rental agreement.
+        </p>
+
+        <!-- Progress Tracker -->
+        <div class="step-progress">
+            <div class="step-item step-item--active" id="progress-step-1">
+                <span class="step-number">1</span>
+                <span class="step-text">Details</span>
+            </div>
+            <div class="step-line" id="progress-line-1"></div>
+            <div class="step-item" id="progress-step-2">
+                <span class="step-number">2</span>
+                <span class="step-text">Payment</span>
+            </div>
+            <div class="step-line" id="progress-line-2"></div>
+            <div class="step-item" id="progress-step-3">
+                <span class="step-number">3</span>
+                <span class="step-text">Finish</span>
+            </div>
+        </div>
+
+        <!-- TWO COLUMN FLOW (Active for Steps 1 and 2) -->
+        <div class="booking-layout" id="split-checkout-layout" style="display: grid; grid-template-columns: 1.4fr 1fr; gap: 32px; max-width: var(--container-max); margin: 0 auto; padding: 0 16px 80px;">
+            
+            <!-- Left Panel (Details Form) -->
+            <div class="checkout-left-column">
+                
+                <!-- STEP 1 CONTAINER (Details Form) -->
+                <div id="step-1-container" class="fade-in" style="display: block;">
+                    <form id="step-1-form" onsubmit="event.preventDefault(); processBooking();">
+                        <!-- Pickup & Drop Details -->
+                        <div class="booking-card" style="margin-bottom: 24px;">
+                            <h2 class="booking-card__title">Pickup & Drop Details</h2>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label class="form-label" for="pickup-date">Pickup Date</label>
+                                    <input type="date" id="pickup-date" class="form-input" required onchange="calculateRentalPrice()">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="pickup-time">Pickup Time</label>
+                                    <input type="time" id="pickup-time" class="form-input" required value="10:00">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="drop-date">Drop Date</label>
+                                    <input type="date" id="drop-date" class="form-input" required onchange="calculateRentalPrice()">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="drop-time">Drop Time</label>
+                                    <input type="time" id="drop-time" class="form-input" required value="10:00">
+                                </div>
+                            </div>
+                        </div>
+
+
+
+                        <!-- Customer Details -->
+                        <div class="booking-card">
+                            <h2 class="booking-card__title">Customer & Delivery Details</h2>
+                            <div class="form-grid">
+
+                                <div class="form-group form-group--full">
+                                    <label class="form-label" for="cust-name">Full Name</label>
+                                    <input type="text" id="cust-name" class="form-input" placeholder="Mayan Sharma" required>
+                                </div>
+
+                                <div class="form-group form-group--full">
+                                    <label class="form-label" for="pickup-location">Delivery Area in Pune</label>
+                                    <input type="text" id="pickup-location" class="form-input" placeholder="e.g. Koregaon Park, Pune" required value="Koregaon Park, Pune" oninput="checkPuneArea(this.value)">
+                                    <div id="pune-warning-badge" style="margin-top: 8px; transition: all 0.3s ease;">
+                                        <!-- Filled dynamically -->
+                                    </div>
+                                </div>
+
+                                <div class="form-group form-group--full">
+                                    <label class="form-label" for="cust-phone">Mobile Contact Number</label>
+                                    <input type="tel" id="cust-phone" class="form-input" placeholder="+91 98765 43210" required>
+                                </div>
+
+                                <div class="form-group form-group--full" style="display:none;">
+                                    <label class="form-label" for="cust-email">Email Address</label>
+                                    <input type="email" id="cust-email" class="form-input" placeholder="mayan@example.com" required>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <!-- Next Action -->
+                        <div style="margin-top: 24px;">
+                            <button type="submit" class="btn-confirm" style="display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 1.05rem; padding: 16px 32px; border-radius: 100px; font-weight: 700; width: 100%; background: var(--color-primary); box-shadow: 0 4px 14px rgba(235, 103, 14, 0.35);">
+                                Proceed to Pay
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                    <polyline points="12 5 19 12 12 19"></polyline>
+                                </svg>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- STEP 2 CONTAINER is bypassed. Booking is processed directly on details form submission -->
+
+            </div>
+
+            <!-- Right Column (Sticky Summary View) -->
+            <div class="checkout-right-column">
+                <div class="booking-card" style="position: sticky; top: 90px; box-shadow: var(--shadow-card);">
+                    <h2 class="booking-card__title" style="margin-bottom: 20px;">Rental Summary</h2>
+
+                    <div class="summary-car">
+                        <div class="summary-car__img-wrap" id="car-image-container" style="height: 140px; background: var(--color-bg); border-radius: 12px; display: flex; align-items: center; justify-content: center; overflow: hidden; margin-bottom: 16px;">
+                            <!-- Dynamic image/placeholder loaded here -->
+                        </div>
+                        <h3 class="summary-car__name" id="summary-car-name" style="font-size: 1.15rem; font-weight: 800; color: var(--color-black); margin-bottom: 4px; letter-spacing: -0.01em;">Car Model</h3>
+                        <span class="summary-car__type" id="summary-car-type" style="font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; color: var(--color-text-secondary);">Specification</span>
+                    </div>
+
+                    <div class="summary-cost" style="margin-top: 20px; border-top: 1px solid var(--color-border-light); padding-top: 18px;">
+                        <div class="summary-row" style="display: flex; justify-content: space-between; font-size: 0.86rem; color: var(--color-text-secondary); margin-bottom: 10px;">
+                            <span id="days-label">Rental price (1 day)</span>
+                            <span id="base-rate-display" style="font-weight: 600; color: var(--color-black);">₹0</span>
+                        </div>
+                        <div class="summary-row" style="display: flex; justify-content: space-between; font-size: 0.86rem; color: var(--color-text-secondary); margin-bottom: 10px;">
+                            <span>Base Subtotal</span>
+                            <span id="subtotal-display" style="font-weight: 600; color: var(--color-black);">₹0</span>
+                        </div>
+                        <div class="summary-row" style="display: flex; justify-content: space-between; font-size: 0.86rem; color: var(--color-text-secondary); margin-bottom: 10px;">
+                            <span>GST (18%)</span>
+                            <span id="gst-display" style="font-weight: 600; color: var(--color-black);">₹0</span>
+                        </div>
+                        <div class="summary-row" style="display: flex; justify-content: space-between; font-size: 0.86rem; color: var(--color-text-secondary); margin-bottom: 16px;">
+                            <span>Service Fee</span>
+                            <span id="fee-display" style="font-weight: 600; color: var(--color-black);">₹250</span>
+                        </div>
+                        <div class="summary-row summary-row--total" style="display: flex; justify-content: space-between; font-size: 1.18rem; font-weight: 800; color: var(--color-black); border-top: 1.5px dashed var(--color-border); padding-top: 14px;">
+                            <span>Total Amount</span>
+                            <span id="total-display" style="color: var(--color-primary);">₹0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- FULL-WIDTH LANDINGS (Step 3 and Step 4 overlay cards) -->
+        <div id="full-width-outcome-layout" style="display: none; max-width: 800px; margin: 0 auto 80px; padding: 0 16px;">
+            
+            <!-- STEP 3 CONTAINER (Success Page) -->
+            <div id="step-3-container" class="fade-in" style="display: none;">
+                <div style="background: var(--color-white); border-radius: var(--radius-xl); border: 1px solid var(--color-border-light); padding: 48px 32px; text-align: center; box-shadow: var(--shadow-card);">
+                    <div style="width: 72px; height: 72px; border-radius: 50%; background: rgba(46, 204, 113, 0.08); border: 3px solid #2ecc71; color: #2ecc71; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px; font-size: 2.2rem; font-weight: 800; animation: pulseSuccess 2s infinite;">
+                        ✓
+                    </div>
+                    <h1 style="font-size: 1.85rem; font-weight: 800; color: var(--color-black); margin-bottom: 8px; letter-spacing: -0.02em;">Your Payment is Successful</h1>
+                    <p style="font-size: 0.95rem; color: var(--color-text-secondary); margin-bottom: 32px; font-weight: 500;">
+                        You will receive a call, and if you don't, contact via the given number.
+                    </p>
+
+                    <!-- Receipt Summary -->
+                    <div style="background: var(--color-bg); border-radius: 16px; padding: 24px; border: 1px solid var(--color-border-light); text-align: left; margin-bottom: 32px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 16px; border-bottom: 1.5px dashed var(--color-border); padding-bottom: 12px;">
+                            <span style="font-size: 0.78rem; font-weight: 800; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 0.05em;">Booking Reference</span>
+                            <span style="font-size: 0.92rem; font-weight: 800; color: var(--color-primary);" id="success-ref-id">BD-XXXXXX</span>
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                            <div>
+                                <span style="font-size: 0.75rem; color: var(--color-text-secondary); display: block; font-weight: 600; text-transform: uppercase; letter-spacing: 0.02em;">Vehicle Model</span>
+                                <span style="font-size: 0.9rem; font-weight: 700; color: var(--color-black);" id="success-car-name">Mitsubishi Lancer</span>
+                            </div>
+                            <div>
+                                <span style="font-size: 0.75rem; color: var(--color-text-secondary); display: block; font-weight: 600; text-transform: uppercase; letter-spacing: 0.02em;">Total Cost Paid</span>
+                                <span style="font-size: 0.9rem; font-weight: 700; color: var(--color-black);" id="success-cost">₹4,970</span>
+                            </div>
+                            <div>
+                                <span style="font-size: 0.75rem; color: var(--color-text-secondary); display: block; font-weight: 600; text-transform: uppercase; letter-spacing: 0.02em;">Pickup Date & Time</span>
+                                <span style="font-size: 0.88rem; font-weight: 700; color: var(--color-black);" id="success-pickup">24 May 2026</span>
+                            </div>
+                            <div>
+                                <span style="font-size: 0.75rem; color: var(--color-text-secondary); display: block; font-weight: 600; text-transform: uppercase; letter-spacing: 0.02em;">Delivery Location</span>
+                                <span style="font-size: 0.88rem; font-weight: 700; color: var(--color-black);" id="success-loc">Koregaon Park, Pune</span>
+                            </div>
+                        </div>
+
+                        <!-- Owner Host Details Panel (Retrieved from local storage car database) -->
+                        <div style="background: rgba(108, 92, 231, 0.04); border: 1.5px solid rgba(108, 92, 231, 0.12); border-radius: 12px; padding: 18px; display: flex; flex-direction: column; gap: 8px;">
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <div style="font-size: 1.8rem; background: rgba(108, 92, 231, 0.1); width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; border-radius: 50%;">👨‍✈️</div>
+                                <div>
+                                    <span style="font-size: 0.7rem; text-transform: uppercase; color: var(--color-text-secondary); font-weight: 800; display: block; letter-spacing: 0.04em;">Vehicle Host</span>
+                                    <span style="font-size: 0.95rem; font-weight: 800; color: var(--color-black);" id="success-host-name">Rohan Pune-Owner</span>
+                                </div>
+                            </div>
+                            <p style="font-size: 0.8rem; color: var(--color-text-secondary); margin: 4px 0 10px; line-height: 1.55; font-weight: 500;">
+                                Please contact the vehicle owner directly to schedule drop-off parameters and receive key handover.
+                            </p>
+                            <div style="display: flex; gap: 8px;">
+                                <button type="button" class="btn-confirm" onclick="triggerMockCall()" style="padding: 10px 18px; font-size: 0.82rem; font-weight: 700; background: var(--color-secondary); box-shadow: 0 4px 10px rgba(108,92,231,0.2); width: auto; display: inline-flex; align-items: center; gap: 6px;">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                                    </svg>
+                                    Call Host (<span id="success-host-phone-text">+91 90110 12345</span>)
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Warning Notice Banner -->
+                    <div class="checkout-warning-notice" style="background: rgba(235, 103, 14, 0.08); border: 2px solid var(--color-primary); border-radius: 12px; padding: 18px; margin-bottom: 32px; display: flex; align-items: flex-start; gap: 12px; text-align: left; margin-top: 24px;">
+                        <span style="font-size: 1.5rem; line-height: 1;">⚠️</span>
+                        <div>
+                            <h4 style="margin: 0 0 4px; font-size: 0.95rem; font-weight: 800; color: var(--color-black);">Mandatory Document Reminder</h4>
+                            <p style="margin: 0; font-size: 0.86rem; color: var(--color-text-secondary); font-weight: 600; line-height: 1.5;">
+                                Remember, you have to bring your original physical <strong>Aadhaar Card</strong> &amp; <strong>driving license</strong> with you when collecting the car.
+                            </p>
+                        </div>
+                    </div>
+
+                    <button onclick="goToDashboard()" class="btn-confirm" style="background: var(--color-black); box-shadow: 0 4px 12px rgba(0,0,0,0.15); font-weight: 700; padding: 14px 28px; border-radius: 100px; width: auto; font-size: 0.88rem;">
+                        Go to My Bookings Dashboard
+                    </button>
+                </div>
+            </div>
+
+            <!-- STEP 4 CONTAINER (Failure Page) -->
+            <div id="step-4-container" class="fade-in" style="display: none;">
+                <div style="background: var(--color-white); border-radius: var(--radius-xl); border: 1px solid var(--color-border-light); padding: 48px 32px; text-align: center; box-shadow: var(--shadow-card);">
+                    <div style="width: 72px; height: 72px; border-radius: 50%; background: rgba(231, 76, 60, 0.08); border: 3px solid #e74c3c; color: #e74c3c; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px; font-size: 2.2rem; font-weight: bold; animation: shakeError 0.5s ease;">
+                        ✕
+                    </div>
+                    <h1 style="font-size: 1.85rem; font-weight: 800; color: var(--color-black); margin-bottom: 8px; letter-spacing: -0.02em;">Payment Authorization Failed</h1>
+                    <p style="font-size: 0.95rem; color: var(--color-text-secondary); margin-bottom: 24px; font-weight: 500;" id="failure-msg">The transaction was declined by your bank.</p>
+ 
+                    <div style="background: rgba(231, 76, 60, 0.04); border: 1.5px solid rgba(231, 76, 60, 0.12); border-radius: 16px; padding: 20px; text-align: left; margin-bottom: 32px; font-size: 0.83rem; color: #c0392b; line-height: 1.6; font-weight: 500;">
+                        <strong>Troubleshooting Suggestions:</strong>
+                        <ul style="margin: 8px 0 0; padding-left: 20px; display: flex; flex-direction: column; gap: 6px;">
+                            <li>Ensure your online purchase limits are sufficient for this transaction.</li>
+                            <li>Verify your daily card limit or payment authorization.</li>
+                            <li>Retry by clicking the button below or browsing our alternative cars list.</li>
+                        </ul>
+                    </div>
+ 
+                    <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+                        <a href="index.html" class="btn-confirm" style="background: var(--color-black); box-shadow: 0 4px 12px rgba(0,0,0,0.15); font-weight: 700; text-decoration: none; display: flex; align-items: center; justify-content: center; padding: 14px 28px; border-radius: 100px; width: auto; font-size: 0.88rem; color: white;">
+                            Go back to Home
+                        </a>
+                        <a href="cars.html" class="btn-confirm" style="background: transparent; border: 1.5px solid var(--color-border); color: var(--color-black); box-shadow: none; font-weight: 700; text-decoration: none; display: flex; align-items: center; justify-content: center; padding: 14px 28px; border-radius: 100px; width: auto; font-size: 0.88rem;">
+                            Browse Fleet
+                        </a>
+                        <button onclick="goToStep(1)" class="btn-confirm" style="background: var(--color-primary); box-shadow: 0 4px 12px rgba(235, 103, 14, 0.2); font-weight: 700; padding: 14px 28px; border-radius: 100px; width: auto; font-size: 0.88rem;">
+                            Try Again
+                        </button>
+                    </div>
+                </div>
+            </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+  </div>
+        </div>
+    </div>
+
+    <!-- ===================== FOOTER ===================== -->
+    <footer class="footer" id="footer">
+        <div class="footer__inner">
+            <div class="footer__top">
+                <!-- Brand column -->
+                <div class="footer__brand">
+                    <a href="index.html" class="footer__logo">
+                        <span>Carzo</span>
+                    </a>
+                    <address class="footer__address">
+                        Storkower Strasse 41<br>
+                        Rhineland-Pfalz,<br>
+                        54176, Germany
+                    </address>
+                    <div class="footer__socials">
+                        <a href="#" class="footer__social" aria-label="Facebook">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
+                            </svg>
+                        </a>
+                        <a href="#" class="footer__social" aria-label="LinkedIn">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path
+                                    d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
+                                <rect x="2" y="9" width="4" height="12" />
+                                <circle cx="4" cy="4" r="2" />
+                            </svg>
+                        </a>
+                        <a href="#" class="footer__social" aria-label="Instagram">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Links columns -->
+                <div class="footer__links-group">
+                    <div class="footer__col">
+                        <h3 class="footer__col-title">Primary Pages</h3>
+                        <ul class="footer__col-list">
+                            <li><a href="index.html">Home</a></li>
+                            <li><a href="cars.html">Rent Luxury Cars</a></li>
+                            <li><a href="list-car.html">List Your Car</a></li>
+                            <li><a href="contact.html">Contact Us</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer__col">
+                        <h3 class="footer__col-title">Listing Locations</h3>
+                        <ul class="footer__col-list">
+                            <li><a href="locations.html">Near by locations</a></li>
+                            <li><a href="locations.html">Pune Hub</a></li>
+                            <li><a href="locations.html">Mumbai Hub</a></li>
+                            <li><a href="locations.html">Delhi Hub</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer__col">
+                        <h3 class="footer__col-title">Overview & Details</h3>
+                        <ul class="footer__col-list">
+                            <li><a href="about.html">About US</a></li>
+                            <li><a href="contact.html">Send Message</a></li>
+                            <li><a href="#">Terms & Conditions</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="footer__bottom">
+                <p>&copy; 2026 Carzo. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+
+    <!-- ===================== JAVASCRIPT LOGIC ===================== -->
+    <script>
+        let carsDb = [];
+        let selectedCarId = "";
+        let selectedCarObj = null;
+        let rentalRate = 4000;
+        let totalDays = 1;
+        let totalCost = 0;
+        let currentStep = 1;
+
+        // Parse query params to load chosen car
+        window.addEventListener('DOMContentLoaded', () => {
+            // Load cars from LocalStorage
+            carsDb = JSON.parse(localStorage.getItem('Carzo_cars')) || [];
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const carParam = urlParams.get('car');
+            
+            // Find car object
+            if (carParam) {
+                selectedCarObj = carsDb.find(c => c.id === carParam);
+            }
+            // Fallback to first available car if not found
+            if (!selectedCarObj && carsDb.length > 0) {
+                selectedCarObj = carsDb.find(c => c.available) || carsDb[0];
+            }
+            
+            if (selectedCarObj) {
+                selectedCarId = selectedCarObj.id;
+            }
+
+            // Set default dates: pickup tomorrow, drop day after tomorrow
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            const dayAfter = new Date();
+            dayAfter.setDate(dayAfter.getDate() + 2);
+
+            document.getElementById('pickup-date').value = formatDate(tomorrow);
+            document.getElementById('drop-date').value = formatDate(dayAfter);
+
+            // Min dates selection bounds
+            document.getElementById('pickup-date').min = formatDate(new Date());
+            document.getElementById('drop-date').min = formatDate(tomorrow);
+
+            // Load user data if previously typed (quality of life feature)
+            const activeUser = JSON.parse(localStorage.getItem('Carzo_user_profile')) || {
+                name: "Mayan Sharma",
+                email: "mayan@example.com",
+                phone: "+91 98765 43210"
+            };
+
+            if (document.getElementById('cust-name')) document.getElementById('cust-name').value = activeUser.name || '';
+            if (document.getElementById('cust-email')) document.getElementById('cust-email').value = activeUser.email || '';
+            if (document.getElementById('cust-phone')) document.getElementById('cust-phone').value = activeUser.phone || '';
+
+            // Trigger names update in document checklist
+            updateChecklistNames(activeUser.name || '');
+
+            // Run initial Pune checker check
+            checkPuneArea(document.getElementById('pickup-location').value);
+
+            loadCarDetails();
+        });
+
+        function formatDate(date) {
+            const y = date.getFullYear();
+            const m = String(date.getMonth() + 1).padStart(2, '0');
+            const d = String(date.getDate()).padStart(2, '0');
+            return `${y}-${m}-${d}`;
+        }
+
+        function updateChecklistNames(nameStr) {
+            const displayStr = nameStr.trim() || "Customer Name";
+            const chkNameAadhaarEl = document.getElementById('chk-name-aadhaar');
+            const chkNameLicenseEl = document.getElementById('chk-name-license');
+            if (chkNameAadhaarEl) chkNameAadhaarEl.textContent = displayStr;
+            if (chkNameLicenseEl) chkNameLicenseEl.textContent = displayStr;
+        }
+
+        function checkPuneArea(val) {
+            const badge = document.getElementById('pune-warning-badge');
+            if (!badge) return;
+            const inputVal = val.toLowerCase().trim();
+            if (inputVal === '') {
+                badge.innerHTML = '';
+                return;
+            }
+            
+            // Pune keywords
+            const puneKeywords = ['pune', 'kothrud', 'baner', 'hadapsar', 'koregaon', 'viman', 'hinjewadi', 'shivaji', 'wakad', 'camp', 'kalyani', 'pimple', 'aundh', 'bavdhan', 'katraj', 'swargate', 'yerwada', 'airport'];
+            const isPune = puneKeywords.some(k => inputVal.includes(k));
+            
+            if (isPune) {
+                badge.innerHTML = `
+                    <div style="background: rgba(46, 204, 113, 0.08); border: 1px solid #2ecc71; color: #27ae60; padding: 10px 14px; border-radius: 8px; font-size: 0.82rem; font-weight: 600; display: flex; align-items: center; gap: 8px;">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                            <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                        ✓ Pune delivery area detected (verified local hub delivery)
+                    </div>
+                `;
+            } else {
+                badge.innerHTML = `
+                    <div style="background: rgba(231, 76, 60, 0.06); border: 1px solid #e74c3c; color: #c0392b; padding: 10px 14px; border-radius: 8px; font-size: 0.82rem; font-weight: 600; display: flex; align-items: center; gap: 8px;">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                            <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                        </svg>
+                        ⚠️ Note: Carzo operates strictly in Pune. Please confirm your delivery is inside city boundaries.
+                    </div>
+                `;
+            }
+        }
+
+        function loadCarDetails() {
+            if (!selectedCarObj) return;
+
+            rentalRate = selectedCarObj.priceDay;
+            document.getElementById('summary-car-name').textContent = selectedCarObj.name;
+            document.getElementById('summary-car-type').textContent = `${selectedCarObj.passengers} Seater · ${selectedCarObj.fuelType} · ${selectedCarObj.category}`;
+
+            const imgContainer = document.getElementById('car-image-container');
+            if (selectedCarObj.isPlaceholder) {
+                imgContainer.innerHTML = `<div class="detail__image-placeholder" style="background:${selectedCarObj.colorCode || '#2c3e50'}; width: 100%; height: 100%; border-radius: 8px;"></div>`;
+            } else {
+                imgContainer.innerHTML = `<img src="${selectedCarObj.image}" alt="${selectedCarObj.name}" style="max-height: 95px; max-width: 100%; object-fit: contain;">`;
+            }
+
+            calculateRentalPrice();
+        }
+
+        function calculateRentalPrice() {
+            const pickupInput = document.getElementById('pickup-date');
+            const dropInput = document.getElementById('drop-date');
+
+            let days = 1;
+            if (pickupInput && dropInput && pickupInput.value && dropInput.value) {
+                const pickupD = new Date(pickupInput.value);
+                if (!isNaN(pickupD.getTime())) {
+                    // Set min drop date to 1 day after pickup date
+                    const minDropDate = new Date(pickupD);
+                    minDropDate.setDate(minDropDate.getDate() + 1);
+                    dropInput.min = formatDate(minDropDate);
+
+                    let dropD = new Date(dropInput.value);
+                    if (isNaN(dropD.getTime()) || dropD <= pickupD) {
+                        dropInput.value = formatDate(minDropDate);
+                        dropD = minDropDate;
+                    }
+
+                    // calculate difference in days
+                    const timeDiff = dropD.getTime() - pickupD.getTime();
+                    days = Math.ceil(timeDiff / (1000 * 3600 * 24));
+                }
+            }
+
+            if (isNaN(days) || days < 1) {
+                days = 1;
+            }
+
+            totalDays = days;
+
+            // update labels and displays
+            document.getElementById('days-label').textContent = `Rental price (${days} ${days === 1 ? 'day' : 'days'})`;
+            document.getElementById('base-rate-display').textContent = `₹${rentalRate.toLocaleString('en-IN')}/day`;
+
+            const subtotal = rentalRate * days;
+            const gst = Math.round(subtotal * 0.18);
+            const fee = 250;
+            totalCost = subtotal + gst + fee;
+
+            document.getElementById('subtotal-display').textContent = `₹${subtotal.toLocaleString('en-IN')}`;
+            document.getElementById('gst-display').textContent = `₹${gst.toLocaleString('en-IN')}`;
+            document.getElementById('fee-display').textContent = `₹${fee.toLocaleString('en-IN')}`;
+            document.getElementById('total-display').textContent = `₹${totalCost.toLocaleString('en-IN')}`;
+            
+            const btnPayAmountEl = document.getElementById('btn-pay-amount');
+            if (btnPayAmountEl) {
+                btnPayAmountEl.textContent = totalCost.toLocaleString('en-IN');
+            }
+        }
+
+        // Sequential step navigation
+        function goToStep(step) {
+            currentStep = step;
+
+            // Reset progress tracker classes
+            document.getElementById('progress-step-1').className = "step-item";
+            document.getElementById('progress-step-2').className = "step-item";
+            document.getElementById('progress-step-3').className = "step-item";
+            document.getElementById('progress-line-1').className = "step-line";
+            document.getElementById('progress-line-2').className = "step-line";
+
+            if (step === 1) {
+                document.getElementById('progress-step-1').classList.add('step-item--active');
+                
+                // Show split layout, hide outcomes
+                document.getElementById('split-checkout-layout').style.display = "grid";
+                document.getElementById('split-checkout-layout').classList.remove('checkout-layout--hidden');
+                document.getElementById('full-width-outcome-layout').style.display = "none";
+                
+                document.getElementById('step-1-container').style.display = "block";
+            } 
+            else if (step === 3) { // Success
+                document.getElementById('progress-step-1').classList.add('step-item--completed');
+                document.getElementById('progress-line-1').classList.add('step-line--completed');
+                document.getElementById('progress-step-2').classList.add('step-item--completed');
+                document.getElementById('progress-line-2').classList.add('step-line--completed');
+                document.getElementById('progress-step-3').classList.add('step-item--completed');
+
+                document.getElementById('split-checkout-layout').style.display = "none";
+                document.getElementById('split-checkout-layout').classList.add('checkout-layout--hidden');
+                document.getElementById('full-width-outcome-layout').style.display = "block";
+
+                document.getElementById('step-3-container').style.display = "block";
+                document.getElementById('step-4-container').style.display = "none";
+            }
+            else if (step === 4) { // Failure
+                document.getElementById('progress-step-1').classList.add('step-item--completed');
+                document.getElementById('progress-line-1').classList.add('step-line--completed');
+                document.getElementById('progress-step-2').classList.add('step-item--active'); // stay on payment step progress visual
+                
+                document.getElementById('split-checkout-layout').style.display = "none";
+                document.getElementById('split-checkout-layout').classList.add('checkout-layout--hidden');
+                document.getElementById('full-width-outcome-layout').style.display = "block";
+
+                document.getElementById('step-3-container').style.display = "none";
+                document.getElementById('step-4-container').style.display = "block";
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Process and save booking details
+        function processBooking() {
+            // Save user parameters to local storage profiles
+            const name = document.getElementById('cust-name').value;
+            const email = document.getElementById('cust-email').value;
+            const phone = document.getElementById('cust-phone').value;
+
+            let profile = JSON.parse(localStorage.getItem('Carzo_user_profile')) || {};
+            profile.name = name;
+            profile.email = email;
+            profile.phone = phone;
+            delete profile.license;
+            localStorage.setItem('Carzo_user_profile', JSON.stringify(profile));
+
+            // SUCCESS FLOW
+            const bookingId = 'BD-' + Math.floor(100000 + Math.random() * 900000);
+            
+            // Build new booking object
+            const pickupLoc = document.getElementById('pickup-location').value;
+            
+            // Get dates from pre-populated hidden inputs
+            const pickupDate = document.getElementById('pickup-date').value;
+            const pickupTime = document.getElementById('pickup-time').value || "10:00";
+            const dropDate = document.getElementById('drop-date').value;
+            const dropTime = document.getElementById('drop-time').value || "10:00";
+
+            const booking = {
+                id: bookingId,
+                carId: selectedCarId,
+                carName: selectedCarObj ? selectedCarObj.name : "Car Model",
+                carImage: selectedCarObj ? selectedCarObj.image : "",
+                isPlaceholder: selectedCarObj ? selectedCarObj.isPlaceholder : true,
+                colorCode: selectedCarObj ? selectedCarObj.colorCode : "#2c3e50",
+                pickupLoc: pickupLoc,
+                pickupDate: pickupDate,
+                pickupTime: pickupTime,
+                dropDate: dropDate,
+                dropTime: dropTime,
+                totalDays: totalDays,
+                totalCost: totalCost,
+                status: 'Confirmed',
+                dateCreated: new Date().toISOString(),
+                custName: name,
+                custPhone: phone,
+                custEmail: email
+            };
+
+            // Save booking in LocalStorage list
+            let bookingsList = JSON.parse(localStorage.getItem('Carzo_bookings')) || [];
+            bookingsList.unshift(booking);
+            localStorage.setItem('Carzo_bookings', JSON.stringify(bookingsList));
+
+            // Populate Step 3 details page
+            document.getElementById('success-ref-id').textContent = bookingId;
+            document.getElementById('success-car-name').textContent = booking.carName;
+            document.getElementById('success-cost').textContent = `₹${totalCost.toLocaleString('en-IN')}`;
+            document.getElementById('success-pickup').textContent = `${pickupDate} at ${pickupTime}`;
+            document.getElementById('success-loc').textContent = pickupLoc;
+
+            // Load host details from car object
+            if (selectedCarObj) {
+                document.getElementById('success-host-name').textContent = selectedCarObj.ownerName || "Rohan Pune-Owner";
+                document.getElementById('success-host-phone-text').textContent = selectedCarObj.ownerPhone || "+91 90110 12345";
+            }
+
+            goToStep(3);
+        }
+
+        function triggerMockCall() {
+            const hostName = selectedCarObj ? selectedCarObj.ownerName : "Rohan Pune-Owner";
+            const hostPhone = selectedCarObj ? selectedCarObj.ownerPhone : "+91 90110 12345";
+            alert(`📞 Connecting call to host ${hostName} at ${hostPhone}...\n\n(This is a mock call simulation)`);
+        }
+
+        function goToDashboard() {
+            window.location.href = 'dashboard.html';
+        }
+    </script>
+</body>
+
+</html>

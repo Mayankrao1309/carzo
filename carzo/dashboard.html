@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Carzo - Customer Dashboard. Overview of your bookings, account settings, and rental statistics.">
+    <title>Carzo — Customer Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="dashboard-page" style="background:var(--color-bg);">
+
+    <!-- ===================== NAVBAR ===================== -->
+    <header class="navbar navbar--scrolled navbar--always-white" id="navbar">
+        <div class="navbar__inner">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <button class="navbar__icon-btn dashboard-hamburger" id="dashboard-hamburger-btn" aria-label="Toggle Sidebar Menu">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <line x1="3" x2="21" y1="6" y2="6"/>
+                        <line x1="3" x2="21" y1="12" y2="12"/>
+                        <line x1="3" x2="21" y1="18" y2="18"/>
+                    </svg>
+                </button>
+                <a href="index.html" class="navbar__logo" id="logo">
+                    <div class="navbar__logo-icon" style="background:var(--color-primary); color:var(--color-white); border-radius:8px; display:flex; align-items:center; justify-content:center; width:32px; height:32px;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5"/>
+                            <polyline points="12 22 12 12 22 8.5"/>
+                            <line x1="12" y1="12" x2="2" y2="8.5"/>
+                        </svg>
+                    </div>
+                    <span>Carzo</span>
+                </a>
+            </div>
+            <nav class="navbar__links" id="nav-links">
+                <a href="index.html" class="navbar__link">Home</a>
+                <a href="cars.html" class="navbar__link">All Cars</a>
+                <a href="list-car.html" class="navbar__link">List Your Car</a>
+                <a href="locations.html" class="navbar__link">Near by locations</a>
+                <a href="about.html" class="navbar__link">About US</a>
+                <a href="contact.html" class="navbar__link">Contact Us</a>
+            </nav>
+            <div class="navbar__actions">
+                <div class="navbar__auth" id="navbar-auth" style="display: none;">
+                    <a href="login.html" class="btn-auth btn-auth--login">Log In</a>
+                    <a href="signup.html" class="btn-auth btn-auth--signup">Sign Up</a>
+                </div>
+                <div class="navbar__profile-dropdown" id="profile-dropdown" style="display: none;">
+                    <button class="navbar__profile-btn" id="profile-btn" aria-label="Profile Menu">
+                        <div class="navbar__profile-avatar" id="navbar-avatar">MS</div>
+                    </button>
+                    <div class="navbar__profile-menu" id="profile-menu">
+                        <div class="navbar__profile-header">
+                            <span class="navbar__profile-name" id="navbar-profile-name">Mayan Sharma</span>
+                            <span class="navbar__profile-email" id="navbar-profile-email">mayan@example.com</span>
+                        </div>
+                        <div class="navbar__profile-divider"></div>
+                        <a href="admin.html" class="navbar__profile-item" style="color:var(--color-primary); font-weight:700;">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="3"/>
+                                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                            </svg>
+                            Admin Panel
+                        </a>
+                        <a href="dashboard.html" class="navbar__profile-item">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect width="7" height="9" x="3" y="3" rx="1"/>
+                                <rect width="7" height="5" x="14" y="3" rx="1"/>
+                                <rect width="7" height="9" x="14" y="12" rx="1"/>
+                                <rect width="7" height="5" x="3" y="16" rx="1"/>
+                            </svg>
+                            Dashboard
+                        </a>
+                        <a href="profile.html" class="navbar__profile-item">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
+                                <circle cx="12" cy="7" r="4"/>
+                            </svg>
+                            Edit Profile
+                        </a>
+                        <a href="booking-management.html" class="navbar__profile-item">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect width="18" height="18" x="3" y="4" rx="2" ry="2"/>
+                                <line x1="16" x2="16" y1="2" y2="6"/>
+                                <line x1="8" x2="8" y1="2" y2="6"/>
+                                <line x1="3" x2="21" y1="10" y2="10"/>
+                            </svg>
+                            My Bookings
+                        </a>
+                        <a href="#" class="navbar__profile-item" id="logout-btn">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                                <polyline points="16 17 21 12 16 7"/>
+                                <line x1="21" x2="9" y1="12" y2="12"/>
+                            </svg>
+                            Logout
+                        </a>
+                    </div>
+                </div>
+                <button class="navbar__icon-btn navbar__hamburger" id="hamburger" aria-label="Menu">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="3" y1="6" x2="21" y2="6" />
+                        <line x1="3" y1="12" x2="21" y2="12" />
+                        <line x1="3" y1="18" x2="21" y2="18" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- ===================== MAIN DASHBOARD CONTENT ===================== -->
+    <main class="dashboard">
+        <div class="dashboard-container">
+
+            <!-- Sidebar Navigation -->
+            <aside class="dashboard-sidebar">
+                <div class="user-profile-summary">
+                    <div class="user-avatar" id="nav-avatar">MS</div>
+                    <div class="user-profile-info">
+                        <h2 class="user-name" id="nav-name">Mayan Sharma</h2>
+                        <span class="user-role">Premium Member</span>
+                    </div>
+                </div>
+                <nav class="sidebar-menu">
+                    <a href="dashboard.html" class="sidebar-link sidebar-link--active">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:2px;">
+                            <rect width="7" height="9" x="3" y="3" rx="1" />
+                            <rect width="7" height="5" x="14" y="3" rx="1" />
+                            <rect width="7" height="9" x="14" y="12" rx="1" />
+                            <rect width="7" height="5" x="3" y="16" rx="1" />
+                        </svg>
+                        Dashboard
+                    </a>
+                    <a href="booking-management.html" class="sidebar-link">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:2px;">
+                            <rect width="18" height="18" x="3" y="4" rx="2" ry="2" />
+                            <line x1="16" x2="16" y1="2" y2="6" />
+                            <line x1="8" x2="8" y1="2" y2="6" />
+                            <line x1="3" x2="21" y1="10" y2="10" />
+                        </svg>
+                        Manage Bookings
+                    </a>
+                    <a href="profile.html" class="sidebar-link">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:2px;">
+                            <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
+                        </svg>
+                        Edit Profile
+                    </a>
+
+                    <a href="cars.html" class="sidebar-link">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:2px;">
+                            <path
+                                d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2" />
+                            <circle cx="7" cy="17" r="2" />
+                            <circle cx="17" cy="17" r="2" />
+                        </svg>
+                        Browse Fleet
+                    </a>
+                </nav>
+            </aside>
+
+            <!-- Main Panel Content -->
+            <section class="dashboard-main">
+
+                <div class="dashboard-header">
+                    <div>
+                        <h1 class="dashboard-title" id="welcome-message">Welcome Back, Mayan!</h1>
+                        <p style="font-size:0.875rem;color:var(--color-text-secondary);margin-top:4px;">Here is the
+                            summary of your rental account.</p>
+                    </div>
+                </div>
+
+                <!-- Statistics Grid -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <span class="stat-val" id="stat-total-bookings">0</span>
+                        <span class="stat-label">Total Bookings</span>
+                    </div>
+                    <div class="stat-card stat-card--purple">
+                        <span class="stat-val" id="stat-active-rentals">0</span>
+                        <span class="stat-label">Active & Confirmed</span>
+                    </div>
+                    <div class="stat-card stat-card--teal">
+                        <span class="stat-val" id="stat-total-spent">₹0</span>
+                        <span class="stat-label">Total Spent</span>
+                    </div>
+                    <div class="stat-card stat-card--blue">
+                        <span class="stat-val" id="stat-completed-trips">0</span>
+                        <span class="stat-label">Completed Trips</span>
+                    </div>
+                </div>
+
+                <!-- Bookings & Recent Activity Block -->
+                <div class="dashboard-block">
+                    <div class="dashboard-block__title">
+                        <span>Current & Upcoming Bookings</span>
+                        <a href="booking-management.html" style="font-size:0.82rem;color:var(--color-primary);font-weight:700;">View
+                            All →</a>
+                    </div>
+
+                    <div id="dashboard-bookings-container">
+                        <!-- Dynamic list populated from LocalStorage -->
+                        <div class="empty-state">
+                            <div class="empty-state-icon">📂</div>
+                            <p class="empty-state-text">You don't have any bookings yet. Browse our premium fleet to get
+                                started!</p>
+                            <a href="cars.html" class="btn-dashboard-action btn-dashboard-action--primary"
+                                style="display:inline-block;padding:10px 24px;">Rent a Car</a>
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+
+        </div>
+    </main>
+
+    <!-- ===================== FOOTER ===================== -->
+    <footer class="footer" id="footer" style="margin-top:80px;">
+        <div class="footer__inner">
+            <div class="footer__top">
+                <!-- Brand column -->
+                <div class="footer__brand">
+                    <a href="index.html" class="footer__logo">
+                        <span>Carzo</span>
+                    </a>
+                    <address class="footer__address">
+                        Storkower Strasse 41<br>
+                        Rhineland-Pfalz,<br>
+                        54176, Germany
+                    </address>
+                    <div class="footer__socials">
+                        <a href="#" class="footer__social" aria-label="Facebook">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
+                            </svg>
+                        </a>
+                        <a href="#" class="footer__social" aria-label="LinkedIn">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path
+                                    d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
+                                <rect x="2" y="9" width="4" height="12" />
+                                <circle cx="4" cy="4" r="2" />
+                            </svg>
+                        </a>
+                        <a href="#" class="footer__social" aria-label="Instagram">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Links columns -->
+                <div class="footer__links-group">
+                    <div class="footer__col">
+                        <h3 class="footer__col-title">Primary Pages</h3>
+                        <ul class="footer__col-list">
+                            <li><a href="index.html">Home</a></li>
+                            <li><a href="cars.html">Rent Luxury Cars</a></li>
+                            <li><a href="list-car.html">List Your Car</a></li>
+                            <li><a href="contact.html">Contact Us</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer__col">
+                        <h3 class="footer__col-title">Listing Locations</h3>
+                        <ul class="footer__col-list">
+                            <li><a href="locations.html">Near by locations</a></li>
+                            <li><a href="locations.html">Pune Hub</a></li>
+                            <li><a href="locations.html">Mumbai Hub</a></li>
+                            <li><a href="locations.html">Delhi Hub</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer__col">
+                        <h3 class="footer__col-title">Overview & Details</h3>
+                        <ul class="footer__col-list">
+                            <li><a href="about.html">About US</a></li>
+                            <li><a href="contact.html">Send Message</a></li>
+                            <li><a href="#">Terms & Conditions</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="footer__bottom">
+                <p>&copy; 2026 Carzo. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ===================== JAVASCRIPT LOGIC ===================== -->
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            // Load user data
+            const activeUser = JSON.parse(localStorage.getItem('Carzo_user_profile')) || {
+                name: "Mayan Sharma",
+                email: "mayan@example.com"
+            };
+
+            // Set welcome message and profiles
+            const nameParts = activeUser.name.split(' ');
+            const firstName = nameParts[0] || 'User';
+            document.getElementById('welcome-message').textContent = `Welcome Back, ${firstName}!`;
+            document.getElementById('nav-name').textContent = activeUser.name;
+
+            // Set initials in avatar
+            const initials = nameParts.map(n => n[0]).join('').substring(0, 2).toUpperCase();
+            document.getElementById('nav-avatar').textContent = initials || 'BD';
+
+            // Load statistics and list
+            renderDashboard();
+        });
+
+        function renderDashboard() {
+            const bookingsList = JSON.parse(localStorage.getItem('Carzo_bookings')) || [];
+
+            // Statistics calculations
+            const totalBookings = bookingsList.length;
+            const activeRentals = bookingsList.filter(b => b.status === 'Confirmed' || b.status === 'Active' || b.status === 'Delivered').length;
+            const completedTrips = bookingsList.filter(b => b.status === 'Completed').length;
+
+            // Total spent (exclude cancelled bookings)
+            const totalSpent = bookingsList
+                .filter(b => b.status !== 'Cancelled')
+                .reduce((acc, curr) => acc + curr.totalCost, 0);
+
+            // Update stats DOM
+            document.getElementById('stat-total-bookings').textContent = totalBookings;
+            document.getElementById('stat-active-rentals').textContent = activeRentals;
+            document.getElementById('stat-completed-trips').textContent = completedTrips;
+            document.getElementById('stat-total-spent').textContent = `₹${totalSpent.toLocaleString('en-IN')}`;
+
+            // Render bookings list
+            const container = document.getElementById('dashboard-bookings-container');
+            const activeOrUpcoming = bookingsList.filter(b => b.status === 'Confirmed' || b.status === 'Active' || b.status === 'Delivered');
+
+            if (activeOrUpcoming.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">🚗</div>
+                        <p class="empty-state-text">You have no active or upcoming bookings at the moment.</p>
+                        <a href="cars.html" class="btn-dashboard-action btn-dashboard-action--primary" style="display:inline-block;padding:10px 24px;">Browse and Rent</a>
+                    </div>
+                `;
+                return;
+            }
+
+            let htmlContent = '';
+            // Display top 3 active or upcoming bookings on the home dashboard
+            activeOrUpcoming.slice(0, 3).forEach(booking => {
+                let badgeClass = 'badge--confirmed';
+                if (booking.status === 'Active' || booking.status === 'Delivered') badgeClass = 'badge--active';
+
+                let carImageTag = '';
+                if (booking.isPlaceholder) {
+                    carImageTag = `<div class="detail__image-placeholder" style="background:${booking.colorCode}; width: 100%; height: 100%; border-radius: 6px;"></div>`;
+                } else {
+                    carImageTag = `<img src="${booking.carImage}" alt="${booking.carName}" class="booking-item-car-img">`;
+                }
+
+                htmlContent += `
+                    <div class="booking-item-card">
+                        <div class="booking-item-details">
+                            <div class="booking-item-car-thumb">
+                                ${carImageTag}
+                            </div>
+                            <div class="booking-item-meta">
+                                <span class="booking-item-name">${booking.carName} <span class="badge ${badgeClass}">${booking.status}</span></span>
+                                <span style="font-size:0.75rem;color:var(--color-text-muted);font-weight:600;">ID: ${booking.id}</span>
+                                <span class="booking-item-dates">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                        <rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/>
+                                    </svg>
+                                    ${booking.pickupDate} (${booking.pickupTime}) to ${booking.dropDate} (${booking.dropTime})
+                                </span>
+                            </div>
+                        </div>
+                        <div class="booking-item-actions">
+                            <div style="text-align:right;margin-right:12px;">
+                                <span class="booking-item-price-tag">₹${booking.totalCost.toLocaleString('en-IN')}</span>
+                                <div style="font-size:0.75rem;color:var(--color-text-secondary);font-weight:500;">${booking.totalDays} Days</div>
+                            </div>
+                            <a href="booking-management.html?id=${booking.id}" class="btn-dashboard-action btn-dashboard-action--secondary">Manage</a>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = htmlContent;
+        }
+    </script>
+    <script src="script.js"></script>
+</body>
+
+</html>

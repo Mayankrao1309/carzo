@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Carzo - Browse our premium fleet of rental cars. Search and filter to find your perfect vehicle.">
+    <title>Carzo — All Cars</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Mobile filter dropdown toggle styling */
+        @media (max-width: 1024px) {
+            .filter-sidebar {
+                padding: 16px 20px !important;
+                border-radius: var(--radius-lg);
+                background: var(--color-white);
+                border: 1px solid var(--color-border-light);
+                box-shadow: var(--shadow-card);
+                margin-bottom: 8px;
+            }
+            .filter-sidebar__header {
+                padding-bottom: 0 !important;
+                border-bottom: none !important;
+                margin-bottom: 0 !important;
+            }
+            .filter-chevron {
+                display: flex !important;
+                align-items: center;
+                justify-content: center;
+            }
+            .filter-sidebar__content {
+                max-height: 0;
+                overflow: hidden;
+                transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), padding 0.3s ease, margin-top 0.3s ease;
+                padding-top: 0;
+            }
+            .filter-sidebar--open .filter-sidebar__content {
+                max-height: 1000px;
+                padding-top: 20px;
+                margin-top: 16px;
+                border-top: 1.5px solid var(--color-border-light);
+            }
+            .filter-sidebar--open .filter-chevron {
+                transform: rotate(180deg);
+            }
+        }
+        @media (max-width: 768px) {
+            .fleet-grid {
+                grid-template-columns: 1fr 1fr !important;
+                gap: 12px !important;
+                max-width: 100% !important;
+                padding: 0 !important;
+            }
+
+            .car-card {
+                border-radius: var(--radius-md) !important;
+            }
+
+            .car-card__image-container {
+                height: 120px !important;
+                padding: 12px !important;
+            }
+
+            .car-card__badge {
+                top: 8px !important;
+                left: 8px !important;
+                font-size: 0.6rem !important;
+                padding: 2px 6px !important;
+            }
+
+            .car-card__body {
+                padding: 12px 8px !important;
+            }
+
+            .car-card__name {
+                font-size: 0.88rem !important;
+                margin-bottom: 8px !important;
+                min-height: 38px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .car-card__specs-row {
+                gap: 6px !important;
+                margin-bottom: 12px !important;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .car-card__spec-item {
+                font-size: 0.65rem !important;
+                gap: 3px !important;
+            }
+
+            .car-card__spec-icon {
+                width: 12px !important;
+                height: 12px !important;
+            }
+
+            .car-card__price-tag {
+                font-size: 0.8rem !important;
+                margin-bottom: 12px !important;
+            }
+
+            .car-card__actions {
+                grid-template-columns: 1fr !important;
+                gap: 6px !important;
+            }
+
+            .car-btn {
+                padding: 8px 4px !important;
+                font-size: 0.72rem !important;
+                border-radius: 6px !important;
+                height: 32px !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ===================== NAVBAR ===================== -->
+    <header class="navbar" id="navbar">
+        <div class="navbar__inner">
+            <a href="index.html" class="navbar__logo" id="logo">
+                <div class="navbar__logo-icon" style="background:var(--color-primary); color:var(--color-white); border-radius:8px; display:flex; align-items:center; justify-content:center; width:32px; height:32px;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5"/>
+                        <polyline points="12 22 12 12 22 8.5"/>
+                        <line x1="12" y1="12" x2="2" y2="8.5"/>
+                    </svg>
+                </div>
+                <span>Carzo</span>
+            </a>
+            <nav class="navbar__links" id="nav-links">
+                <a href="index.html" class="navbar__link">Home</a>
+                <a href="cars.html" class="navbar__link navbar__link--active">All Cars</a>
+                <a href="list-car.html" class="navbar__link">List Your Car</a>
+                <a href="locations.html" class="navbar__link">Near by locations</a>
+                <a href="about.html" class="navbar__link">About US</a>
+                <a href="contact.html" class="navbar__link">Contact Us</a>
+            </nav>
+            <div class="navbar__actions">
+                <div class="navbar__auth" id="navbar-auth" style="display: none;">
+                    <a href="login.html" class="btn-auth btn-auth--login">Log In</a>
+                    <a href="signup.html" class="btn-auth btn-auth--signup">Sign Up</a>
+                </div>
+                <div class="navbar__profile-dropdown" id="profile-dropdown" style="display: none;">
+                    <button class="navbar__profile-btn" id="profile-btn" aria-label="Profile Menu">
+                        <div class="navbar__profile-avatar" id="navbar-avatar">MS</div>
+                    </button>
+                    <div class="navbar__profile-menu" id="profile-menu">
+                        <div class="navbar__profile-header">
+                            <span class="navbar__profile-name" id="navbar-profile-name">Mayan Sharma</span>
+                            <span class="navbar__profile-email" id="navbar-profile-email">mayan@example.com</span>
+                        </div>
+                        <div class="navbar__profile-divider"></div>
+                        <a href="admin.html" class="navbar__profile-item" style="color:var(--color-primary); font-weight:700;">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="3"/>
+                                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                            </svg>
+                            Admin Panel
+                        </a>
+                        <a href="dashboard.html" class="navbar__profile-item">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect width="7" height="9" x="3" y="3" rx="1"/>
+                                <rect width="7" height="5" x="14" y="3" rx="1"/>
+                                <rect width="7" height="9" x="14" y="12" rx="1"/>
+                                <rect width="7" height="5" x="3" y="16" rx="1"/>
+                            </svg>
+                            Dashboard
+                        </a>
+                        <a href="profile.html" class="navbar__profile-item">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
+                                <circle cx="12" cy="7" r="4"/>
+                            </svg>
+                            Edit Profile
+                        </a>
+                        <a href="booking-management.html" class="navbar__profile-item">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect width="18" height="18" x="3" y="4" rx="2" ry="2"/>
+                                <line x1="16" x2="16" y1="2" y2="6"/>
+                                <line x1="8" x2="8" y1="2" y2="6"/>
+                                <line x1="3" x2="21" y1="10" y2="10"/>
+                            </svg>
+                            My Bookings
+                        </a>
+                        <a href="#" class="navbar__profile-item" id="logout-btn">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                                <polyline points="16 17 21 12 16 7"/>
+                                <line x1="21" x2="9" y1="12" y2="12"/>
+                            </svg>
+                            Logout
+                        </a>
+                    </div>
+                </div>
+                <button class="navbar__icon-btn navbar__hamburger" id="hamburger" aria-label="Menu">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="3" y1="6" x2="21" y2="6" />
+                        <line x1="3" y1="12" x2="21" y2="12" />
+                        <line x1="3" y1="18" x2="21" y2="18" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- ===================== FLEET HERO ===================== -->
+    <section class="fleet-hero">
+        <div class="fleet-hero__overlay"></div>
+        <div class="fleet-hero__content">
+            <h1 class="fleet-hero__title">Our Fleet</h1>
+            <p class="fleet-hero__subtitle">Find the perfect car for your next journey</p>
+        </div>
+    </section>
+
+    <!-- ===================== FLEET SECTION ===================== -->
+    <section class="fleet-section">
+        <div class="fleet-container">
+
+            <!-- Left Sidebar (Filters) -->
+            <aside class="filter-sidebar" id="filter-sidebar">
+                <div class="filter-sidebar__header" id="filter-toggle-btn" style="cursor: pointer; display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                    <h2 class="filter-sidebar__title" style="display: flex; align-items: center; gap: 8px; border-bottom: none; padding-bottom: 0; margin-bottom: 0;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-right: 4px;">
+                            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
+                        </svg>
+                        Filter by
+                    </h2>
+                    <!-- Toggle indicator chevron (visible only on mobile) -->
+                    <span class="filter-chevron" style="display: none; transition: transform var(--transition-base);">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <polyline points="6 9 12 15 18 9"/>
+                        </svg>
+                    </span>
+                </div>
+
+                <!-- Wrapper for filter groups to collapse/expand -->
+                <div class="filter-sidebar__content" id="filter-sidebar-content">
+                    <!-- Car Type Filter -->
+                    <div class="filter-group">
+                        <h3 class="filter-group__title">Car type</h3>
+                        <div class="filter-group__options" id="sidebar-car-type-options">
+                            <!-- Populated dynamically from localStorage categories -->
+                        </div>
+                    </div>
+
+                    <!-- Capacity Filter -->
+                    <div class="filter-group">
+                        <h3 class="filter-group__title">Capacity</h3>
+                        <div class="filter-group__options">
+                            <label class="filter-checkbox">
+                                <input type="checkbox" class="filter-capacity-checkbox" value="2-4">
+                                <span class="filter-checkbox__box"></span>
+                                <span class="filter-checkbox__label">2-4 passengers <span
+                                        class="filter-checkbox__count" id="count-cap-2-4">0</span></span>
+                            </label>
+                            <label class="filter-checkbox">
+                                <input type="checkbox" class="filter-capacity-checkbox" value="5+">
+                                <span class="filter-checkbox__box"></span>
+                                <span class="filter-checkbox__label">5 or more passengers <span
+                                        class="filter-checkbox__count" id="count-cap-5">0</span></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Fuel Type Filter -->
+                    <div class="filter-group">
+                        <h3 class="filter-group__title">Fuel type</h3>
+                        <div class="filter-group__options">
+                            <label class="filter-checkbox">
+                                <input type="checkbox" class="filter-fuel-checkbox" value="Petrol">
+                                <span class="filter-checkbox__box"></span>
+                                <span class="filter-checkbox__label">Petrol <span
+                                        class="filter-checkbox__count" id="count-fuel-Petrol">0</span></span>
+                            </label>
+                            <label class="filter-checkbox">
+                                <input type="checkbox" class="filter-fuel-checkbox" value="CNG">
+                                <span class="filter-checkbox__box"></span>
+                                <span class="filter-checkbox__label">CNG <span
+                                        class="filter-checkbox__count" id="count-fuel-CNG">0</span></span>
+                            </label>
+                            <label class="filter-checkbox">
+                                <input type="checkbox" class="filter-fuel-checkbox" value="Diesel">
+                                <span class="filter-checkbox__box"></span>
+                                <span class="filter-checkbox__label">Diesel <span
+                                        class="filter-checkbox__count" id="count-fuel-Diesel">0</span></span>
+                            </label>
+                            <label class="filter-checkbox">
+                                <input type="checkbox" class="filter-fuel-checkbox" value="Electric">
+                                <span class="filter-checkbox__box"></span>
+                                <span class="filter-checkbox__label">Electric <span
+                                        class="filter-checkbox__count" id="count-fuel-Electric">0</span></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Price Slider Filter -->
+                    <div class="filter-group">
+                        <h3 class="filter-group__title">Daily price</h3>
+                        <div class="price-slider-container">
+                            <input type="range" id="price-range-slider" class="price-slider" min="50" max="600" value="600">
+                            <div class="price-slider__labels">
+                                <span>min: ₹500</span>
+                                <span class="price-slider__current" id="price-slider-label">max. ₹6,000</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+ 
+            <!-- Right Content (Grid list) -->
+            <div class="fleet-content">
+                <!-- Search & Dynamic Filters Container -->
+                <div style="background: var(--color-white); padding: 24px; border-radius: var(--radius-lg); border: 1px solid var(--color-border-light); margin-bottom: 24px; box-shadow: var(--shadow-card); display: flex; flex-direction: column; gap: 20px;">
+                    
+                    <!-- Search Bar -->
+                    <div style="position: relative; width: 100%;">
+                        <div style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--color-text-secondary); pointer-events: none; display: flex; align-items: center;">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
+                            </svg>
+                        </div>
+                        <input type="text" id="global-search-input" placeholder="Search by brand, model, fuel, or category..." oninput="handleSearchFilter()" style="width: 100%; padding: 12px 16px 12px 46px; border-radius: var(--radius-pill); border: 1.5px solid var(--color-border); background: var(--color-white); font-family: var(--font-family); font-size: 0.88rem; font-weight: 500; color: var(--color-black); outline: none; transition: all var(--transition-fast);">
+                    </div>
+
+                    <!-- Category Tabs Filter buttons -->
+                    <div style="display: flex; flex-direction: column; gap: 8px;">
+                        <span style="font-size: 0.78rem; font-weight: 700; text-transform: uppercase; color: var(--color-text-secondary); letter-spacing: 0.05em; text-align: left;">Category Filters</span>
+                        <div id="parent-categories-row" style="display: flex; gap: 6px; flex-wrap: wrap;">
+                            <!-- Populate dynamically -->
+                        </div>
+                        <div id="subcategory-filters-row" style="display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px;">
+                            <!-- Populate subcategories dynamically -->
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="fleet-content__header" style="margin-bottom: 20px;">
+                    <span class="fleet-content__results" id="results-count-display">0 results</span>
+                    <div class="fleet-content__sorting">
+                        <span class="sorting-label">Sort by</span>
+                        <div class="sorting-select-wrapper">
+                            <select class="sorting-select" id="sort-select" onchange="handleSortChange()">
+                                <option value="best">Best match</option>
+                                <option value="low">Price: Low to High</option>
+                                <option value="high">Price: High to Low</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="fleet-grid" id="fleet-grid-container">
+                    <!-- Populated dynamically from localStorage -->
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ===================== FOOTER ===================== -->
+    <footer class="footer" id="footer">
+        <div class="footer__inner">
+            <div class="footer__top">
+                <!-- Brand column -->
+                <div class="footer__brand">
+                    <a href="index.html" class="footer__logo">
+                        <span>Carzo</span>
+                    </a>
+                    <address class="footer__address">
+                        Storkower Strasse 41<br>
+                        Rhineland-Pfalz,<br>
+                        54176, Germany
+                    </address>
+                    <div class="footer__socials">
+                        <a href="#" class="footer__social" aria-label="Facebook">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
+                            </svg>
+                        </a>
+                        <a href="#" class="footer__social" aria-label="LinkedIn">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path
+                                    d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
+                                <rect x="2" y="9" width="4" height="12" />
+                                <circle cx="4" cy="4" r="2" />
+                            </svg>
+                        </a>
+                        <a href="#" class="footer__social" aria-label="Instagram">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Links columns -->
+                <div class="footer__links-group">
+                    <div class="footer__col">
+                        <h3 class="footer__col-title">Primary Pages</h3>
+                        <ul class="footer__col-list">
+                            <li><a href="index.html">Home</a></li>
+                            <li><a href="cars.html">Rent Luxury Cars</a></li>
+                            <li><a href="list-car.html">List Your Car</a></li>
+                            <li><a href="contact.html">Contact Us</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer__col">
+                        <h3 class="footer__col-title">Listing Locations</h3>
+                        <ul class="footer__col-list">
+                            <li><a href="locations.html">Near by locations</a></li>
+                            <li><a href="locations.html">Pune Hub</a></li>
+                            <li><a href="locations.html">Mumbai Hub</a></li>
+                            <li><a href="locations.html">Delhi Hub</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer__col">
+                        <h3 class="footer__col-title">Overview & Details</h3>
+                        <ul class="footer__col-list">
+                            <li><a href="about.html">About US</a></li>
+                            <li><a href="contact.html">Send Message</a></li>
+                            <li><a href="#">Terms & Conditions</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="footer__bottom">
+                <p>&copy; 2026 Carzo. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        let carsDb = [];
+        let categoriesList = [];
+        let selectedCategory = '';
+        let selectedSubcategory = '';
+        let searchQuery = '';
+        let selectedCarTypes = [];
+        let selectedCapacities = [];
+        let selectedFuels = [];
+        let maxPrice = 6000;
+        let sortOption = 'best';
+
+        window.addEventListener('DOMContentLoaded', () => {
+            refreshData();
+            renderSidebarCategories();
+            initSidebarFilters();
+            renderCategories();
+
+            // Read URL search parameter
+            const urlParams = new URLSearchParams(window.location.search);
+            const searchParam = urlParams.get('search');
+            if (searchParam) {
+                const searchInput = document.getElementById('global-search-input');
+                if (searchInput) {
+                    searchInput.value = searchParam;
+                }
+                searchQuery = searchParam.toLowerCase().trim();
+            }
+
+            renderCarGrid();
+
+            // Mobile Filter Sidebar Toggle
+            const filterToggleBtn = document.getElementById('filter-toggle-btn');
+            const filterSidebar = document.getElementById('filter-sidebar');
+            if (filterToggleBtn && filterSidebar) {
+                filterToggleBtn.addEventListener('click', () => {
+                    if (window.innerWidth <= 1024) {
+                        filterSidebar.classList.toggle('filter-sidebar--open');
+                    }
+                });
+            }
+
+            window.addEventListener('resize', () => {
+                if (window.innerWidth > 1024 && filterSidebar) {
+                    filterSidebar.classList.remove('filter-sidebar--open');
+                }
+            });
+        });
+
+        function refreshData() {
+            carsDb = JSON.parse(localStorage.getItem('Carzo_cars')) || [];
+            categoriesList = JSON.parse(localStorage.getItem('Carzo_categories')) || [];
+        }
+
+        function renderSidebarCategories() {
+            const container = document.getElementById('sidebar-car-type-options');
+            if (!container) return;
+
+            let html = '';
+            categoriesList.forEach(cat => {
+                html += `
+                    <label class="filter-checkbox">
+                        <input type="checkbox" class="filter-type-checkbox" value="${cat.name}">
+                        <span class="filter-checkbox__box"></span>
+                        <span class="filter-checkbox__label">${cat.name} <span class="filter-checkbox__count" id="count-type-${cat.name}">0</span></span>
+                    </label>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        function initSidebarFilters() {
+            // Bind check events for type checkboxes
+            const typeCheckboxes = document.querySelectorAll('.filter-type-checkbox');
+            typeCheckboxes.forEach(cb => {
+                cb.addEventListener('change', () => {
+                    selectedCarTypes = Array.from(typeCheckboxes).filter(c => c.checked).map(c => c.value);
+                    renderCarGrid();
+                });
+            });
+
+            // Bind check events for capacity checkboxes
+            const capCheckboxes = document.querySelectorAll('.filter-capacity-checkbox');
+            capCheckboxes.forEach(cb => {
+                cb.addEventListener('change', () => {
+                    selectedCapacities = Array.from(capCheckboxes).filter(c => c.checked).map(c => c.value);
+                    renderCarGrid();
+                });
+            });
+
+            // Bind check events for fuel checkboxes
+            const fuelCheckboxes = document.querySelectorAll('.filter-fuel-checkbox');
+            fuelCheckboxes.forEach(cb => {
+                cb.addEventListener('change', () => {
+                    selectedFuels = Array.from(fuelCheckboxes).filter(c => c.checked).map(c => c.value);
+                    renderCarGrid();
+                });
+            });
+
+            // Bind price range slider
+            const slider = document.getElementById('price-range-slider');
+            const sliderLabel = document.getElementById('price-slider-label');
+            if (slider) {
+                // Initial value setting
+                maxPrice = parseInt(slider.value) * 10;
+                slider.addEventListener('input', (e) => {
+                    const val = parseInt(e.target.value);
+                    maxPrice = val * 10;
+                    if (sliderLabel) {
+                        sliderLabel.textContent = `max. ₹${maxPrice.toLocaleString('en-IN')}`;
+                    }
+                    renderCarGrid();
+                });
+            }
+        }
+
+        function renderCategories() {
+            const parentRow = document.getElementById('parent-categories-row');
+            if (!parentRow) return;
+
+            let parentHtml = `
+                <button onclick="filterParent('')" class="hero__pill ${selectedCategory === '' ? 'hero__pill--active' : ''}" style="margin-bottom: 8px;">
+                    All Classifications
+                </button>
+            `;
+
+            categoriesList.forEach(cat => {
+                parentHtml += `
+                    <button onclick="filterParent('${cat.name}')" class="hero__pill ${selectedCategory === cat.name ? 'hero__pill--active' : ''}" style="margin-bottom: 8px;">
+                        ${cat.name}
+                    </button>
+                `;
+            });
+            parentRow.innerHTML = parentHtml;
+
+            const subRow = document.getElementById('subcategory-filters-row');
+            if (!subRow) return;
+
+            if (selectedCategory === '') {
+                subRow.innerHTML = '';
+                return;
+            }
+
+            const activeCat = categoriesList.find(c => c.name === selectedCategory);
+            let subHtml = '';
+
+            if (activeCat && activeCat.subcategories) {
+                subHtml += `
+                    <button onclick="filterSub('')" class="hero__pill ${selectedSubcategory === '' ? 'hero__pill--active' : ''}" style="padding: 6px 16px; font-size: 0.78rem;">
+                        All ${selectedCategory}
+                    </button>
+                `;
+                activeCat.subcategories.forEach(sub => {
+                    subHtml += `
+                        <button onclick="filterSub('${sub}')" class="hero__pill ${selectedSubcategory === sub ? 'hero__pill--active' : ''}" style="padding: 6px 16px; font-size: 0.78rem;">
+                            ${sub}
+                        </button>
+                    `;
+                });
+            }
+            subRow.innerHTML = subHtml;
+        }
+
+        function filterParent(catName) {
+            selectedCategory = catName;
+            selectedSubcategory = '';
+            renderCategories();
+            renderCarGrid();
+        }
+
+        function filterSub(subName) {
+            selectedSubcategory = subName;
+            renderCategories();
+            renderCarGrid();
+        }
+
+        function handleSearchFilter() {
+            const searchInput = document.getElementById('global-search-input');
+            if (searchInput) {
+                searchQuery = searchInput.value.toLowerCase().trim();
+                renderCarGrid();
+            }
+        }
+
+        function handleSortChange() {
+            const sortSelect = document.getElementById('sort-select');
+            if (sortSelect) {
+                sortOption = sortSelect.value;
+                renderCarGrid();
+            }
+        }
+
+        function renderCarGrid() {
+            const grid = document.getElementById('fleet-grid-container');
+            const resultsDisplay = document.getElementById('results-count-display');
+            if (!grid) return;
+
+            // Update Counts Dynamically
+            updateCountBadges();
+
+            let filtered = carsDb.filter(car => {
+                // Category Buttons filter (Top row)
+                if (selectedCategory !== '' && car.category !== selectedCategory) return false;
+                if (selectedSubcategory !== '' && car.subcategory !== selectedSubcategory) return false;
+
+                // Search Query filter
+                if (searchQuery !== '') {
+                    const nameMatch = car.name.toLowerCase().includes(searchQuery);
+                    const brandMatch = car.carName.toLowerCase().includes(searchQuery);
+                    const fuelMatch = car.fuelType.toLowerCase().includes(searchQuery);
+                    const catMatch = car.category.toLowerCase().includes(searchQuery);
+                    if (!nameMatch && !brandMatch && !fuelMatch && !catMatch) return false;
+                }
+
+                // Sidebar Car Type
+                if (selectedCarTypes.length > 0 && !selectedCarTypes.includes(car.category)) return false;
+
+                // Sidebar Capacity
+                if (selectedCapacities.length > 0) {
+                    let matchCap = false;
+                    if (selectedCapacities.includes('2-4') && car.passengers >= 2 && car.passengers <= 4) matchCap = true;
+                    if (selectedCapacities.includes('5+') && car.passengers >= 5) matchCap = true;
+                    if (!matchCap) return false;
+                }
+
+                // Sidebar Fuel
+                if (selectedFuels.length > 0 && !selectedFuels.includes(car.fuelType)) return false;
+
+                // Sidebar Price Slider
+                if (car.priceDay > maxPrice) return false;
+
+                return true;
+            });
+
+            // Sorting
+            if (sortOption === 'low') {
+                filtered.sort((a, b) => a.priceDay - b.priceDay);
+            } else if (sortOption === 'high') {
+                filtered.sort((a, b) => b.priceDay - a.priceDay);
+            }
+
+            if (resultsDisplay) {
+                resultsDisplay.textContent = `${filtered.length} result${filtered.length === 1 ? '' : 's'}`;
+            }
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 48px; background: var(--color-white); border-radius: var(--radius-xl); border: 1px solid var(--color-border-light);">
+                        <div style="font-size: 2.5rem; margin-bottom: 12px;">📂</div>
+                        <p style="color: var(--color-text-secondary); font-weight: 500;">No available vehicles match your search or filters.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            filtered.forEach(car => {
+                let imgTag = '';
+                if (car.isPlaceholder) {
+                    imgTag = `<div class="detail__image-placeholder" style="background:${car.colorCode || '#2c3e50'}; width: 100%; height: 100%; border-radius: var(--radius-xl);"></div>`;
+                } else {
+                    imgTag = `<img src="${car.image}" alt="${car.name}" class="car-card__img">`;
+                }
+
+                let badgeClass = 'car-card__badge--petrol';
+                if (car.fuelType.toLowerCase() === 'electric') badgeClass = 'car-card__badge--electric';
+                if (car.fuelType.toLowerCase() === 'cng') badgeClass = 'car-card__badge--cng';
+                if (car.fuelType.toLowerCase() === 'diesel') badgeClass = 'car-card__badge--diesel';
+
+                html += `
+                    <article class="car-card" id="${car.id}">
+                        <div class="car-card__image-container" style="position: relative;">
+                            <span class="car-card__badge ${badgeClass}">${car.fuelType}</span>
+                            ${!car.available ? `
+                            <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 1.1rem; z-index: 10; letter-spacing: 0.05em; backdrop-filter: blur(2px);">
+                                NOT AVAILABLE
+                            </div>
+                            ` : ''}
+                            <div class="car-card__image">
+                                ${imgTag}
+                            </div>
+                        </div>
+                        <div class="car-card__body">
+                            <h2 class="car-card__name">${car.name}</h2>
+
+                            <div class="car-card__specs-row">
+                                <div class="car-card__spec-item">
+                                    <svg class="car-card__spec-icon" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+                                        <circle cx="12" cy="7" r="4" />
+                                    </svg>
+                                    <span>${car.passengers} Seater</span>
+                                </div>
+                                <div class="car-card__spec-item">
+                                    <svg class="car-card__spec-icon" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <circle cx="12" cy="12" r="10" />
+                                        <line x1="12" y1="2" x2="12" y2="22" />
+                                        <line x1="2" y1="12" x2="22" y2="12" />
+                                        <path d="m16.2 7.8-8.4 8.4" />
+                                    </svg>
+                                    <span>${car.fuelType === 'Electric' ? 'Automatic' : 'Manual'}</span>
+                                </div>
+                                <div class="car-card__spec-item">
+                                    <svg class="car-card__spec-icon" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <circle cx="12" cy="12" r="10" />
+                                        <path d="M12 12l-4-4" />
+                                    </svg>
+                                    <span>${car.mileage}</span>
+                                </div>
+                            </div>
+
+                            <div class="car-card__price-tag">Starting at ₹${car.priceDay.toLocaleString('en-IN')}/Day</div>
+
+                            <div class="car-card__actions">
+                                <a href="car-detail.html?car=${car.id}" class="car-btn car-btn--details">Details</a>
+                                ${car.available ? `
+                                    <a href="booking.html?car=${car.id}" class="car-btn car-btn--book">Book Now</a>
+                                ` : `
+                                    <button class="car-btn" style="background: #e2e8f0; color: #949eb5; cursor: not-allowed;" disabled>Unavailable</button>
+                                `}
+                            </div>
+                        </div>
+                    </article>
+                `;
+            });
+            grid.innerHTML = html;
+            setupTiltAnimation();
+        }
+
+        function updateCountBadges() {
+            // Count for each category
+            categoriesList.forEach(cat => {
+                const count = carsDb.filter(car => car.available && car.category === cat.name).length;
+                const badge = document.getElementById(`count-type-${cat.name}`);
+                if (badge) badge.textContent = count;
+            });
+
+            // Count for capacities
+            const count2_4 = carsDb.filter(car => car.available && car.passengers >= 2 && car.passengers <= 4).length;
+            const badge2_4 = document.getElementById('count-cap-2-4');
+            if (badge2_4) badge2_4.textContent = count2_4;
+
+            const count5 = carsDb.filter(car => car.available && car.passengers >= 5).length;
+            const badge5 = document.getElementById('count-cap-5');
+            if (badge5) badge5.textContent = count5;
+
+            // Count for fuels
+            const fuels = ["Petrol", "CNG", "Diesel", "Electric"];
+            fuels.forEach(fuel => {
+                const count = carsDb.filter(car => car.available && car.fuelType === fuel).length;
+                const badge = document.getElementById(`count-fuel-${fuel}`);
+                if (badge) badge.textContent = count;
+            });
+        }
+
+        function setupTiltAnimation() {
+            const cards = document.querySelectorAll('.car-card');
+            cards.forEach(card => {
+                card.addEventListener('mousemove', (e) => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    const centerX = rect.width / 2;
+                    const centerY = rect.height / 2;
+                    const rotateX = ((y - centerY) / centerY) * -1.5;
+                    const rotateY = ((x - centerX) / centerX) * 1.5;
+                    card.style.transform = `translateY(-4px) perspective(800px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+                });
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = 'translateY(0) perspective(800px) rotateX(0) rotateY(0)';
+                    card.style.transition = 'transform 0.4s ease';
+                });
+                card.addEventListener('mouseenter', () => {
+                    card.style.transition = 'transform 0.15s ease';
+                });
+            });
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Carzo - 2013 Subaru Forester Premium Plus auction details. Place your bid now.">
+    <title>Carzo — 2013 Subaru Forester Premium Plus</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+    <!-- ===================== NAVBAR ===================== -->
+    <header class="navbar navbar--scrolled navbar--always-white" id="navbar">
+        <div class="navbar__inner">
+            <a href="index.html" class="navbar__logo" id="logo">
+                <div class="navbar__logo-icon" style="background:var(--color-black);color:var(--color-white);">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10" />
+                        <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" />
+                        <path d="M2 12h20" />
+                    </svg>
+                </div>
+                <span style="color:var(--color-black);">Carzo</span>
+            </a>
+            <nav class="navbar__links" id="nav-links">
+                <a href="index.html" class="navbar__link">Home</a>
+                <a href="cars.html" class="navbar__link">All Cars</a>
+                <a href="list-car.html" class="navbar__link">List Your Car</a>
+                <a href="locations.html" class="navbar__link">Near by locations</a>
+                <a href="about.html" class="navbar__link">About US</a>
+                <a href="contact.html" class="navbar__link">Contact Us</a>
+            </nav>
+            <div class="navbar__actions">
+                <div class="navbar__auth" id="navbar-auth" style="display: none;">
+                    <a href="login.html" class="btn-auth btn-auth--login">Log In</a>
+                    <a href="signup.html" class="btn-auth btn-auth--signup">Sign Up</a>
+                </div>
+                <div class="navbar__profile-dropdown" id="profile-dropdown" style="display: none;">
+                    <button class="navbar__profile-btn" id="profile-btn" aria-label="Profile Menu">
+                        <div class="navbar__profile-avatar" id="navbar-avatar">MS</div>
+                    </button>
+                    <div class="navbar__profile-menu" id="profile-menu">
+                        <div class="navbar__profile-header">
+                            <span class="navbar__profile-name" id="navbar-profile-name">Mayan Sharma</span>
+                            <span class="navbar__profile-email" id="navbar-profile-email">mayan@example.com</span>
+                        </div>
+                        <div class="navbar__profile-divider"></div>
+                        <a href="dashboard.html" class="navbar__profile-item">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect width="7" height="9" x="3" y="3" rx="1"/>
+                                <rect width="7" height="5" x="14" y="3" rx="1"/>
+                                <rect width="7" height="9" x="14" y="12" rx="1"/>
+                                <rect width="7" height="5" x="3" y="16" rx="1"/>
+                            </svg>
+                            Dashboard
+                        </a>
+                        <a href="profile.html" class="navbar__profile-item">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
+                                <circle cx="12" cy="7" r="4"/>
+                            </svg>
+                            Edit Profile
+                        </a>
+                        <a href="booking-management.html" class="navbar__profile-item">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect width="18" height="18" x="3" y="4" rx="2" ry="2"/>
+                                <line x1="16" x2="16" y1="2" y2="6"/>
+                                <line x1="8" x2="8" y1="2" y2="6"/>
+                                <line x1="3" x2="21" y1="10" y2="10"/>
+                            </svg>
+                            My Bookings
+                        </a>
+                        <a href="#" class="navbar__profile-item" id="logout-btn">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                                <polyline points="16 17 21 12 16 7"/>
+                                <line x1="21" x2="9" y1="12" y2="12"/>
+                            </svg>
+                            Logout
+                        </a>
+                    </div>
+                </div>
+                <button class="navbar__icon-btn navbar__hamburger" id="hamburger" aria-label="Menu">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="3" y1="6" x2="21" y2="6" />
+                        <line x1="3" y1="12" x2="21" y2="12" />
+                        <line x1="3" y1="18" x2="21" y2="18" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- ===================== PRODUCT DETAIL ===================== -->
+    <main class="detail" id="detail-section">
+        <div class="detail__container">
+            <div class="detail__card">
+
+                <!-- LEFT: Gallery -->
+                <div class="detail__gallery">
+                    <div class="detail__main-image" id="main-image">
+                        <div class="detail__image-placeholder" style="background:#2c3e50;"></div>
+                    </div>
+                    <div class="detail__thumbnails" id="thumbnails">
+                        <button class="detail__thumb detail__thumb--active" data-index="0">
+                            <div class="detail__thumb-color" style="background:#2c3e50;"></div>
+                        </button>
+                        <button class="detail__thumb" data-index="1">
+                            <div class="detail__thumb-color" style="background:#34495e;"></div>
+                        </button>
+                        <button class="detail__thumb" data-index="2">
+                            <div class="detail__thumb-color" style="background:#4a6274;"></div>
+                        </button>
+                        <button class="detail__thumb" data-index="3">
+                            <div class="detail__thumb-color" style="background:#1a252f;"></div>
+                        </button>
+                        +
+                    </div>
+                </div>                <!-- RIGHT: Info -->
+                <div class="detail__info">
+                    <!-- Seller -->
+                    <div class="detail__seller">
+                        <div class="detail__seller-avatar" style="background:var(--color-secondary);"></div>
+                        <span class="detail__seller-name" id="seller-name">Host Details</span>
+
+                    </div>
+
+                    <!-- Title -->
+                    <h1 class="detail__title" id="car-title">Car Model</h1>
+                    <p class="detail__subtitle" id="car-subtitle">Car Specs</p>
+
+                    <!-- Specs Table -->
+                    <div class="detail__specs-table" id="specs-table">
+                        <!-- Populated dynamically -->
+                    </div>
+
+                    <!-- Rental Price -->
+                    <div class="detail__rental-price">
+                        <div class="detail__price-wrap">
+                            <span class="detail__price-amount" id="price-amount">₹0</span>
+                            <span class="detail__price-period">/ day</span>
+                        </div>
+                        <a href="#" class="detail__book-btn" id="book-now-btn">Book Now</a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+
+    </main>
+
+    <!-- ===================== FOOTER ===================== -->
+    <footer class="footer" id="footer">
+        <div class="footer__inner">
+            <div class="footer__top">
+                <!-- Brand column -->
+                <div class="footer__brand">
+                    <a href="index.html" class="footer__logo">
+                        <span>Carzo</span>
+                    </a>
+                    <address class="footer__address">
+                        Storkower Strasse 41<br>
+                        Rhineland-Pfalz,<br>
+                        54176, Germany
+                    </address>
+                    <div class="footer__socials">
+                        <a href="#" class="footer__social" aria-label="Facebook">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
+                            </svg>
+                        </a>
+                        <a href="#" class="footer__social" aria-label="LinkedIn">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path
+                                    d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
+                                <rect x="2" y="9" width="4" height="12" />
+                                <circle cx="4" cy="4" r="2" />
+                            </svg>
+                        </a>
+                        <a href="#" class="footer__social" aria-label="Instagram">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Links columns -->
+                <div class="footer__links-group">
+                    <div class="footer__col">
+                        <h3 class="footer__col-title">Primary Pages</h3>
+                        <ul class="footer__col-list">
+                            <li><a href="index.html">Home</a></li>
+                            <li><a href="cars.html">Rent Luxury Cars</a></li>
+                            <li><a href="list-car.html">List Your Car</a></li>
+                            <li><a href="contact.html">Contact Us</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer__col">
+                        <h3 class="footer__col-title">Listing Locations</h3>
+                        <ul class="footer__col-list">
+                            <li><a href="locations.html">Near by locations</a></li>
+                            <li><a href="locations.html">Pune Hub</a></li>
+                            <li><a href="locations.html">Mumbai Hub</a></li>
+                            <li><a href="locations.html">Delhi Hub</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer__col">
+                        <h3 class="footer__col-title">Overview & Details</h3>
+                        <ul class="footer__col-list">
+                            <li><a href="about.html">About US</a></li>
+                            <li><a href="contact.html">Send Message</a></li>
+                            <li><a href="#">Terms & Conditions</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="footer__bottom">
+                <p>&copy; 2026 Carzo. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            // Retrieve selected car details from URL query parameter
+            const urlParams = new URLSearchParams(window.location.search);
+            const carId = urlParams.get('car');
+            const carsDb = JSON.parse(localStorage.getItem('Carzo_cars')) || [];
+            
+            // Find the requested car, or fallback to the first one in the database
+            const car = carsDb.find(c => c.id === carId) || carsDb[0];
+            
+            if (!car) return;
+
+            // 1. Seller / Host Details
+            const sellerNameEl = document.getElementById('seller-name');
+            if (sellerNameEl) {
+                const ownersDb = JSON.parse(localStorage.getItem('Carzo_owners')) || [];
+                const owner = ownersDb.find(o => o.name === car.ownerName) || {
+                    name: car.ownerName || 'Carzo Premium Host',
+                    phone: car.ownerPhone || '',
+                    email: 'support@carzo.com',
+                    location: 'Pune Hub'
+                };
+                sellerNameEl.innerHTML = `Host: <span style="font-weight:700; color:var(--color-black);">${owner.name}</span> &middot; Phone: <span style="font-weight:700; color:var(--color-black);">${owner.phone}</span> &middot; Email: <span style="font-weight:700; color:var(--color-black);">${owner.email}</span> &middot; Hub: <span style="font-weight:700; color:var(--color-black);">${owner.location}</span>`;
+            }
+
+            // 2. Car Image & Thumbnail
+            const mainImgContainer = document.getElementById('main-image');
+            const thumbnailsContainer = document.getElementById('thumbnails');
+            
+            function setMainImage(imgUrl) {
+                if (mainImgContainer) {
+                    if (imgUrl) {
+                        mainImgContainer.innerHTML = `<img src="${imgUrl}" alt="${car.name}" style="width:100%; height:100%; object-fit:contain; filter:drop-shadow(0 10px 15px rgba(0,0,0,0.1));">`;
+                    } else {
+                        mainImgContainer.innerHTML = `<div class="detail__image-placeholder" style="background:${car.colorCode || '#2c3e50'}; width:100%; height:100%; border-radius:8px;"></div>`;
+                    }
+                }
+            }
+
+            // Initially set showcase to the main image
+            setMainImage(car.image);
+
+            if (thumbnailsContainer) {
+                const imgList = [
+                    car.image || '',
+                    car.image2 || '',
+                    car.image3 || '',
+                    car.image4 || ''
+                ];
+                
+                let thumbHtml = '';
+                imgList.forEach((imgSrc, idx) => {
+                    // Fall back to main image if a slot is empty (so exactly 4 thumbnails are always visible)
+                    const displayImg = imgSrc || car.image;
+                    
+                    if (displayImg) {
+                        thumbHtml += `
+                            <button class="detail__thumb ${idx === 0 ? 'detail__thumb--active' : ''}" data-img="${displayImg}">
+                                <img src="${displayImg}" alt="${car.name}" style="width:100%; height:100%; object-fit:cover; border-radius:4px;">
+                            </button>
+                        `;
+                    } else {
+                        thumbHtml += `
+                            <button class="detail__thumb ${idx === 0 ? 'detail__thumb--active' : ''}" data-img="">
+                                <div class="detail__thumb-color" style="background:${car.colorCode || '#2c3e50'}; width:100%; height:100%; border-radius:4px;"></div>
+                            </button>
+                        `;
+                    }
+                });
+                
+                thumbnailsContainer.innerHTML = thumbHtml;
+
+                // Add interactive click listeners to switch showcase image
+                const thumbs = thumbnailsContainer.querySelectorAll('.detail__thumb');
+                thumbs.forEach(thumb => {
+                    thumb.addEventListener('click', () => {
+                        thumbs.forEach(t => t.classList.remove('detail__thumb--active'));
+                        thumb.classList.add('detail__thumb--active');
+                        const imgUrl = thumb.getAttribute('data-img');
+                        setMainImage(imgUrl);
+                    });
+                });
+            }
+
+            // 3. Title & Subtitle
+            const carTitleEl = document.getElementById('car-title');
+            if (carTitleEl) {
+                carTitleEl.textContent = car.name;
+            }
+
+            const carSubtitleEl = document.getElementById('car-subtitle');
+            if (carSubtitleEl) {
+                carSubtitleEl.textContent = `${car.category} · ${car.fuelType} · ${car.passengers} Seater · ${car.mileage}`;
+            }
+
+            // 4. Specs Table (Only fields matching the listing configurator)
+            const specsTableEl = document.getElementById('specs-table');
+            if (specsTableEl) {
+                const subcategoryLabel = car.subcategory || 'Standard';
+                const monthlyPriceLabel = car.priceMonth ? `₹${car.priceMonth.toLocaleString('en-IN')}` : 'Contact Host';
+                
+                specsTableEl.innerHTML = `
+                    <div class="detail__spec-row">
+                        <span class="detail__spec-key">Brand</span>
+                        <span class="detail__spec-val">${car.carName || car.name.split(' ')[0]}</span>
+                    </div>
+                    <div class="detail__spec-row">
+                        <span class="detail__spec-key">Category</span>
+                        <span class="detail__spec-val">${car.category}</span>
+                    </div>
+                    <div class="detail__spec-row">
+                        <span class="detail__spec-key">Subcategory</span>
+                        <span class="detail__spec-val">${subcategoryLabel}</span>
+                    </div>
+                    <div class="detail__spec-row">
+                        <span class="detail__spec-key">Fuel Type</span>
+                        <span class="detail__spec-val">${car.fuelType}</span>
+                    </div>
+                    <div class="detail__spec-row">
+                        <span class="detail__spec-key">Capacity</span>
+                        <span class="detail__spec-val">${car.passengers} Passengers</span>
+                    </div>
+                    <div class="detail__spec-row">
+                        <span class="detail__spec-key">Mileage</span>
+                        <span class="detail__spec-val">${car.mileage}</span>
+                    </div>
+                    <div class="detail__spec-row">
+                        <span class="detail__spec-key">Monthly Price</span>
+                        <span class="detail__spec-val">${monthlyPriceLabel}</span>
+                    </div>
+                `;
+            }
+
+            // 5. Daily Rental Price
+            const priceAmountEl = document.getElementById('price-amount');
+            if (priceAmountEl) {
+                priceAmountEl.textContent = `₹${car.priceDay.toLocaleString('en-IN')}`;
+            }
+
+            // 6. Booking Button URL & Status
+            const bookBtn = document.getElementById('book-now-btn');
+            if (bookBtn) {
+                if (car.available) {
+                    bookBtn.href = `booking.html?car=${car.id}`;
+                    bookBtn.textContent = 'Book Now';
+                    bookBtn.style.pointerEvents = 'auto';
+                    bookBtn.style.opacity = '1';
+                } else {
+                    bookBtn.removeAttribute('href');
+                    bookBtn.textContent = 'Unavailable';
+                    bookBtn.style.pointerEvents = 'none';
+                    bookBtn.style.background = '#e2e8f0';
+                    bookBtn.style.color = '#949eb5';
+                }
+            }
+        });
+    </script>
+    <script src="script.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="List your car on Carzo and start earning. Calculate your potential earnings with our interactive commission estimator.">
+    <title>List Your Car — Carzo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body style="background:var(--color-bg);">
+
+    <!-- ===================== NAVBAR ===================== -->
+    <header class="navbar" id="navbar">
+        <div class="navbar__inner">
+            <a href="index.html" class="navbar__logo" id="logo">
+                <div class="navbar__logo-icon" style="background:var(--color-primary); color:var(--color-white); border-radius:8px; display:flex; align-items:center; justify-content:center; width:32px; height:32px;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5"/>
+                        <polyline points="12 22 12 12 22 8.5"/>
+                        <line x1="12" y1="12" x2="2" y2="8.5"/>
+                    </svg>
+                </div>
+                <span>Carzo</span>
+            </a>
+            <nav class="navbar__links" id="nav-links">
+                <a href="index.html" class="navbar__link">Home</a>
+                <a href="cars.html" class="navbar__link">All Cars</a>
+                <a href="list-car.html" class="navbar__link navbar__link--active">List Your Car</a>
+                <a href="locations.html" class="navbar__link">Near by locations</a>
+                <a href="about.html" class="navbar__link">About US</a>
+                <a href="contact.html" class="navbar__link">Contact Us</a>
+            </nav>
+            <div class="navbar__actions">
+                <div class="navbar__auth" id="navbar-auth" style="display: none;">
+                    <a href="login.html" class="btn-auth btn-auth--login">Log In</a>
+                    <a href="signup.html" class="btn-auth btn-auth--signup">Sign Up</a>
+                </div>
+                <div class="navbar__profile-dropdown" id="profile-dropdown" style="display: none;">
+                    <button class="navbar__profile-btn" id="profile-btn" aria-label="Profile Menu">
+                        <div class="navbar__profile-avatar" id="navbar-avatar">MS</div>
+                    </button>
+                    <div class="navbar__profile-menu" id="profile-menu">
+                        <div class="navbar__profile-header">
+                            <span class="navbar__profile-name" id="navbar-profile-name">Mayan Sharma</span>
+                            <span class="navbar__profile-email" id="navbar-profile-email">mayan@example.com</span>
+                        </div>
+                        <div class="navbar__profile-divider"></div>
+                        <a href="dashboard.html" class="navbar__profile-item">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect width="7" height="9" x="3" y="3" rx="1"/>
+                                <rect width="7" height="5" x="14" y="3" rx="1"/>
+                                <rect width="7" height="9" x="14" y="12" rx="1"/>
+                                <rect width="7" height="5" x="3" y="16" rx="1"/>
+                            </svg>
+                            Dashboard
+                        </a>
+                        <a href="profile.html" class="navbar__profile-item">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
+                                <circle cx="12" cy="7" r="4"/>
+                            </svg>
+                            Edit Profile
+                        </a>
+                        <a href="booking-management.html" class="navbar__profile-item">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect width="18" height="18" x="3" y="4" rx="2" ry="2"/>
+                                <line x1="16" x2="16" y1="2" y2="6"/>
+                                <line x1="8" x2="8" y1="2" y2="6"/>
+                                <line x1="3" x2="21" y1="10" y2="10"/>
+                            </svg>
+                            My Bookings
+                        </a>
+                        <a href="#" class="navbar__profile-item" id="logout-btn">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                                <polyline points="16 17 21 12 16 7"/>
+                                <line x1="21" x2="9" y1="12" y2="12"/>
+                            </svg>
+                            Logout
+                        </a>
+                    </div>
+                </div>
+                <button class="navbar__icon-btn navbar__hamburger" id="hamburger" aria-label="Menu">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="3" y1="6" x2="21" y2="6" />
+                        <line x1="3" y1="12" x2="21" y2="12" />
+                        <line x1="3" y1="18" x2="21" y2="18" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- ===================== LIST CAR HERO ===================== -->
+    <section class="list-car-hero">
+        <div class="list-car-hero__overlay"></div>
+        <div class="list-car-hero__content">
+            <h1 class="list-car-hero__title">List Your Car</h1>
+            <p class="list-car-hero__subtitle">Earn money by sharing your car with verified renters in India.</p>
+        </div>
+    </section>
+
+    <!-- ===================== MAIN CONTENT ===================== -->
+    <section class="contact-section" style="padding-top: 80px;">
+        <div class="contact-container">
+                    
+            <!-- Left: Host Value Proposition -->
+            <div class="contact-info">
+                <h2 class="contact-info__title">Why Host on Carzo?</h2>
+                <p class="contact-info__desc">Join our community of hosts. Carzo lets you turn your idle asset into an earnings engine. We offer comprehensive insurance coverage, verified renters, and secure payments directly to your bank account.</p>
+                
+                <div class="steps-list" style="margin-top: 24px;">
+                    <div class="step-item" style="margin-bottom: 20px;">
+                        <div class="step-num">1</div>
+                        <div class="step-text"><strong>List For Free:</strong> Describe your car, upload premium photos, and choose your rental rules.</div>
+                    </div>
+                    <div class="step-item" style="margin-bottom: 20px;">
+                        <div class="step-num">2</div>
+                        <div class="step-text"><strong>Set Your Price:</strong> Decide the daily rate that matches your vehicle's value.</div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-num">3</div>
+                        <div class="step-text"><strong>Get Paid:</strong> Earn up to 88% of the daily trip price. Payouts are made directly via bank transfer.</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Onboarding Form Card -->
+            <div class="contact-form-wrap" id="onboarding-form-section">
+                <h2 class="contact-info__title" style="font-size: 1.25rem; margin-bottom: 8px; border-bottom: none; padding-bottom: 0;">Car Onboarding Details</h2>
+                <p style="margin-bottom: 24px; font-size: 0.85rem; color: var(--color-text-secondary); line-height: 1.6;">Submit your car's details and our onboarding agents will contact you within 24 hours to schedule an inspection.</p>
+                
+                <form id="onboarding-form" class="contact-form" onsubmit="handleOnboardingSubmit(event)">
+                    <div class="form-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                        <div class="form-group" style="display: flex; flex-direction: column; gap: 6px;">
+                            <label class="form-label" for="car-make" style="font-size: 0.85rem; font-weight: 600; color: var(--color-text);">Car Make & Model</label>
+                            <input type="text" id="car-make" class="form-input" style="height: 42px; background: rgba(0, 0, 0, 0.02); border: 1px solid var(--color-border); border-radius: 8px; padding: 10px 14px;" placeholder="e.g. Honda City" required>
+                        </div>
+                        
+                        <div class="form-group" style="display: flex; flex-direction: column; gap: 6px;">
+                            <label class="form-label" for="car-year" style="font-size: 0.85rem; font-weight: 600; color: var(--color-text);">Year of Manufacture</label>
+                            <input type="number" id="car-year" class="form-input" style="height: 42px; background: rgba(0, 0, 0, 0.02); border: 1px solid var(--color-border); border-radius: 8px; padding: 10px 14px;" placeholder="e.g. 2021" min="2010" max="2026" required>
+                        </div>
+
+                        <div class="form-group" style="grid-column: span 2; display: flex; flex-direction: column; gap: 6px;">
+                            <label class="form-label" for="car-location" style="font-size: 0.85rem; font-weight: 600; color: var(--color-text);">City Location</label>
+                            <input type="text" id="car-location" class="form-input" style="height: 42px; background: rgba(0, 0, 0, 0.02); border: 1px solid var(--color-border); border-radius: 8px; padding: 10px 14px;" placeholder="e.g. Pune" required>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; justify-content: flex-end;">
+                        <button type="submit" class="btn-confirm" id="onboard-submit" style="background: var(--color-primary); box-shadow: 0 4px 14px rgba(235, 103, 14, 0.35); width: 100%; height: 48px; border-radius: 8px; font-weight: 700; color: white; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; cursor: pointer; transition: background var(--transition-fast);">
+                            SUBMIT CAR LISTING
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-left: 6px;">
+                                <polyline points="20 6 9 17 4 12" />
+                            </svg>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ===================== FOOTER ===================== -->
+    <footer class="footer" id="footer" style="margin-top:80px;">
+        <div class="footer__inner">
+            <div class="footer__top">
+                <!-- Brand column -->
+                <div class="footer__brand">
+                    <a href="index.html" class="footer__logo">
+                        <span>Carzo</span>
+                    </a>
+                    <address class="footer__address">
+                        Storkower Strasse 41<br>
+                        Rhineland-Pfalz,<br>
+                        54176, Germany
+                    </address>
+                    <div class="footer__socials">
+                        <a href="#" class="footer__social" aria-label="Facebook">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
+                            </svg>
+                        </a>
+                        <a href="#" class="footer__social" aria-label="LinkedIn">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path
+                                    d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
+                                <rect x="2" y="9" width="4" height="12" />
+                                <circle cx="4" cy="4" r="2" />
+                            </svg>
+                        </a>
+                        <a href="#" class="footer__social" aria-label="Instagram">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Links columns -->
+                <div class="footer__links-group">
+                    <div class="footer__col">
+                        <h3 class="footer__col-title">Primary Pages</h3>
+                        <ul class="footer__col-list">
+                            <li><a href="index.html">Home</a></li>
+                            <li><a href="cars.html">Rent Luxury Cars</a></li>
+                            <li><a href="list-car.html">List Your Car</a></li>
+                            <li><a href="contact.html">Contact Us</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer__col">
+                        <h3 class="footer__col-title">Listing Locations</h3>
+                        <ul class="footer__col-list">
+                            <li><a href="locations.html">Near by locations</a></li>
+                            <li><a href="locations.html">Pune Hub</a></li>
+                            <li><a href="locations.html">Mumbai Hub</a></li>
+                            <li><a href="locations.html">Delhi Hub</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer__col">
+                        <h3 class="footer__col-title">Overview & Details</h3>
+                        <ul class="footer__col-list">
+                            <li><a href="about.html">About US</a></li>
+                            <li><a href="contact.html">Send Message</a></li>
+                            <li><a href="#">Terms & Conditions</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="footer__bottom" style="text-align:center;">
+                <p>&copy; 2026 Carzo. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Success Feedback Notification -->
+    <div id="toast-notification" style="position: fixed; bottom: 24px; right: 24px; background: #15803d; color: white; padding: 12px 24px; border-radius: 8px; font-weight: 600; font-size: 0.9rem; display: flex; align-items: center; gap: 8px; transform: translateY(150%); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 2000; box-shadow: 0 4px 12px rgba(21,128,61,0.25);">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"/>
+        </svg>
+        <span>Listing submitted successfully! Our team will contact you soon.</span>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+
+        function handleOnboardingSubmit(e) {
+            e.preventDefault();
+            
+            const btn = document.getElementById('onboard-submit');
+            const originalText = btn.innerHTML;
+            btn.textContent = 'Submitting...';
+            btn.disabled = true;
+
+            setTimeout(() => {
+                showToast("Car listing submitted successfully! Our team will contact you soon.");
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+                document.getElementById('onboarding-form').reset();
+            }, 1200);
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast-notification');
+            toast.querySelector('span').textContent = msg;
+            toast.style.transform = 'translateY(0)';
+            setTimeout(() => {
+                toast.style.transform = 'translateY(150%)';
+            }, 3000);
+        }
+
+    </script>
+</body>
+
+</html>

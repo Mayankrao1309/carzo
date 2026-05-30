@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Carzo - Explore available cars for rent in different locations. Luxury and premium car rentals.">
+    <title>Carzo — Cars for Rent</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+    <!-- ===================== NAVBAR ===================== -->
+    <header class="navbar" id="navbar">
+        <div class="navbar__inner">
+            <a href="index.html" class="navbar__logo" id="logo">
+                <div class="navbar__logo-icon" style="background:var(--color-primary); color:var(--color-white); border-radius:8px; display:flex; align-items:center; justify-content:center; width:32px; height:32px;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5"/>
+                        <polyline points="12 22 12 12 22 8.5"/>
+                        <line x1="12" y1="12" x2="2" y2="8.5"/>
+                    </svg>
+                </div>
+                <span>Carzo</span>
+            </a>
+            <nav class="navbar__links" id="nav-links">
+                <a href="index.html" class="navbar__link navbar__link--active">Home</a>
+                <a href="cars.html" class="navbar__link">All Cars</a>
+                <a href="list-car.html" class="navbar__link">List Your Car</a>
+                <a href="locations.html" class="navbar__link">Near by locations</a>
+                <a href="about.html" class="navbar__link">About US</a>
+                <a href="contact.html" class="navbar__link">Contact Us</a>
+            </nav>
+            <div class="navbar__actions">
+                <div class="navbar__auth" id="navbar-auth" style="display: none;">
+                    <a href="login.html" class="btn-auth btn-auth--login">Log In</a>
+                    <a href="signup.html" class="btn-auth btn-auth--signup">Sign Up</a>
+                </div>
+                <div class="navbar__profile-dropdown" id="profile-dropdown" style="display: none;">
+                    <button class="navbar__profile-btn" id="profile-btn" aria-label="Profile Menu">
+                        <div class="navbar__profile-avatar" id="navbar-avatar">MS</div>
+                    </button>
+                    <div class="navbar__profile-menu" id="profile-menu">
+                        <div class="navbar__profile-header">
+                            <span class="navbar__profile-name" id="navbar-profile-name">Mayan Sharma</span>
+                            <span class="navbar__profile-email" id="navbar-profile-email">mayan@example.com</span>
+                        </div>
+                        <div class="navbar__profile-divider"></div>
+                        <a href="admin.html" class="navbar__profile-item" style="color:var(--color-primary); font-weight:700;">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="3"/>
+                                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                            </svg>
+                            Admin Panel
+                        </a>
+                        <a href="dashboard.html" class="navbar__profile-item">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect width="7" height="9" x="3" y="3" rx="1"/>
+                                <rect width="7" height="5" x="14" y="3" rx="1"/>
+                                <rect width="7" height="9" x="14" y="12" rx="1"/>
+                                <rect width="7" height="5" x="3" y="16" rx="1"/>
+                            </svg>
+                            Dashboard
+                        </a>
+                        <a href="profile.html" class="navbar__profile-item">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
+                                <circle cx="12" cy="7" r="4"/>
+                            </svg>
+                            Edit Profile
+                        </a>
+                        <a href="booking-management.html" class="navbar__profile-item">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect width="18" height="18" x="3" y="4" rx="2" ry="2"/>
+                                <line x1="16" x2="16" y1="2" y2="6"/>
+                                <line x1="8" x2="8" y1="2" y2="6"/>
+                                <line x1="3" x2="21" y1="10" y2="10"/>
+                            </svg>
+                            My Bookings
+                        </a>
+                        <a href="#" class="navbar__profile-item" id="logout-btn">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                                <polyline points="16 17 21 12 16 7"/>
+                                <line x1="21" x2="9" y1="12" y2="12"/>
+                            </svg>
+                            Logout
+                        </a>
+                    </div>
+                </div>
+                <button class="navbar__icon-btn navbar__hamburger" id="hamburger" aria-label="Menu">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="3" y1="6" x2="21" y2="6" />
+                        <line x1="3" y1="12" x2="21" y2="12" />
+                        <line x1="3" y1="18" x2="21" y2="18" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- ===================== HERO ===================== -->
+    <section class="hero" id="hero">
+        <div class="hero__overlay"></div>
+        <div class="hero__content">
+            <h1 class="hero__title">Cars for Rent</h1>
+            <p class="hero__subtitle">Explore the available cars in different locations</p>
+
+            <!-- Hero Search Form -->
+            <form action="cars.html" method="GET" id="booking-bar" class="booking-bar">
+                <!-- Location Field -->
+                <div class="booking-bar__field">
+                    <div class="booking-bar__icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/>
+                            <circle cx="12" cy="10" r="3"/>
+                        </svg>
+                    </div>
+                    <div class="booking-bar__info">
+                        <label for="where-input" class="booking-bar__label">Where</label>
+                        <input type="text" id="where-input" class="booking-bar__input" name="search" placeholder="City, airport or address" value="Pune" required autocomplete="off">
+                    </div>
+                </div>
+
+                <div class="booking-bar__divider"></div>
+
+                <!-- Pickup Field -->
+                <div class="booking-bar__field">
+                    <div class="booking-bar__icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect width="18" height="18" x="3" y="4" rx="2" ry="2"/>
+                            <line x1="16" x2="16" y1="2" y2="6"/>
+                            <line x1="8" x2="8" y1="2" y2="6"/>
+                            <line x1="3" x2="21" y1="10" y2="10"/>
+                        </svg>
+                    </div>
+                    <div class="booking-bar__info">
+                        <span class="booking-bar__label">Pickup Date & Time</span>
+                        <div class="booking-bar__datetime">
+                            <input type="date" class="booking-bar__input booking-bar__input--date" name="pickup_date" required>
+                            <input type="time" class="booking-bar__input booking-bar__input--time" name="pickup_time" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="booking-bar__divider"></div>
+
+                <!-- Drop-off Field -->
+                <div class="booking-bar__field">
+                    <div class="booking-bar__icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect width="18" height="18" x="3" y="4" rx="2" ry="2"/>
+                            <line x1="16" x2="16" y1="2" y2="6"/>
+                            <line x1="8" x2="8" y1="2" y2="6"/>
+                            <line x1="3" x2="21" y1="10" y2="10"/>
+                        </svg>
+                    </div>
+                    <div class="booking-bar__info">
+                        <span class="booking-bar__label">Drop-off Date & Time</span>
+                        <div class="booking-bar__datetime">
+                            <input type="date" class="booking-bar__input booking-bar__input--date" name="dropoff_date" required>
+                            <input type="time" class="booking-bar__input booking-bar__input--time" name="dropoff_time" required>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Search Button -->
+                <button type="submit" class="booking-bar__btn" aria-label="Search">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8" />
+                        <path d="m21 21-4.3-4.3" />
+                    </svg>
+                </button>
+            </form>
+
+            <!-- Location Pills -->
+            <div class="hero__pills" style="margin-bottom: 30px;">
+                <span class="hero__pill hero__pill--active">Pune</span>
+                <span class="hero__pill">Koregaon Park</span>
+                <span class="hero__pill">Kothrud</span>
+                <span class="hero__pill">Hinjawadi</span>
+                <span class="hero__pill">Viman Nagar</span>
+                <span class="hero__pill">Lonavala</span>
+            </div>
+
+            <div class="hero__cta-group">
+                <a href="#cars-section" class="btn-hero btn-hero--primary">Get Started</a>
+                <a href="cars.html" class="btn-hero btn-hero--secondary">All Cars</a>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ===================== SERVICES SECTION ===================== -->
+    <section class="services-section" id="services-section">
+        <div class="services-container">
+            <div class="section-header">
+                <h2 class="section-header__title">Our Premium Services</h2>
+                <p class="section-header__subtitle">We offer customized high-end car rental services tailored to meet all your premium transport requirements.</p>
+            </div>
+            <div class="services-grid">
+                <!-- Service 1 -->
+                <div class="service-card">
+                    <div class="service-card__icon-wrap">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/>
+                            <circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/>
+                        </svg>
+                    </div>
+                    <h3 class="service-card__title">Luxury Fleet</h3>
+                    <p class="service-card__desc">Choose from our wide selection of luxury sedans, SUVs, and high-performance sports cars in pristine condition.</p>
+                </div>
+                <!-- Service 2 -->
+                <div class="service-card">
+                    <div class="service-card__icon-wrap">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect width="18" height="18" x="3" y="4" rx="2" ry="2"/>
+                            <line x1="16" x2="16" y1="2" y2="6"/>
+                            <line x1="8" x2="8" y1="2" y2="6"/>
+                            <line x1="3" x2="21" y1="10" y2="10"/>
+                        </svg>
+                    </div>
+                    <h3 class="service-card__title">Flexible Rental</h3>
+                    <p class="service-card__desc">Hourly, daily, weekly, or monthly luxury rental plans designed around your specific schedule and itinerary.</p>
+                </div>
+                <!-- Service 3 -->
+                <div class="service-card">
+                    <div class="service-card__icon-wrap">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                        </svg>
+                    </div>
+                    <h3 class="service-card__title">Roadside Cover</h3>
+                    <p class="service-card__desc">24/7 dedicated support and immediate roadside cover to ensure you have a safe and stress-free journey.</p>
+                </div>
+                <!-- Service 4 -->
+                <div class="service-card">
+                    <div class="service-card__icon-wrap">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                            <circle cx="9" cy="7" r="4"/>
+                            <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                        </svg>
+                    </div>
+                    <h3 class="service-card__title">Chauffeur Service</h3>
+                    <p class="service-card__desc">Sit back and relax while our highly professional, English-speaking chauffeurs take you to your destination.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===================== DYNAMIC SEARCH, FILTERS & CAR GRID ===================== -->
+    <section class="cars" id="cars-section" style="padding: 60px 16px 80px;">
+        <div style="max-width: var(--container-max); margin: 0 auto;">
+            
+            <!-- Global Search and Category filters panel wrapper -->
+            <div style="max-width: 900px; margin: 0 auto 48px; display: flex; flex-direction: column; gap: 24px; text-align: center;">
+                
+                <!-- Search bar input -->
+                <div style="position: relative; width: 100%;">
+                    <div style="position: absolute; left: 24px; top: 50%; transform: translateY(-50%); color: var(--color-text-secondary); pointer-events: none; display: flex; align-items: center;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
+                        </svg>
+                    </div>
+                    <input type="text" id="global-search-input" placeholder="Search for brand, model, fuel type, or category..." oninput="handleSearchFilter()" style="width: 100%; padding: 18px 24px 18px 60px; border-radius: var(--radius-pill); border: 1.5px solid var(--color-border); background: var(--color-white); font-family: var(--font-family); font-size: 0.95rem; font-weight: 500; color: var(--color-black); box-shadow: var(--shadow-search); outline: none; transition: all var(--transition-fast);">
+                </div>
+
+                <!-- Category Filters Row -->
+                <div style="display: flex; flex-direction: column; gap: 12px; align-items: center;">
+                    <div id="parent-categories-row" style="display: flex; gap: 8px; flex-wrap: wrap; justify-content: center;">
+                        <!-- Populate dynamically -->
+                    </div>
+                    <div id="subcategory-filters-row" style="display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; min-height: 0; margin-top: 4px; transition: all 0.3s ease;">
+                        <!-- Populate subcategories dynamically when active -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dynamic Cars Grid -->
+            <div class="cars__grid" id="cars-grid-container">
+                <!-- Populate dynamically from JS -->
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ===================== ABOUT TEASER SECTION ===================== -->
+    <section class="about-teaser-section" style="background: var(--color-white); padding: 80px 16px; border-top: 1px solid var(--color-border-light); border-bottom: 1px solid var(--color-border-light);">
+        <div style="max-width: var(--container-max); margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center;" class="about-teaser-grid">
+            <div style="position: relative;">
+                <div style="background: linear-gradient(135deg, var(--color-secondary), var(--color-primary)); width: 100%; height: 350px; border-radius: var(--radius-lg); position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow-card-hover);">
+                    <div style="color: var(--color-white); text-align: center; padding: 32px; z-index: 2;">
+                        <span style="font-size: 3rem; display: block; margin-bottom: 12px;">🚗✨</span>
+                        <h3 style="font-size: 1.6rem; font-weight: 800; margin-bottom: 8px;">Explore Premium Cars</h3>
+                        <p style="font-size: 0.9rem; color: rgba(255,255,255,0.85); font-weight: 500;">Handpicked fleet matching ultimate quality and style.</p>
+                    </div>
+                    <div style="position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.15); z-index: 1;"></div>
+                </div>
+            </div>
+            <div>
+                <span style="font-size: 0.8rem; font-weight: 700; color: var(--color-primary); text-transform: uppercase; letter-spacing: 0.05em; display: block; margin-bottom: 8px;">Our Heritage</span>
+                <h2 style="font-size: 2.2rem; font-weight: 800; color: var(--color-black); margin-bottom: 16px; line-height: 1.2; letter-spacing: -0.02em;">We Are Redefining Car Sharing</h2>
+                <p style="font-size: 0.95rem; color: var(--color-text-secondary); line-height: 1.7; margin-bottom: 16px;">Carzo is built on trust, transparency, and a passion for luxury motoring. We connect verified users with verified vehicle hosts, bringing clean commissions, insured journeys, and standard-setting luxury models directly to you.</p>
+                <p style="font-size: 0.95rem; color: var(--color-text-secondary); line-height: 1.7; margin-bottom: 28px;">All our cars pass an intensive quality screening check. Aadhaar ID verification is required to guarantee customer and host security.</p>
+                <a href="about.html" class="btn-hero btn-hero--primary" style="padding: 12px 28px; font-size: 0.9rem; box-shadow: 0 4px 12px rgba(235, 103, 14, 0.2); border-radius:100px;">Learn More About Us</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===================== REVIEWS SECTION ===================== -->
+    <section class="reviews-section" id="reviews-section">
+        <div class="reviews-container">
+            <div class="section-header">
+                <h2 class="section-header__title">Our First Customer Reviews</h2>
+                <p class="section-header__subtitle">See what our very first customers have to say about their rental experience with Carzo.</p>
+            </div>
+            <div class="reviews-grid">
+                <!-- Review 1 -->
+                <div class="review-card">
+                    <div>
+                        <div class="review-card__stars">
+                            ★★★★★
+                        </div>
+                        <p class="review-card__text">"Outstanding service! The booking was finished in minutes and the Mitsubishi was spotless. Will definitely hire from them again."</p>
+                    </div>
+                    <div class="review-card__user">
+                        <div class="review-card__avatar" style="background:var(--color-primary); color:var(--color-white); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.9rem;">MS</div>
+                        <div class="review-card__info">
+                            <h4 class="review-card__name">Mayan Sharma</h4>
+                            <span class="review-card__loc">Delhi, India (Verified Customer)</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- Review 2 -->
+                <div class="review-card">
+                    <div>
+                        <div class="review-card__stars">
+                            ★★★★★
+                        </div>
+                        <p class="review-card__text">"Renting the Tesla Model Y was an absolute dream. Dynamic electric drive and transparent billing. Highly recommended!"</p>
+                    </div>
+                    <div class="review-card__user">
+                        <div class="review-card__avatar" style="background:var(--color-secondary); color:var(--color-white); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.9rem;">PP</div>
+                        <div class="review-card__info">
+                            <h4 class="review-card__name">Priya Patel</h4>
+                            <span class="review-card__loc">Mumbai, India (Verified Customer)</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- Review 3 -->
+                <div class="review-card">
+                    <div>
+                        <div class="review-card__stars">
+                            ★★★★★
+                        </div>
+                        <p class="review-card__text">"The Chauffeur driven Range Rover was perfect for our executive event. Punctual driver and luxurious interior."</p>
+                    </div>
+                    <div class="review-card__user">
+                        <div class="review-card__avatar" style="background:var(--color-accent); color:var(--color-white); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.9rem;">RG</div>
+                        <div class="review-card__info">
+                            <h4 class="review-card__name">Rohan Gupta</h4>
+                            <span class="review-card__loc">Bangalore, India (Verified Customer)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===================== FAQ SECTION ===================== -->
+    <section class="faq-section" style="padding: 80px 16px; background: var(--color-white);">
+        <div style="max-width: 800px; margin: 0 auto;">
+            <h2 style="text-align: center; font-size: 2.2rem; font-weight: 800; color: var(--color-black); margin-bottom: 12px; letter-spacing: -0.02em;">Frequently Asked Questions</h2>
+            <p style="text-align: center; color: var(--color-text-secondary); margin-bottom: 48px; font-weight: 500; font-size: 0.95rem;">Got questions about our services? Here are the most common inquiries.</p>
+            
+            <div class="faq-accordion" style="display: flex; flex-direction: column; gap: 16px;">
+                <!-- FAQ Item 1 -->
+                <div class="faq-item" style="border: 1px solid var(--color-border-light); border-radius: 12px; overflow: hidden; background: var(--color-bg); transition: all 0.3s ease;">
+                    <button class="faq-toggle" onclick="toggleFaq(this)" style="width: 100%; padding: 22px 24px; display: flex; justify-content: space-between; align-items: center; background: none; border: none; outline: none; cursor: pointer; text-align: left; font-size: 1.05rem; font-weight: 700; color: var(--color-black); gap: 16px; transition: all 0.2s ease;">
+                        <span>How does the booking process work?</span>
+                        <span class="faq-icon" style="font-size: 1.2rem; transition: transform 0.3s ease; color: var(--color-primary);">+</span>
+                    </button>
+                    <div class="faq-content" style="max-height: 0; overflow: hidden; transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1); background: var(--color-white);">
+                        <p style="padding: 0 24px 22px; margin: 0; font-size: 0.92rem; color: var(--color-text-secondary); line-height: 1.6; font-weight: 500;">
+                            Simply browse our fleet of luxury cars, select the vehicle you desire, fill out your pickup location and mobile details in the checkout form, and complete the payment process. You will receive a confirmation call shortly after!
+                        </p>
+                    </div>
+                </div>
+
+                <!-- FAQ Item 2 -->
+                <div class="faq-item" style="border: 1px solid var(--color-border-light); border-radius: 12px; overflow: hidden; background: var(--color-bg); transition: all 0.3s ease;">
+                    <button class="faq-toggle" onclick="toggleFaq(this)" style="width: 100%; padding: 22px 24px; display: flex; justify-content: space-between; align-items: center; background: none; border: none; outline: none; cursor: pointer; text-align: left; font-size: 1.05rem; font-weight: 700; color: var(--color-black); gap: 16px; transition: all 0.2s ease;">
+                        <span>What documents do I need to bring at handover?</span>
+                        <span class="faq-icon" style="font-size: 1.2rem; transition: transform 0.3s ease; color: var(--color-primary);">+</span>
+                    </button>
+                    <div class="faq-content" style="max-height: 0; overflow: hidden; transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1); background: var(--color-white);">
+                        <p style="padding: 0 24px 22px; margin: 0; font-size: 0.92rem; color: var(--color-text-secondary); line-height: 1.6; font-weight: 500;">
+                            It is mandatory to bring your physical Aadhaar Card and a valid driving license for verification during key handover. The host will check these documents before releasing the vehicle.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- FAQ Item 3 -->
+                <div class="faq-item" style="border: 1px solid var(--color-border-light); border-radius: 12px; overflow: hidden; background: var(--color-bg); transition: all 0.3s ease;">
+                    <button class="faq-toggle" onclick="toggleFaq(this)" style="width: 100%; padding: 22px 24px; display: flex; justify-content: space-between; align-items: center; background: none; border: none; outline: none; cursor: pointer; text-align: left; font-size: 1.05rem; font-weight: 700; color: var(--color-black); gap: 16px; transition: all 0.2s ease;">
+                        <span>Can I cancel or reschedule my booking?</span>
+                        <span class="faq-icon" style="font-size: 1.2rem; transition: transform 0.3s ease; color: var(--color-primary);">+</span>
+                    </button>
+                    <div class="faq-content" style="max-height: 0; overflow: hidden; transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1); background: var(--color-white);">
+                        <p style="padding: 0 24px 22px; margin: 0; font-size: 0.92rem; color: var(--color-text-secondary); line-height: 1.6; font-weight: 500;">
+                            Yes, you can manage your bookings directly from your Dashboard. You can reschedule or cancel a booking up until the vehicle status has been toggled to "Delivered" by the admin, which freezes any further changes.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- FAQ Item 4 -->
+                <div class="faq-item" style="border: 1px solid var(--color-border-light); border-radius: 12px; overflow: hidden; background: var(--color-bg); transition: all 0.3s ease;">
+                    <button class="faq-toggle" onclick="toggleFaq(this)" style="width: 100%; padding: 22px 24px; display: flex; justify-content: space-between; align-items: center; background: none; border: none; outline: none; cursor: pointer; text-align: left; font-size: 1.05rem; font-weight: 700; color: var(--color-black); gap: 16px; transition: all 0.2s ease;">
+                        <span>What is covered under the rental rate?</span>
+                        <span class="faq-icon" style="font-size: 1.2rem; transition: transform 0.3s ease; color: var(--color-primary);">+</span>
+                    </button>
+                    <div class="faq-content" style="max-height: 0; overflow: hidden; transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1); background: var(--color-white);">
+                        <p style="padding: 0 24px 22px; margin: 0; font-size: 0.92rem; color: var(--color-text-secondary); line-height: 1.6; font-weight: 500;">
+                            The rental price shown includes the vehicle daily rate, 18% GST, and a flat ₹250 service fee. Fuel costs are typically borne by the renter unless stated otherwise in the vehicle specific rules.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===================== FOOTER ===================== -->
+    <footer class="footer" id="footer">
+        <div class="footer__inner">
+            <div class="footer__top">
+                <!-- Brand column -->
+                <div class="footer__brand">
+                    <a href="#" class="footer__logo">
+                        <span>Carzo</span>
+                    </a>
+                    <address class="footer__address">
+                        Storkower Strasse 41<br>
+                        Rhineland-Pfalz,<br>
+                        54176, Germany
+                    </address>
+                    <div class="footer__socials">
+                        <a href="#" class="footer__social" aria-label="Facebook">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
+                            </svg>
+                        </a>
+                        <a href="#" class="footer__social" aria-label="LinkedIn">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path
+                                    d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
+                                <rect x="2" y="9" width="4" height="12" />
+                                <circle cx="4" cy="4" r="2" />
+                            </svg>
+                        </a>
+                        <a href="#" class="footer__social" aria-label="Instagram">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Links columns -->
+                <div class="footer__links-group">
+                    <div class="footer__col">
+                        <h3 class="footer__col-title">Primary Pages</h3>
+                        <ul class="footer__col-list">
+                            <li><a href="index.html">Home</a></li>
+                            <li><a href="cars.html">Rent Luxury Cars</a></li>
+                            <li><a href="list-car.html">List Your Car</a></li>
+                            <li><a href="contact.html">Contact Us</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer__col">
+                        <h3 class="footer__col-title">Listing Locations</h3>
+                        <ul class="footer__col-list">
+                            <li><a href="locations.html">Near by locations</a></li>
+                            <li><a href="locations.html">Pune Hub</a></li>
+                            <li><a href="locations.html">Koregaon Park Hub</a></li>
+                            <li><a href="locations.html">Hinjawadi IT Hub</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer__col">
+                        <h3 class="footer__col-title">Overview & Details</h3>
+                        <ul class="footer__col-list">
+                            <li><a href="about.html">About US</a></li>
+                            <li><a href="contact.html">Send Message</a></li>
+                            <li><a href="#">Terms & Conditions</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="footer__bottom">
+                <p>&copy; 2026 Carzo. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        let carsDb = [];
+        let categoriesList = [];
+        let selectedCategory = '';
+        let selectedSubcategory = '';
+        let searchQuery = '';
+
+        window.addEventListener('DOMContentLoaded', () => {
+            refreshData();
+            renderCategories();
+            renderCarGrid();
+        });
+
+        function refreshData() {
+            carsDb = JSON.parse(localStorage.getItem('Carzo_cars')) || [];
+            categoriesList = JSON.parse(localStorage.getItem('Carzo_categories')) || [];
+        }
+
+        function renderCategories() {
+            const parentRow = document.getElementById('parent-categories-row');
+            if (!parentRow) return;
+
+            let parentHtml = `
+                <button onclick="filterParent('')" class="hero__pill ${selectedCategory === '' ? 'hero__pill--active' : ''}" style="margin-bottom: 8px;">
+                    All Classifications
+                </button>
+            `;
+
+            categoriesList.forEach(cat => {
+                parentHtml += `
+                    <button onclick="filterParent('${cat.name}')" class="hero__pill ${selectedCategory === cat.name ? 'hero__pill--active' : ''}" style="margin-bottom: 8px;">
+                        ${cat.name}
+                    </button>
+                `;
+            });
+            parentRow.innerHTML = parentHtml;
+
+            const subRow = document.getElementById('subcategory-filters-row');
+            if (!subRow) return;
+
+            if (selectedCategory === '') {
+                subRow.innerHTML = '';
+                subRow.style.minHeight = '0px';
+                return;
+            }
+
+            subRow.style.minHeight = '40px';
+            const activeCat = categoriesList.find(c => c.name === selectedCategory);
+            let subHtml = '';
+
+            if (activeCat && activeCat.subcategories) {
+                subHtml += `
+                    <button onclick="filterSub('')" class="hero__pill ${selectedSubcategory === '' ? 'hero__pill--active' : ''}" style="padding: 6px 16px; font-size: 0.78rem;">
+                        All ${selectedCategory}
+                    </button>
+                `;
+                activeCat.subcategories.forEach(sub => {
+                    subHtml += `
+                        <button onclick="filterSub('${sub}')" class="hero__pill ${selectedSubcategory === sub ? 'hero__pill--active' : ''}" style="padding: 6px 16px; font-size: 0.78rem;">
+                            ${sub}
+                        </button>
+                    `;
+                });
+            }
+            subRow.innerHTML = subHtml;
+        }
+
+        function filterParent(catName) {
+            selectedCategory = catName;
+            selectedSubcategory = '';
+            renderCategories();
+            renderCarGrid();
+        }
+
+        function filterSub(subName) {
+            selectedSubcategory = subName;
+            renderCategories();
+            renderCarGrid();
+        }
+
+        function handleSearchFilter() {
+            const searchInput = document.getElementById('global-search-input');
+            if (searchInput) {
+                searchQuery = searchInput.value.toLowerCase().trim();
+                renderCarGrid();
+            }
+        }
+
+        function renderCarGrid() {
+            const grid = document.getElementById('cars-grid-container');
+            if (!grid) return;
+
+            const filtered = carsDb.filter(car => {
+                if (selectedCategory !== '' && car.category !== selectedCategory) return false;
+                if (selectedSubcategory !== '' && car.subcategory !== selectedSubcategory) return false;
+
+                if (searchQuery !== '') {
+                    const nameMatch = car.name.toLowerCase().includes(searchQuery);
+                    const modelMatch = car.carName.toLowerCase().includes(searchQuery);
+                    const fuelMatch = car.fuelType.toLowerCase().includes(searchQuery);
+                    const catMatch = car.category.toLowerCase().includes(searchQuery);
+                    return nameMatch || modelMatch || fuelMatch || catMatch;
+                }
+                return true;
+            });
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 48px; background: var(--color-white); border-radius: var(--radius-xl); border: 1px solid var(--color-border-light);">
+                        <div style="font-size: 2.5rem; margin-bottom: 12px;">📂</div>
+                        <p style="color: var(--color-text-secondary); font-weight: 500;">No available vehicles match your search or filters.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            filtered.forEach(car => {
+                let imgTag = '';
+                if (car.isPlaceholder) {
+                    imgTag = `<div class="detail__image-placeholder" style="background:${car.colorCode || '#2c3e50'}; width: 100%; height: 100%; border-radius: var(--radius-xl);"></div>`;
+                } else {
+                    imgTag = `<img src="${car.image}" alt="${car.name}" class="car-card__img">`;
+                }
+
+                let badgeClass = 'car-card__badge--petrol';
+                if (car.fuelType.toLowerCase() === 'electric') badgeClass = 'car-card__badge--electric';
+                if (car.fuelType.toLowerCase() === 'cng') badgeClass = 'car-card__badge--cng';
+                if (car.fuelType.toLowerCase() === 'diesel') badgeClass = 'car-card__badge--diesel';
+
+                html += `
+                    <article class="car-card" id="${car.id}">
+                        <div class="car-card__image-container" style="position: relative;">
+                            <span class="car-card__badge ${badgeClass}">${car.fuelType}</span>
+                            ${!car.available ? `
+                            <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 1.1rem; z-index: 10; letter-spacing: 0.05em; backdrop-filter: blur(2px);">
+                                NOT AVAILABLE
+                            </div>
+                            ` : ''}
+                            <div class="car-card__image">
+                                ${imgTag}
+                            </div>
+                        </div>
+                        <div class="car-card__body">
+                            <h2 class="car-card__name">${car.name}</h2>
+
+                            <div class="car-card__specs-row">
+                                <div class="car-card__spec-item">
+                                    <svg class="car-card__spec-icon" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+                                        <circle cx="12" cy="7" r="4" />
+                                    </svg>
+                                    <span>${car.passengers} Seater</span>
+                                </div>
+                                <div class="car-card__spec-item">
+                                    <svg class="car-card__spec-icon" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <circle cx="12" cy="12" r="10" />
+                                        <line x1="12" y1="2" x2="12" y2="22" />
+                                        <line x1="2" y1="12" x2="22" y2="12" />
+                                        <path d="m16.2 7.8-8.4 8.4" />
+                                    </svg>
+                                    <span>${car.fuelType === 'Electric' ? 'Automatic' : 'Manual'}</span>
+                                </div>
+                                <div class="car-card__spec-item">
+                                    <svg class="car-card__spec-icon" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <circle cx="12" cy="12" r="10" />
+                                        <path d="M12 12l-4-4" />
+                                    </svg>
+                                    <span>${car.mileage}</span>
+                                </div>
+                            </div>
+
+                            <div class="car-card__price-tag">Starting at ₹${car.priceDay.toLocaleString('en-IN')}/Day</div>
+
+                            <div class="car-card__actions">
+                                <a href="car-detail.html?car=${car.id}" class="car-btn car-btn--details">Details</a>
+                                ${car.available ? `
+                                    <a href="booking.html?car=${car.id}" class="car-btn car-btn--book">Book Now</a>
+                                ` : `
+                                    <button class="car-btn" style="background: #e2e8f0; color: #949eb5; cursor: not-allowed;" disabled>Unavailable</button>
+                                `}
+                            </div>
+                        </div>
+                    </article>
+                `;
+            });
+            grid.innerHTML = html;
+            setupTiltAnimation();
+        }
+
+        function setupTiltAnimation() {
+            const cards = document.querySelectorAll('.car-card');
+            cards.forEach(card => {
+                card.addEventListener('mousemove', (e) => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    const centerX = rect.width / 2;
+                    const centerY = rect.height / 2;
+                    const rotateX = ((y - centerY) / centerY) * -1.5;
+                    const rotateY = ((x - centerX) / centerX) * 1.5;
+                    card.style.transform = `translateY(-4px) perspective(800px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+                });
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = 'translateY(0) perspective(800px) rotateX(0) rotateY(0)';
+                    card.style.transition = 'transform 0.4s ease';
+                });
+                card.addEventListener('mouseenter', () => {
+                    card.style.transition = 'transform 0.15s ease';
+                });
+            });
+        }
+
+        function toggleFaq(button) {
+            const faqItem = button.parentElement;
+            const content = faqItem.querySelector('.faq-content');
+            const icon = button.querySelector('.faq-icon');
+            
+            // Toggle active state on item
+            const isActive = faqItem.classList.contains('faq-item--active');
+            
+            // Close all items first (accordion style)
+            document.querySelectorAll('.faq-item').forEach(item => {
+                item.classList.remove('faq-item--active');
+                item.style.borderColor = 'var(--color-border-light)';
+                item.style.background = 'var(--color-bg)';
+                const itemContent = item.querySelector('.faq-content');
+                if (itemContent) itemContent.style.maxHeight = '0px';
+                const itemIcon = item.querySelector('.faq-icon');
+                if (itemIcon) {
+                    itemIcon.textContent = '+';
+                    itemIcon.style.transform = 'rotate(0deg)';
+                }
+            });
+            
+            if (!isActive) {
+                faqItem.classList.add('faq-item--active');
+                faqItem.style.borderColor = 'var(--color-primary)';
+                faqItem.style.background = 'var(--color-white)';
+                content.style.maxHeight = content.scrollHeight + 'px';
+                icon.textContent = '−';
+                icon.style.transform = 'rotate(180deg)';
+            }
+        }
+    </script>
+</body>
+</html>
