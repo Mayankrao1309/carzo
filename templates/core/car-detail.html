@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Carzo - 2013 Subaru Forester Premium Plus auction details. Place your bid now.">
+    <title>Carzo — 2013 Subaru Forester Premium Plus</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'assets/styles.css' %}">
+</head>
+
+<body>
+
+    <!-- ===================== NAVBAR ===================== -->
+    <header class="navbar navbar--scrolled navbar--always-white" id="navbar">
+        <div class="navbar__inner">
+            <a href="{% url 'carzo_core:index' %}" class="navbar__logo" id="logo">
+                <img src="{% static 'assets/logo.png' %}" alt="Carzo Logo" class="navbar__logo-img">
+                <span>Carzo</span>
+            </a>
+            <nav class="navbar__links" id="nav-links">
+                <a href="{% url 'carzo_core:index' %}" class="navbar__link">Home</a>
+                <a href="{% url 'carzo_core:cars' %}" class="navbar__link">All Cars</a>
+                <a href="{% url 'carzo_core:list-car' %}" class="navbar__link">List Your Car</a>
+                <a href="{% url 'carzo_core:about' %}" class="navbar__link">About Us</a>
+                <a href="{% url 'carzo_core:contact' %}" class="navbar__link">Contact Us</a>
+            </nav>
+            <div class="navbar__actions">
+                {% if request.user.is_authenticated %}
+                <div class="navbar__profile-dropdown" id="profile-dropdown">
+                    <button class="navbar__profile-btn" id="profile-btn" aria-label="Profile Menu">
+                        <div class="navbar__profile-avatar" id="navbar-avatar">
+                            {% if request.user.avatar %}
+                            <img src="{{ request.user.avatar.url }}"
+                                style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" alt="Avatar">
+                            {% else %}
+                            {% if request.user.first_name or request.user.last_name %}{{ request.user.first_name|slice:":1"|upper }}{{ request.user.last_name|slice:":1"|upper }}{% else %}{{ request.user.username|slice:":2"|upper }}{% endif %}
+                            {% endif %}
+                        </div>
+                    </button>
+                    <div class="navbar__profile-menu" id="profile-menu">
+                        <div class="navbar__profile-header">
+                            <span class="navbar__profile-name" id="navbar-profile-name">{{ request.user.first_name }} {{ request.user.last_name }}</span>
+                            <span class="navbar__profile-email" id="navbar-profile-email">{{ request.user.email }}</span>
+                        </div>
+                        <div class="navbar__profile-divider"></div>
+                        {% if request.user.is_staff %}
+                        <a href="{% url 'useradmin:admin-panel' %}" class="navbar__profile-item"
+                            style="color:var(--color-primary); font-weight:700;">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="3" />
+                                <path
+                                    d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+                            </svg>
+                            Admin Panel
+                        </a>
+                        {% endif %}
+                        <a href="{% url 'carzo_core:dashboard' %}" class="navbar__profile-item">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+                                <circle cx="12" cy="7" r="4" />
+                            </svg>
+                            Profile
+                        </a>
+                        <a href="{% url 'carzo_core:booking-management' %}" class="navbar__profile-item">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect width="18" height="18" x="3" y="4" rx="2" ry="2" />
+                                <line x1="16" x2="16" y1="2" y2="6" />
+                                <line x1="8" x2="8" y1="2" y2="6" />
+                                <line x1="3" x2="21" y1="10" y2="10" />
+                            </svg>
+                            My Bookings
+                        </a>
+                        <a href="{% url 'userauths:logout' %}" class="navbar__profile-item">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                                <polyline points="16 17 21 12 16 7" />
+                                <line x1="21" x2="9" y1="12" y2="12" />
+                            </svg>
+                            Logout
+                        </a>
+                    </div>
+                </div>
+                {% else %}
+                <div class="navbar__auth" id="navbar-auth">
+                    <a href="{% url 'userauths:login' %}" class="btn-auth btn-auth--login">Log In</a>
+                    <a href="{% url 'userauths:signup' %}" class="btn-auth btn-auth--signup">Sign Up</a>
+                </div>
+                {% endif %}
+                <button class="navbar__icon-btn navbar__hamburger" id="hamburger" aria-label="Menu">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="3" y1="6" x2="21" y2="6" />
+                        <line x1="3" y1="12" x2="21" y2="12" />
+                        <line x1="3" y1="18" x2="21" y2="18" />
+                    </svg>
+                </button>
+            </div>
+    </header>
+
+    <!-- ===================== PRODUCT DETAIL ===================== -->
+    <main class="detail" id="detail-section">
+        <div class="detail__container">
+            <div class="detail__card">
+
+                <!-- LEFT PANEL: Showcase (shifted to Left) -->
+                <div class="detail__showcase">
+                    <!-- Faded Background Watermark -->
+                    <div class="detail__watermark" id="car-watermark">CARZO</div>
+
+                    <!-- Showcase Header: Dots & Title -->
+                    <div class="detail__showcase-header">
+                        <span class="detail__showcase-title" id="gallery-image-title">Vehicle Images</span>
+                    </div>
+
+                    <!-- Main Showcase Area with Nav Arrows -->
+                    <div class="detail__showcase-main">
+                        <button class="detail__nav-arrow detail__nav-arrow--left" id="prev-image-btn"
+                            aria-label="Previous image">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="15 18 9 12 15 6" />
+                            </svg>
+                        </button>
+
+                        <div class="detail__main-image-container" id="main-image">
+                            <!-- Showcase Image centered here -->
+                            <div class="detail__image-placeholder" style="background:#2c3e50;"></div>
+                        </div>
+
+                        <button class="detail__nav-arrow detail__nav-arrow--right" id="next-image-btn"
+                            aria-label="Next image">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="9 18 15 12 9 6" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- Showcase Footer with Thumbnails grid -->
+                    <div class="detail__showcase-footer">
+                        <div class="detail__thumbnails" id="thumbnails">
+                            <!-- Thumbnails populated dynamically -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RIGHT SIDEBAR: Info Panel (shifted to Right) -->
+                <div class="detail__sidebar">
+                    <!-- Brand Logo -->
+                    <div class="detail__brand-logo">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5" />
+                            <polyline points="12 22 12 12 22 8.5" />
+                            <line x1="12" y1="12" x2="2" y2="8.5" />
+                        </svg>
+                        <span id="car-brand-name">Carzo</span>
+                    </div>
+
+                    <!-- Car Title & Subtitle -->
+                    <h1 class="detail__title" id="car-title">Car Model</h1>
+                    <p class="detail__subtitle" id="car-subtitle">Car Specs</p>
+
+                    <!-- Vertical Specs List -->
+                    <ul class="detail__specs-list" id="menu-specs">
+                        <!-- Populated dynamically -->
+                    </ul>
+
+                    <!-- Host details -->
+                    <div class="detail__seller-box" id="seller-info-block">
+                        <!-- Populated dynamically -->
+                    </div>
+
+                    <!-- Bottom Price & Book Now Button -->
+                    <div class="detail__bottom-actions">
+                        <a href="#" class="detail__book-btn" id="book-now-btn">Book Now</a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+
+    </main>
+
+    <!-- ===================== FOOTER ===================== -->
+    <footer class="footer" id="footer">
+        <div class="footer__inner">
+            <div class="footer__top">
+                <!-- Brand column -->
+                <div class="footer__brand">
+                    <a href="{% url 'carzo_core:index' %}" class="footer__logo">
+                        <span>Carzo</span>
+                    </a>
+                    <p class="footer__tagline">
+                        Discover the best rental cars and experience premium driving effortlessly.
+                    </p>
+                    <div class="footer__socials">
+                        <a href="https://wa.me/919999999999"
+                            class="footer__social" aria-label="WhatsApp" target="_blank" rel="noopener noreferrer">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.746.953 3.71 1.455 5.703 1.458h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" fill="currentColor"/>
+                            </svg>
+                        </a>
+                        <a href="https://www.instagram.com/carzorentals?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw=="
+                            class="footer__social" aria-label="Instagram" target="_blank" rel="noopener noreferrer">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Links columns -->
+                <div class="footer__links-group">
+                    <!-- Column 1: Shop -->
+                    <div class="footer__col">
+                        <h3 class="footer__col-title">Shop</h3>
+                        <ul class="footer__col-list">
+                            <li><a href="{% url 'carzo_core:index' %}">Home</a></li>
+                            <li><a href="{% url 'carzo_core:cars' %}">Rent Luxury Cars</a></li>
+                            <li><a href="{% url 'carzo_core:list-car' %}">List Your Car</a></li>
+                            <li><a href="{% url 'carzo_core:contact' %}">Contact Us</a></li>
+                        </ul>
+                    </div>
+                    <!-- Column 2: Help -->
+                    <div class="footer__col">
+                        <h3 class="footer__col-title">Help</h3>
+                        <ul class="footer__col-list">
+                            <li><a href="{% url 'carzo_core:index' %}#faq-section">FAQ</a></li>
+                            <li><a href="{% url 'carzo_core:about' %}">About Us</a></li>
+                            <li><a href="{% url 'carzo_core:contact' %}">Contact</a></li>
+                        </ul>
+                    </div>
+                    <!-- Column 3: Legal -->
+                    <div class="footer__col">
+                        <h3 class="footer__col-title">Legal</h3>
+                        <ul class="footer__col-list">
+                            <li><a href="#">Privacy Policy</a></li>
+                            <li><a href="#">Terms & Conditions</a></li>
+                            <li><a href="{% url 'useradmin:admin-panel' %}">Admin</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="footer__bottom">
+                <p>&copy; 2026 Carzo. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+    <script id="car-detail-data" type="application/json">
+        {
+            "id": "{{ car.car_id }}",
+            "name": "{{ car.name }}",
+            "carName": "{{ car.brand }}",
+            "priceDay": {{ car.price_day }},
+            "priceMonth": {% if car.price_month %}{{ car.price_month }}{% else %}null{% endif %},
+            "passengers": {{ car.passengers }},
+            "fuelType": "{{ car.fuel_type }}",
+            "category": "{{ car.category.name }}",
+            "subcategory": "{{ car.subcategory.name|default:'Standard' }}",
+            "owner": {
+                "name": "{{ car.owner.name }}",
+                "phone": "{{ car.owner.phone }}",
+                "email": "{{ car.owner.email }}",
+                "location": "{{ car.owner.location }}"
+            },
+            "available": {% if car.available %}true{% else %}false{% endif %},
+            "image": "{% if car.image %}{% if '/' in car.image.name %}{{ car.image.url }}{% else %}{% static 'assets/' %}{{ car.image.name }}{% endif %}{% endif %}",
+            "image2": "{% if car.image2 %}{% if '/' in car.image2.name %}{{ car.image2.url }}{% else %}{% static 'assets/' %}{{ car.image2.name }}{% endif %}{% endif %}",
+            "image3": "{% if car.image3 %}{% if '/' in car.image3.name %}{{ car.image3.url }}{% else %}{% static 'assets/' %}{{ car.image3.name }}{% endif %}{% endif %}",
+            "image4": "{% if car.image4 %}{% if '/' in car.image4.name %}{{ car.image4.url }}{% else %}{% static 'assets/' %}{{ car.image4.name }}{% endif %}{% endif %}",
+            "isPlaceholder": {% if car.is_placeholder %}true{% else %}false{% endif %},
+            "colorCode": "{{ car.color_code }}"
+        }
+    </script>
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            const car = JSON.parse(document.getElementById('car-detail-data').textContent);
+
+            if (!car) return;
+
+            // 1. Brand Logo Text & Watermark background
+            const carBrandNameEl = document.getElementById('car-brand-name');
+            if (carBrandNameEl) {
+                carBrandNameEl.textContent = car.carName || car.name.split(' ')[0];
+            }
+
+            const carWatermarkEl = document.getElementById('car-watermark');
+            if (carWatermarkEl) {
+                carWatermarkEl.textContent = (car.carName || car.name.split(' ')[0]).toUpperCase();
+            }
+
+            // 2. Title & Subtitle
+            const carTitleEl = document.getElementById('car-title');
+            if (carTitleEl) {
+                carTitleEl.textContent = car.name;
+            }
+
+            const carSubtitleEl = document.getElementById('car-subtitle');
+            if (carSubtitleEl) {
+                carSubtitleEl.textContent = `${car.fuelType} · ${car.passengers} Seater`;
+            }
+
+            // 3. Specs list
+            const menuSpecsEl = document.getElementById('menu-specs');
+            if (menuSpecsEl) {
+                const monthlyPriceLabel = car.priceMonth ? `₹${car.priceMonth.toLocaleString('en-IN')}` : 'Contact Host';
+                menuSpecsEl.innerHTML = `
+                    <li class="detail__specs-item">
+                        <span class="detail__specs-key">Brand</span>
+                        <span class="detail__specs-val">${car.carName || car.name.split(' ')[0]}</span>
+                    </li>
+                    <li class="detail__specs-item">
+                        <span class="detail__specs-key">Fuel Type</span>
+                        <span class="detail__specs-val">${car.fuelType}</span>
+                    </li>
+                    <li class="detail__specs-item">
+                        <span class="detail__specs-key">Capacity</span>
+                        <span class="detail__specs-val">${car.passengers} Passengers</span>
+                    </li>
+                    <li class="detail__specs-item">
+                        <span class="detail__specs-key">Monthly Rate</span>
+                        <span class="detail__specs-val">${monthlyPriceLabel}</span>
+                    </li>
+                    <li class="detail__specs-item">
+                        <span class="detail__specs-key">Daily Price</span>
+                        <span class="detail__specs-val" style="font-weight: 700; color: var(--color-black);">₹${car.priceDay.toLocaleString('en-IN')} / day</span>
+                    </li>
+                `;
+            }
+
+            // 4. Host Info Block
+            const sellerInfoBlockEl = document.getElementById('seller-info-block');
+            if (sellerInfoBlockEl) {
+                const owner = car.owner;
+                sellerInfoBlockEl.innerHTML = `
+                    <div class="detail__seller-profile">
+                        <div class="detail__seller-avatar" style="background:var(--color-secondary);"></div>
+                        <div class="detail__seller-meta">
+                            <span class="detail__seller-label">HOST / PARTNER</span>
+                            <span class="detail__seller-host">${owner.name}</span>
+                        </div>
+                    </div>
+                    <div class="detail__seller-contact">
+                        <div><strong>Phone:</strong> ${owner.phone}</div>
+                        <div><strong>Email:</strong> ${owner.email}</div>
+                        <div><strong>Hub:</strong> ${owner.location}</div>
+                    </div>
+                `;
+            }
+
+            const bookBtn = document.getElementById('book-now-btn');
+            if (bookBtn) {
+                if (car.available) {
+                    bookBtn.href = "{% url 'carzo_core:booking' car.car_id %}";
+                    bookBtn.textContent = 'Book Now';
+                    bookBtn.style.pointerEvents = 'auto';
+                    bookBtn.style.opacity = '1';
+                } else {
+                    bookBtn.removeAttribute('href');
+                    bookBtn.textContent = 'Unavailable';
+                    bookBtn.style.pointerEvents = 'none';
+                    bookBtn.style.background = '#e2e8f0';
+                    bookBtn.style.color = '#949eb5';
+                }
+            }
+
+            // 6. Showcase Gallery (Arrows & Thumbnails)
+            const images = [
+                car.image || '',
+                car.image2 || '',
+                car.image3 || '',
+                car.image4 || ''
+            ].map(src => src || car.image || '');
+
+            let currentImageIndex = 0;
+
+            function showImage(idx) {
+                if (images.length === 0) return;
+                if (idx < 0) idx = images.length - 1;
+                if (idx >= images.length) idx = 0;
+                currentImageIndex = idx;
+
+                const mainImgContainer = document.getElementById('main-image');
+                if (mainImgContainer) {
+                    const imgSrc = images[currentImageIndex];
+                    mainImgContainer.innerHTML = `<img src="${imgSrc}" alt="${car.name}" class="detail__main-img">`;
+                }
+
+                // Update thumbnails active states
+                const thumbs = document.querySelectorAll('.detail__thumb');
+                thumbs.forEach((thumb, tIdx) => {
+                    if (tIdx === currentImageIndex) {
+                        thumb.classList.add('detail__thumb--active');
+                    } else {
+                        thumb.classList.remove('detail__thumb--active');
+                    }
+                });
+
+                // Update gallery title
+                const titleEl = document.getElementById('gallery-image-title');
+                if (titleEl) {
+                    if (currentImageIndex === 0) titleEl.textContent = 'Exterior Profile';
+                    else if (currentImageIndex === 1) titleEl.textContent = 'Interior Cockpit';
+                    else if (currentImageIndex === 2) titleEl.textContent = 'Engine & Chassis';
+                    else titleEl.textContent = 'Detail Highlights';
+                }
+            }
+
+            // Populate thumbnails row
+            const thumbnailsContainer = document.getElementById('thumbnails');
+            if (thumbnailsContainer && images.length > 0) {
+                let thumbHtml = '';
+                images.forEach((imgSrc, idx) => {
+                    thumbHtml += `
+                        <button class="detail__thumb ${idx === 0 ? 'detail__thumb--active' : ''}" data-index="${idx}" aria-label="View photo ${idx + 1}">
+                            <img src="${imgSrc}" alt="${car.name}" style="width:100%; height:100%; object-fit:cover; border-radius:4px;">
+                        </button>
+                    `;
+                });
+                thumbnailsContainer.innerHTML = thumbHtml;
+
+                const thumbs = thumbnailsContainer.querySelectorAll('.detail__thumb');
+                thumbs.forEach(thumb => {
+                    thumb.addEventListener('click', () => {
+                        const idx = parseInt(thumb.getAttribute('data-index'));
+                        showImage(idx);
+                    });
+                });
+            }
+
+            // Initial Showcase Load
+            showImage(0);
+
+            // Arrow nav controls
+            const prevBtn = document.getElementById('prev-image-btn');
+            if (prevBtn) {
+                prevBtn.addEventListener('click', () => {
+                    showImage(currentImageIndex - 1);
+                });
+            }
+
+            const nextBtn = document.getElementById('next-image-btn');
+            if (nextBtn) {
+                nextBtn.addEventListener('click', () => {
+                    showImage(currentImageIndex + 1);
+                });
+            }
+        });
+    </script>
+    <script src="{% static 'assets/script.js' %}"></script>
+</body>
+
+</html>

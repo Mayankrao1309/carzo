@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carzo — Booking Details</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'assets/styles.css' %}">
+    <style>
+        .detail-page-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 80px 16px 40px;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--color-text-secondary);
+            font-weight: 600;
+            text-decoration: none;
+            margin-bottom: 24px;
+            font-size: 0.9rem;
+            transition: color var(--transition-fast);
+        }
+
+        .back-link:hover {
+            color: var(--color-primary);
+        }
+
+        .detail-card {
+            background: #ffffff;
+            border: 1px solid var(--color-border-light);
+            border-radius: var(--radius-xl);
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.01);
+        }
+
+        .detail-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 16px;
+            border-bottom: 1px solid var(--color-border-light);
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+        }
+
+        .detail-title-group h1 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--color-black);
+            margin-bottom: 4px;
+        }
+
+        .detail-subtitle {
+            font-size: 0.85rem;
+            color: var(--color-text-secondary);
+            font-weight: 500;
+        }
+
+        .detail-image-wrapper {
+            width: 100%;
+            height: 200px;
+            background: #f8fafc;
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            margin-bottom: 24px;
+        }
+
+        .detail-image-wrapper img {
+            max-height: 100%;
+            max-width: 100%;
+            object-fit: contain;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+        @media (max-width: 576px) {
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .info-section-title {
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--color-text-secondary);
+            margin-bottom: 12px;
+            border-bottom: 1px dashed var(--color-border-light);
+            padding-bottom: 6px;
+        }
+
+        .info-item {
+            margin-bottom: 12px;
+        }
+
+        .info-label {
+            font-size: 0.75rem;
+            color: var(--color-text-muted);
+            margin-bottom: 2px;
+        }
+
+        .info-value {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--color-black);
+        }
+
+        .financial-table {
+            width: 100%;
+            margin-top: 16px;
+            border-collapse: collapse;
+        }
+
+        .financial-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            font-size: 0.88rem;
+            color: var(--color-text-secondary);
+        }
+
+        .financial-row--total {
+            border-top: 1px solid var(--color-border-light);
+            padding-top: 12px;
+            margin-top: 8px;
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--color-black);
+        }
+
+        .detail-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 24px;
+        }
+
+        .detail-actions .btn-dashboard-action {
+            flex: 1;
+            min-width: 120px;
+            text-align: center;
+            justify-content: center;
+        }
+    </style>
+</head>
+
+<body style="background:var(--color-bg); min-height: 100vh; display: flex; flex-direction: column;">
+
+    <!-- ===================== NAVBAR ===================== -->
+    <header class="navbar navbar--scrolled navbar--always-white" id="navbar">
+        <div class="navbar__inner">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <a href="{% url 'carzo_core:index' %}" class="navbar__logo" id="logo">
+                    <img src="{% static 'assets/logo.png' %}" alt="Carzo Logo" class="navbar__logo-img">
+                    <span>Carzo</span>
+                </a>
+            </div>
+            <nav class="navbar__links" id="nav-links">
+                <a href="{% url 'carzo_core:index' %}" class="navbar__link">Home</a>
+                <a href="{% url 'carzo_core:cars' %}" class="navbar__link">All Cars</a>
+                <a href="{% url 'carzo_core:list-car' %}" class="navbar__link">List Your Car</a>
+                <a href="{% url 'carzo_core:about' %}" class="navbar__link">About Us</a>
+                <a href="{% url 'carzo_core:contact' %}" class="navbar__link">Contact Us</a>
+            </nav>
+            <div class="navbar__actions">
+                {% if request.user.is_authenticated %}
+                <div class="navbar__profile-dropdown" id="profile-dropdown">
+                    <button class="navbar__profile-btn" id="profile-btn" aria-label="Profile Menu">
+                        <div class="navbar__profile-avatar" id="navbar-avatar">
+                            {% if request.user.avatar %}
+                                <img src="{{ request.user.avatar.url }}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" alt="Avatar">
+                            {% else %}
+                                {% if request.user.first_name or request.user.last_name %}{{ request.user.first_name|slice:":1"|upper }}{{ request.user.last_name|slice:":1"|upper }}{% else %}{{ request.user.username|slice:":2"|upper }}{% endif %}
+                            {% endif %}
+                        </div>
+                    </button>
+                    <div class="navbar__profile-menu" id="profile-menu">
+                        <div class="navbar__profile-header">
+                            <span class="navbar__profile-name" id="navbar-profile-name">{{ request.user.first_name }} {{ request.user.last_name }}</span>
+                            <span class="navbar__profile-email" id="navbar-profile-email">{{ request.user.email }}</span>
+                        </div>
+                        <a href="{% url 'carzo_core:dashboard' %}" class="navbar__profile-item">Profile</a>
+                        <a href="{% url 'carzo_core:booking-management' %}" class="navbar__profile-item">My Bookings</a>
+                        {% if request.user.is_superuser or request.user.is_staff %}
+                        <a href="{% url 'useradmin:admin-panel' %}" class="navbar__profile-item">Admin Control Panel</a>
+                        {% endif %}
+                        <div style="border-top: 1px solid #f1f5f9; margin: 4px 0;"></div>
+                        <a href="{% url 'userauths:logout' %}" class="navbar__profile-item" style="color: #ef4444;">Log Out</a>
+                    </div>
+                </div>
+                {% else %}
+                <div class="navbar__auth">
+                    <a href="{% url 'userauths:login' %}" class="btn-auth btn-auth--login">Log In</a>
+                    <a href="{% url 'userauths:signup' %}" class="btn-auth btn-auth--signup">Sign Up</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </header>
+
+    <main style="flex: 1;">
+        <div class="detail-page-container">
+            <a href="{% url 'carzo_core:booking-management' %}" class="back-link">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <line x1="19" y1="12" x2="5" y2="12"></line>
+                    <polyline points="12 19 5 12 12 5"></polyline>
+                </svg>
+                Back to Bookings
+            </a>
+
+            <!-- Messages banner -->
+            {% if messages %}
+            <div style="margin-bottom: 20px;">
+                {% for message in messages %}
+                <div style="padding: 12px 16px; border-radius: var(--radius-md); font-weight: 500; font-size: 0.88rem; margin-bottom: 8px; {% if message.tags == 'success' %}background:#f0fdf4; color:#15803d; border:1px solid rgba(21,128,61,0.15);{% else %}background:#fef2f2; color:#b91c1c; border:1px solid rgba(185,28,28,0.15);{% endif %}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <div class="detail-card">
+                <div class="detail-header">
+                    <div class="detail-title-group">
+                        <h1>{{ booking.car.brand }} {{ booking.car.model }}</h1>
+                        <div class="detail-subtitle">Booking ID: {{ booking.booking_id }}</div>
+                    </div>
+                    <span class="badge {% if booking.status == 'Confirmed' %}badge--confirmed{% elif booking.status == 'Active' or booking.status == 'Delivered' %}badge--active{% elif booking.status == 'Completed' %}badge--completed{% else %}badge--cancelled{% endif %}" style="font-size:0.85rem; padding:6px 14px;">{{ booking.status }}</span>
+                </div>
+
+                <div class="detail-image-wrapper">
+                    {% if booking.car.image %}
+                    <img src="{% if '/' in booking.car.image.name %}{{ booking.car.image.url }}{% else %}{% static 'assets/' %}{{ booking.car.image.name }}{% endif %}" alt="{{ booking.car.brand }} {{ booking.car.model }}">
+                    {% else %}
+                    <div class="detail__image-placeholder" style="background:#4a5568; width: 100%; height: 100%; border-radius: var(--radius-md);"></div>
+                    {% endif %}
+                </div>
+
+                <div class="info-grid">
+                    <div>
+                        <div class="info-section-title">Pickup Details</div>
+                        <div class="info-item">
+                            <div class="info-label">Pickup Location</div>
+                            <div class="info-value">{{ booking.pickup_location }}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Date & Time</div>
+                            <div class="info-value">{{ booking.pickup_date }} at {{ booking.pickup_time|time:"H:i" }}</div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="info-section-title">Drop-off Details</div>
+                        <div class="info-item">
+                            <div class="info-label">Drop-off Location</div>
+                            <div class="info-value">Same as pickup location</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Date & Time</div>
+                            <div class="info-value">{{ booking.drop_date }} at {{ booking.drop_time|time:"H:i" }}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="info-section-title">Payment & Financial Summary</div>
+                    <div class="info-grid" style="margin-bottom: 0;">
+                        <div class="info-item">
+                            <div class="info-label">Payment Status</div>
+                            <div class="info-value" style="text-transform: capitalize; color: {% if booking.payment_status == 'paid' %}#15803d{% elif booking.payment_status == 'failed' %}#ef4444{% else %}var(--color-text-secondary){% endif %};">
+                                {{ booking.payment_status }}
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Rental Duration</div>
+                            <div class="info-value">{{ booking.total_days }} Day{% if booking.total_days > 1 %}s{% endif %}</div>
+                        </div>
+                    </div>
+
+                    <div class="financial-table">
+                        <div class="financial-row">
+                            <span>Base Rate (₹{{ booking.car.price_per_day|floatformat:0 }} x {{ booking.total_days }} day{% if booking.total_days > 1 %}s{% endif %})</span>
+                            <span>₹{{ booking.subtotal }}</span>
+                        </div>
+                        <div class="financial-row">
+                            <span>GST (18%)</span>
+                            <span>₹{{ booking.gst }}</span>
+                        </div>
+                        <div class="financial-row">
+                            <span>Service Fee</span>
+                            <span>₹{{ booking.service_fee }}</span>
+                        </div>
+                        <div class="financial-row financial-row--total">
+                            <span>Grand Total</span>
+                            <span style="color:var(--color-primary);">₹{{ booking.total_cost }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="detail-actions">
+                    <button class="btn-dashboard-action btn-dashboard-action--secondary view-receipt-btn"
+                        data-id="{{ booking.booking_id }}"
+                        data-car="{{ booking.car.brand }} {{ booking.car.model }}"
+                        data-rate="{{ booking.car.price_per_day }}" data-pickup-loc="{{ booking.pickup_location }}"
+                        data-pickup-date="{{ booking.pickup_date|date:'Y-m-d' }}"
+                        data-drop-date="{{ booking.drop_date|date:'Y-m-d' }}"
+                        data-days="{{ booking.total_days }}" data-cost="{{ booking.total_cost }}"
+                        data-status="{{ booking.status }}"
+                        data-created="{{ booking.created_at|date:'Y-m-d' }}"
+                        data-gst="{{ booking.gst }}"
+                        data-fee="{{ booking.service_fee }}">
+                        Receipt
+                    </button>
+
+                    {% if booking.status == 'Confirmed' or booking.status == 'Active' %}
+                    <button class="btn-dashboard-action btn-dashboard-action--secondary modify-dates-btn"
+                        data-id="{{ booking.booking_id }}"
+                        data-car="{{ booking.car.brand }} {{ booking.car.model }}"
+                        data-rate="{{ booking.car.price_per_day }}"
+                        data-pickup-date="{{ booking.pickup_date|date:'Y-m-d' }}"
+                        data-drop-date="{{ booking.drop_date|date:'Y-m-d' }}">
+                        Modify Dates
+                    </button>
+                    <button onclick="cancelBooking('{{ booking.booking_id }}')"
+                        class="btn-dashboard-action btn-dashboard-action--danger">
+                        Cancel Booking
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- ===================== RECEIPT MODAL ===================== -->
+    <div class="modal-overlay" id="receipt-modal">
+        <div class="modal-card" style="max-width:600px; text-align:left;">
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1.5px solid #f1f5f9; padding-bottom:16px; margin-bottom:20px;">
+                <h2 style="font-size:1.25rem; font-weight:800; color:var(--color-black);">Rental Receipt</h2>
+                <button onclick="closeModal('receipt-modal')" style="font-size:1.25rem; font-weight:700; color:var(--color-text-secondary); cursor:pointer;">&times;</button>
+            </div>
+            <div id="receipt-modal-content"></div>
+            <div style="margin-top:28px; display:flex; gap:12px;">
+                <button onclick="window.print()" class="btn-dashboard-action btn-dashboard-action--secondary" style="flex:1;">Print Receipt</button>
+                <button onclick="closeModal('receipt-modal')" class="btn-dashboard-action btn-dashboard-action--primary" style="flex:1;">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================== MODIFY DATES MODAL ===================== -->
+    <div class="modal-overlay" id="modify-modal">
+        <div class="modal-card" style="max-width:500px; text-align:left;">
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1.5px solid #f1f5f9; padding-bottom:16px; margin-bottom:20px;">
+                <h2 style="font-size:1.25rem; font-weight:800; color:var(--color-black);">Modify Rental Dates</h2>
+                <button onclick="closeModal('modify-modal')" style="font-size:1.25rem; font-weight:700; color:var(--color-text-secondary); cursor:pointer;">&times;</button>
+            </div>
+
+            <form id="modify-form" method="POST" action="">
+                {% csrf_token %}
+                <input type="hidden" name="total_days" id="mod-total-days-input">
+                <input type="hidden" name="total_cost" id="mod-total-cost-input">
+                <div class="form-grid" style="grid-template-columns: 1fr;">
+                    <div class="form-group">
+                        <label class="form-label" for="mod-pickup-date">New Pickup Date</label>
+                        <input type="date" id="mod-pickup-date" name="pickup_date" class="form-input" required onchange="calculateModifiedPrice()">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="mod-drop-date">New Drop-off Date</label>
+                        <input type="date" id="mod-drop-date" name="drop_date" class="form-input" required onchange="calculateModifiedPrice()">
+                    </div>
+                    <div style="background:#f8fafc; border:1px solid #f0f0f0; padding:16px; border-radius:8px; margin-top:8px;">
+                        <div style="display:flex; justify-content:space-between; font-size:0.88rem; color:var(--color-text-secondary); margin-bottom:6px;">
+                            <span>New Duration:</span>
+                            <span id="mod-days-display" style="font-weight:700; color:var(--color-black);">1 Day</span>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; font-size:1.05rem; font-weight:800; color:var(--color-black);">
+                            <span>New Grand Total:</span>
+                            <span id="mod-price-display" style="color:var(--color-primary);">₹4,000</span>
+                        </div>
+                    </div>
+                </div>
+                <div style="margin-top:28px; display:flex; gap:12px;">
+                    <button type="button" onclick="closeModal('modify-modal')" class="btn-dashboard-action btn-dashboard-action--secondary" style="flex:1;">Cancel</button>
+                    <button type="submit" class="btn-dashboard-action btn-dashboard-action--primary" style="flex:1;">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ===================== FOOTER ===================== -->
+    <footer class="footer" id="footer" style="margin-top:80px;">
+        <div class="footer__inner">
+            <div class="footer__top">
+                <div class="footer__brand">
+                    <a href="{% url 'carzo_core:index' %}" class="footer__logo">
+                        <span>Carzo</span>
+                    </a>
+                    <p class="footer__tagline">Discover the best rental cars and experience premium driving effortlessly.</p>
+                    <div class="footer__socials">
+                        <a href="https://wa.me/919999999999"
+                            class="footer__social" aria-label="WhatsApp" target="_blank" rel="noopener noreferrer">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.746.953 3.71 1.455 5.703 1.458h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" fill="currentColor"/>
+                            </svg>
+                        </a>
+                        <a href="https://www.instagram.com/carzorentals?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" class="footer__social" aria-label="Instagram" target="_blank" rel="noopener noreferrer">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+                <div class="footer__links-group">
+                    <div class="footer__links-col">
+                        <h4 class="footer__links-title">Shop</h4>
+                        <ul class="footer__links-list">
+                            <li><a href="{% url 'carzo_core:cars' %}">All Cars</a></li>
+                            <li><a href="{% url 'carzo_core:list-car' %}">List Your Car</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer__links-col">
+                        <h4 class="footer__links-title">Help</h4>
+                        <ul class="footer__links-list">
+                            <li><a href="{% url 'carzo_core:about' %}">About Us</a></li>
+                            <li><a href="{% url 'carzo_core:contact' %}">Contact Us</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer__links-col">
+                        <h4 class="footer__links-title">Legal</h4>
+                        <ul class="footer__links-list">
+                            <li><a href="{% url 'useradmin:admin-panel' %}">Admin Portal</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="footer__bottom">
+                <p>&copy; 2026 Carzo. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script>
+        let modifyBaseRate = 0;
+
+        function cancelBooking(bookingId) {
+            if (confirm('Are you sure you want to cancel this booking? This action cannot be undone.')) {
+                window.location.href = `/booking-management/cancel/${bookingId}/`;
+            }
+        }
+
+        // Click listeners for Receipt buttons
+        document.querySelectorAll('.view-receipt-btn').forEach(btn => {
+            btn.addEventListener('click', function () {
+                const id = this.getAttribute('data-id');
+                const car = this.getAttribute('data-car');
+                const rate = parseFloat(this.getAttribute('data-rate'));
+                const pickupLoc = this.getAttribute('data-pickup-loc');
+                const pickupDate = this.getAttribute('data-pickup-date');
+                const dropDate = this.getAttribute('data-drop-date');
+                const days = parseInt(this.getAttribute('data-days'));
+                const cost = parseFloat(this.getAttribute('data-cost'));
+                const status = this.getAttribute('data-status');
+                const created = this.getAttribute('data-created');
+                const gst = parseInt(this.getAttribute('data-gst') || '0');
+                const fee = parseInt(this.getAttribute('data-fee') || '0');
+
+                viewReceipt(id, car, rate, pickupLoc, pickupDate, dropDate, days, cost, status, created, gst, fee);
+            });
+        });
+
+        // Click listeners for Modify Dates buttons
+        document.querySelectorAll('.modify-dates-btn').forEach(btn => {
+            btn.addEventListener('click', function () {
+                const id = this.getAttribute('data-id');
+                const car = this.getAttribute('data-car');
+                const rate = parseFloat(this.getAttribute('data-rate'));
+                const pickupDate = this.getAttribute('data-pickup-date');
+                const dropDate = this.getAttribute('data-drop-date');
+
+                openModifyModal(id, car, rate, pickupDate, dropDate);
+            });
+        });
+
+        function openModifyModal(bookingId, carName, baseRate, pickupDate, dropDate) {
+            modifyBaseRate = baseRate;
+            const form = document.getElementById('modify-form');
+            form.action = `/booking-management/modify/${bookingId}/`;
+
+            const today = new Date();
+            const minPickupDate = formatDate(today);
+
+            document.getElementById('mod-pickup-date').value = pickupDate;
+            document.getElementById('mod-pickup-date').min = minPickupDate;
+
+            document.getElementById('mod-drop-date').value = dropDate;
+            document.getElementById('mod-drop-date').min = pickupDate;
+
+            calculateModifiedPrice();
+            openModal('modify-modal');
+        }
+
+        function formatDate(date) {
+            const y = date.getFullYear();
+            const m = String(date.getMonth() + 1).padStart(2, '0');
+            const d = String(date.getDate()).padStart(2, '0');
+            return `${y}-${m}-${d}`;
+        }
+
+        function calculateModifiedPrice() {
+            const pickupInput = document.getElementById('mod-pickup-date');
+            const dropInput = document.getElementById('mod-drop-date');
+
+            const pickupD = new Date(pickupInput.value);
+            if (isNaN(pickupD.getTime())) return;
+
+            const minDropDate = new Date(pickupD);
+            minDropDate.setDate(minDropDate.getDate() + 1);
+            dropInput.min = formatDate(minDropDate);
+
+            let dropD = new Date(dropInput.value);
+            if (isNaN(dropD.getTime()) || dropD <= pickupD) {
+                dropInput.value = formatDate(minDropDate);
+                dropD = minDropDate;
+            }
+
+            const timeDiff = dropD.getTime() - pickupD.getTime();
+            let days = Math.ceil(timeDiff / (1000 * 3600 * 24));
+
+            if (isNaN(days) || days < 1) days = 1;
+
+            const subtotal = modifyBaseRate * days;
+            const gst = 0;
+            const fee = 0;
+            const total = subtotal;
+
+            document.getElementById('mod-days-display').textContent = `${days} ${days === 1 ? 'Day' : 'Days'}`;
+            document.getElementById('mod-price-display').textContent = `₹${total.toLocaleString('en-IN')}`;
+
+            document.getElementById('mod-total-days-input').value = days;
+            document.getElementById('mod-total-cost-input').value = total;
+        }
+
+        function viewReceipt(bookingId, carName, baseRate, pickupLoc, pickupDate, dropDate, totalDays, totalCost, status, dateCreated, gst, fee) {
+            const subtotal = baseRate * totalDays;
+
+            const content = `
+                <div style="font-family:'Inter',sans-serif; color:#1e293b;">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
+                        <div>
+                            <h3 style="font-size:1.15rem; font-weight:800; color:var(--color-primary); margin-bottom:4px;">CARZO RENTALS</h3>
+                            <p style="font-size:0.78rem; color:#64748b; line-height:1.4;">Premium Car Rental Experience<br>support@carzo.com</p>
+                        </div>
+                        <div style="text-align:right;">
+                            <h4 style="font-size:0.95rem; font-weight:700; color:var(--color-black); margin-bottom:4px;">INVOICE</h4>
+                            <p style="font-size:0.75rem; color:#64748b;">ID: ${bookingId}<br>Created: ${dateCreated}</p>
+                        </div>
+                    </div>
+
+                    <div style="background:#f8fafc; border-radius:8px; padding:16px; margin-bottom:20px; border:1px solid #f1f5f9;">
+                        <div style="font-size:0.78rem; font-weight:700; text-transform:uppercase; color:#64748b; margin-bottom:8px;">Booking Item</div>
+                        <div style="font-size:1.05rem; font-weight:800; color:var(--color-black); margin-bottom:2px;">${carName}</div>
+                        <div style="font-size:0.8rem; color:#64748b;">${totalDays} Days Rental (Base Rate: ₹${baseRate.toLocaleString('en-IN')}/day)</div>
+                    </div>
+
+                    <div style="margin-bottom:20px;">
+                        <div style="font-size:0.78rem; font-weight:700; text-transform:uppercase; color:#64748b; margin-bottom:8px;">Itinerary Details</div>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; font-size:0.82rem;">
+                            <div>
+                                <strong style="display:block; margin-bottom:2px; color:var(--color-black);">Pickup</strong>
+                                <span style="color:#64748b;">${pickupLoc}</span><br>
+                                <span style="font-weight:600; color:var(--color-black);">${pickupDate}</span>
+                            </div>
+                            <div>
+                                <strong style="display:block; margin-bottom:2px; color:var(--color-black);">Drop-off</strong>
+                                <span style="color:#64748b;">Same as pickup</span><br>
+                                <span style="font-weight:600; color:var(--color-black);">${dropDate}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="border-top:1.5px solid #f1f5f9; padding-top:16px;">
+                        <div style="display:flex; justify-content:space-between; font-size:0.85rem; margin-bottom:6px; color:#64748b;">
+                            <span>Subtotal</span>
+                            <span>₹${subtotal.toLocaleString('en-IN')}</span>
+                        </div>
+                        ${gst > 0 ? `
+                        <div style="display:flex; justify-content:space-between; font-size:0.85rem; margin-bottom:6px; color:#64748b;">
+                            <span>GST (18%)</span>
+                            <span>₹${gst.toLocaleString('en-IN')}</span>
+                        </div>
+                        ` : ''}
+                        ${fee > 0 ? `
+                        <div style="display:flex; justify-content:space-between; font-size:0.85rem; margin-bottom:8px; color:#64748b;">
+                            <span>Service & Platform Fee</span>
+                            <span>₹${fee.toLocaleString('en-IN')}</span>
+                        </div>
+                        ` : ''}
+                        <div style="display:flex; justify-content:space-between; font-size:1.1rem; font-weight:800; color:var(--color-black); border-top:1.5px solid #f1f5f9; padding-top:10px;">
+                            <span>Total Cost</span>
+                            <span style="color:var(--color-primary);">₹${totalCost.toLocaleString('en-IN')}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('receipt-modal-content').innerHTML = content;
+            openModal('receipt-modal');
+        }
+
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('modal-overlay--show');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('modal-overlay--show');
+        }
+    </script>
+    <script src="{% static 'assets/script.js' %}"></script>
+</body>
+
+</html>

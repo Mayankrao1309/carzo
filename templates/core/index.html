@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Carzo - Explore available cars for rent in different locations. Luxury and premium car rentals.">
+    <title>Carzo — Cars for Rent</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'assets/styles.css' %}?v=1.3">
+</head>
+
+<body>
+
+    <!-- ===================== NAVBAR ===================== -->
+    <header class="navbar" id="navbar">
+        <div class="navbar__inner">
+            <a href="{% url 'carzo_core:index' %}" class="navbar__logo" id="logo">
+                <img src="{% static 'assets/logo.png' %}" alt="Carzo Logo" class="navbar__logo-img">
+                <span>Carzo</span>
+            </a>
+            <nav class="navbar__links" id="nav-links">
+                <a href="{% url 'carzo_core:index' %}" class="navbar__link navbar__link--active">Home</a>
+                <a href="{% url 'carzo_core:cars' %}" class="navbar__link">All Cars</a>
+                <a href="{% url 'carzo_core:list-car' %}" class="navbar__link">List Your Car</a>
+                <a href="{% url 'carzo_core:about' %}" class="navbar__link">About Us</a>
+                <a href="{% url 'carzo_core:contact' %}" class="navbar__link">Contact Us</a>
+            </nav>
+            <div class="navbar__actions">
+                {% if request.user.is_authenticated %}
+                <div class="navbar__profile-dropdown" id="profile-dropdown">
+                    <button class="navbar__profile-btn" id="profile-btn" aria-label="Profile Menu">
+                        <div class="navbar__profile-avatar" id="navbar-avatar">
+                            {% if request.user.avatar %}
+                                <img src="{{ request.user.avatar.url }}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" alt="Avatar">
+                            {% else %}
+                                {% if request.user.first_name or request.user.last_name %}{{ request.user.first_name|slice:":1"|upper }}{{ request.user.last_name|slice:":1"|upper }}{% else %}{{ request.user.username|slice:":2"|upper }}{% endif %}
+                            {% endif %}
+                        </div>
+                    </button>
+                    <div class="navbar__profile-menu" id="profile-menu">
+                        <div class="navbar__profile-header">
+                            <span class="navbar__profile-name" id="navbar-profile-name">{{ request.user.first_name }} {{ request.user.last_name }}</span>
+                            <span class="navbar__profile-email" id="navbar-profile-email">{{ request.user.email }}</span>
+                        </div>
+                        <div class="navbar__profile-divider"></div>
+                        {% if request.user.is_staff %}
+                        <a href="{% url 'useradmin:admin-panel' %}" class="navbar__profile-item"
+                            style="color:var(--color-primary); font-weight:700;">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="3" />
+                                <path
+                                    d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+                            </svg>
+                            Admin Panel
+                        </a>
+                        {% endif %}
+                        <a href="{% url 'carzo_core:dashboard' %}" class="navbar__profile-item">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+                                <circle cx="12" cy="7" r="4" />
+                            </svg>
+                            Profile
+                        </a>
+                        <a href="{% url 'carzo_core:booking-management' %}" class="navbar__profile-item">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect width="18" height="18" x="3" y="4" rx="2" ry="2" />
+                                <line x1="16" x2="16" y1="2" y2="6" />
+                                <line x1="8" x2="8" y1="2" y2="6" />
+                                <line x1="3" x2="21" y1="10" y2="10" />
+                            </svg>
+                            My Bookings
+                        </a>
+                        <a href="{% url 'userauths:logout' %}" class="navbar__profile-item">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                                <polyline points="16 17 21 12 16 7" />
+                                <line x1="21" x2="9" y1="12" y2="12" />
+                            </svg>
+                            Logout
+                        </a>
+                    </div>
+                </div>
+                {% else %}
+                <div class="navbar__auth" id="navbar-auth">
+                    <a href="{% url 'userauths:login' %}" class="btn-auth btn-auth--login">Log In</a>
+                    <a href="{% url 'userauths:signup' %}" class="btn-auth btn-auth--signup">Sign Up</a>
+                </div>
+                {% endif %}
+                <button class="navbar__icon-btn navbar__hamburger" id="hamburger" aria-label="Menu">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="3" y1="6" x2="21" y2="6" />
+                        <line x1="3" y1="12" x2="21" y2="12" />
+                        <line x1="3" y1="18" x2="21" y2="18" />
+                    </svg>
+                </button>
+            </div>
+    </header>
+
+    <!-- ===================== HERO ===================== -->
+    <section class="hero" id="hero">
+        <div class="hero__overlay"></div>
+        <div class="hero__content">
+            <h1 class="hero__title">Cars for Rent</h1>
+            <p class="hero__subtitle">Explore the available cars in different locations</p>
+
+            <!-- Hero Search Form -->
+            <form action="{% url 'carzo_core:cars' %}" method="GET" id="booking-bar" class="booking-bar">
+                <!-- Pickup Field -->
+                <div class="booking-bar__field" onclick="try { this.querySelector('.booking-bar__input--date').showPicker(); } catch(e) {}">
+                    <div class="booking-bar__icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect width="18" height="18" x="3" y="4" rx="2" ry="2" />
+                            <line x1="16" x2="16" y1="2" y2="6" />
+                            <line x1="8" x2="8" y1="2" y2="6" />
+                            <line x1="3" x2="21" y1="10" y2="10" />
+                        </svg>
+                    </div>
+                    <div class="booking-bar__info">
+                        <span class="booking-bar__label">Pickup Date<span class="booking-bar__label-time"> & Time</span></span>
+                        <div class="booking-bar__datetime">
+                            <input type="date" class="booking-bar__input booking-bar__input--date" name="pickup_date"
+                                required>
+                            <input type="time" class="booking-bar__input booking-bar__input--time" name="pickup_time"
+                                value="10:00" required onclick="event.stopPropagation();">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="booking-bar__divider"></div>
+
+                <!-- Drop-off Field -->
+                <div class="booking-bar__field" onclick="try { this.querySelector('.booking-bar__input--date').showPicker(); } catch(e) {}">
+                    <div class="booking-bar__icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect width="18" height="18" x="3" y="4" rx="2" ry="2" />
+                            <line x1="16" x2="16" y1="2" y2="6" />
+                            <line x1="8" x2="8" y1="2" y2="6" />
+                            <line x1="3" x2="21" y1="10" y2="10" />
+                        </svg>
+                    </div>
+                    <div class="booking-bar__info">
+                        <span class="booking-bar__label">Drop-off Date<span class="booking-bar__label-time"> & Time</span></span>
+                        <div class="booking-bar__datetime">
+                            <input type="date" class="booking-bar__input booking-bar__input--date" name="dropoff_date"
+                                required>
+                            <input type="time" class="booking-bar__input booking-bar__input--time" name="dropoff_time"
+                                value="10:00" required onclick="event.stopPropagation();">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Search Button -->
+                <button type="submit" class="booking-bar__btn" aria-label="Search">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8" />
+                        <path d="m21 21-4.3-4.3" />
+                    </svg>
+                    <span class="booking-bar__btn-text">Search Cars</span>
+                </button>
+            </form>
+
+            <div class="hero__cta-group">
+                <a href="#cars-section" class="btn-hero btn-hero--primary">Get Started</a>
+                <a href="{% url 'carzo_core:cars' %}" class="btn-hero btn-hero--secondary">All Cars</a>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ===================== SERVICES SECTION ===================== -->
+    <section class="services-section" id="services-section">
+        <div class="services-container">
+            <div class="section-header">
+                <h2 class="section-header__title">Our Premium Services</h2>
+                <p class="section-header__subtitle">We offer customized high-end car rental services tailored to meet
+                    all your premium transport requirements.</p>
+            </div>
+            <div class="services-grid">
+                <!-- Service 1 -->
+                <div class="service-card">
+                    <div class="service-card__icon-wrap">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path
+                                d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2" />
+                            <circle cx="7" cy="17" r="2" />
+                            <circle cx="17" cy="17" r="2" />
+                        </svg>
+                    </div>
+                    <h3 class="service-card__title">Luxury Fleet</h3>
+                    <p class="service-card__desc">Choose from our wide selection of luxury sedans, SUVs, and
+                        high-performance sports cars in pristine condition.</p>
+                </div>
+                <!-- Service 2 -->
+                <div class="service-card">
+                    <div class="service-card__icon-wrap">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect width="18" height="18" x="3" y="4" rx="2" ry="2" />
+                            <line x1="16" x2="16" y1="2" y2="6" />
+                            <line x1="8" x2="8" y1="2" y2="6" />
+                            <line x1="3" x2="21" y1="10" y2="10" />
+                        </svg>
+                    </div>
+                    <h3 class="service-card__title">Flexible Rental</h3>
+                    <p class="service-card__desc">Hourly, daily, weekly, or monthly luxury rental plans designed around
+                        your specific schedule and itinerary.</p>
+                </div>
+                <!-- Service 3 -->
+                <div class="service-card">
+                    <div class="service-card__icon-wrap">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" />
+                            <line x1="7" y1="7" x2="7.01" y2="7" />
+                        </svg>
+                    </div>
+                    <h3 class="service-card__title">Affordable Prices</h3>
+                    <p class="service-card__desc">Premium luxury cars at highly competitive rates, offering you the best value without compromising on quality.</p>
+                </div>
+                <!-- Service 4 -->
+                <div class="service-card">
+                    <div class="service-card__icon-wrap">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2" />
+                            <circle cx="7" cy="17" r="2" />
+                            <circle cx="15" cy="17" r="2" />
+                            <line x1="19" y1="5" x2="19" y2="11" />
+                            <line x1="16" y1="8" x2="22" y2="8" />
+                        </svg>
+                    </div>
+                    <h3 class="service-card__title">List Your Car</h3>
+                    <p class="service-card__desc">Earn passive income by listing your own premium vehicle on our platform. We ensure safe rentals and verified drivers.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===================== DYNAMIC SEARCH, FILTERS & CAR GRID ===================== -->
+    <section class="cars" id="cars-section" style="padding: 60px 16px 80px;">
+        <div style="max-width: var(--container-max); margin: 0 auto;">
+
+            <!-- Top Sellers Heading -->
+            <div class="section-header" style="margin-bottom: 48px;">
+                <h2 class="section-header__title">Top Sellers</h2>
+                <p class="section-header__subtitle">Explore our most popular and highly-rated vehicles available for
+                    rent.</p>
+            </div>
+
+            <!-- Dynamic Cars Grid -->
+            <div class="cars__grid" id="cars-grid-container">
+                <!-- Populate dynamically from JS -->
+            </div>
+
+        </div>
+    </section>
+
+
+
+    <!-- ===================== REVIEWS SECTION ===================== -->
+    <section class="reviews-section" id="reviews-section">
+        <div class="reviews-container">
+            <div class="section-header">
+                <h2 class="section-header__title">Our First Customer Reviews</h2>
+                <p class="section-header__subtitle">See what our very first customers have to say about their rental
+                    experience with Carzo.</p>
+            </div>
+            <div class="reviews-grid">
+                <!-- Review 1 -->
+                <div class="review-card">
+                    <div>
+                        <div class="review-card__stars">
+                            ★★★★★
+                        </div>
+                        <p class="review-card__text">"Outstanding service! The booking was finished in minutes and the
+                            Mitsubishi was spotless. Will definitely hire from them again."</p>
+                    </div>
+                    <div class="review-card__user">
+                        <div class="review-card__avatar"
+                            style="background:var(--color-primary); color:var(--color-white); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.9rem;">
+                            MS</div>
+                        <div class="review-card__info">
+                            <h4 class="review-card__name">Mayan Sharma</h4>
+                            <span class="review-card__loc">Delhi, India (Verified Customer)</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- Review 2 -->
+                <div class="review-card">
+                    <div>
+                        <div class="review-card__stars">
+                            ★★★★★
+                        </div>
+                        <p class="review-card__text">"Renting the Tesla Model Y was an absolute dream. Dynamic electric
+                            drive and transparent billing. Highly recommended!"</p>
+                    </div>
+                    <div class="review-card__user">
+                        <div class="review-card__avatar"
+                            style="background:var(--color-secondary); color:var(--color-white); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.9rem;">
+                            PP</div>
+                        <div class="review-card__info">
+                            <h4 class="review-card__name">Priya Patel</h4>
+                            <span class="review-card__loc">Mumbai, India (Verified Customer)</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- Review 3 -->
+                <div class="review-card">
+                    <div>
+                        <div class="review-card__stars">
+                            ★★★★★
+                        </div>
+                        <p class="review-card__text">"The Chauffeur driven Range Rover was perfect for our executive
+                            event. Punctual driver and luxurious interior."</p>
+                    </div>
+                    <div class="review-card__user">
+                        <div class="review-card__avatar"
+                            style="background:var(--color-accent); color:var(--color-white); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.9rem;">
+                            RG</div>
+                        <div class="review-card__info">
+                            <h4 class="review-card__name">Rohan Gupta</h4>
+                            <span class="review-card__loc">Bangalore, India (Verified Customer)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===================== FAQ SECTION ===================== -->
+    <section class="faq-section" id="faq-section" style="padding: 80px 16px; background: var(--color-white);">
+        <div style="max-width: 800px; margin: 0 auto;">
+            <h2
+                style="text-align: center; font-size: 2.2rem; font-weight: 800; color: var(--color-black); margin-bottom: 12px; letter-spacing: -0.02em;">
+                Frequently Asked Questions</h2>
+            <p
+                style="text-align: center; color: var(--color-text-secondary); margin-bottom: 48px; font-weight: 500; font-size: 0.95rem;">
+                Got questions about our services? Here are the most common inquiries.</p>
+
+            <div class="faq-accordion" style="display: flex; flex-direction: column; gap: 16px;">
+                <!-- FAQ Item 1 -->
+                <div class="faq-item"
+                    style="border: 1px solid var(--color-border-light); border-radius: 12px; overflow: hidden; background: var(--color-bg); transition: all 0.3s ease;">
+                    <button class="faq-toggle" onclick="toggleFaq(this)"
+                        style="width: 100%; padding: 22px 24px; display: flex; justify-content: space-between; align-items: center; background: none; border: none; outline: none; cursor: pointer; text-align: left; font-size: 1.05rem; font-weight: 700; color: var(--color-black); gap: 16px; transition: all 0.2s ease;">
+                        <span>How does the booking process work?</span>
+                        <span class="faq-icon"
+                            style="font-size: 1.2rem; transition: transform 0.3s ease; color: var(--color-primary);">+</span>
+                    </button>
+                    <div class="faq-content"
+                        style="max-height: 0; overflow: hidden; transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1); background: var(--color-white);">
+                        <p
+                            style="padding: 0 24px 22px; margin: 0; font-size: 0.92rem; color: var(--color-text-secondary); line-height: 1.6; font-weight: 500;">
+                            Simply browse our fleet of luxury cars, select the vehicle you desire, fill out your pickup
+                            location and mobile details in the checkout form, and complete the simulated payment. You
+                            will receive a confirmation call shortly after!
+                        </p>
+                    </div>
+                </div>
+
+                <!-- FAQ Item 2 -->
+                <div class="faq-item"
+                    style="border: 1px solid var(--color-border-light); border-radius: 12px; overflow: hidden; background: var(--color-bg); transition: all 0.3s ease;">
+                    <button class="faq-toggle" onclick="toggleFaq(this)"
+                        style="width: 100%; padding: 22px 24px; display: flex; justify-content: space-between; align-items: center; background: none; border: none; outline: none; cursor: pointer; text-align: left; font-size: 1.05rem; font-weight: 700; color: var(--color-black); gap: 16px; transition: all 0.2s ease;">
+                        <span>What documents do I need to bring at handover?</span>
+                        <span class="faq-icon"
+                            style="font-size: 1.2rem; transition: transform 0.3s ease; color: var(--color-primary);">+</span>
+                    </button>
+                    <div class="faq-content"
+                        style="max-height: 0; overflow: hidden; transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1); background: var(--color-white);">
+                        <p
+                            style="padding: 0 24px 22px; margin: 0; font-size: 0.92rem; color: var(--color-text-secondary); line-height: 1.6; font-weight: 500;">
+                            It is mandatory to bring your physical Aadhaar Card and a valid driving license for
+                            verification during key handover. The host will check these documents before releasing the
+                            vehicle.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- FAQ Item 3 -->
+                <div class="faq-item"
+                    style="border: 1px solid var(--color-border-light); border-radius: 12px; overflow: hidden; background: var(--color-bg); transition: all 0.3s ease;">
+                    <button class="faq-toggle" onclick="toggleFaq(this)"
+                        style="width: 100%; padding: 22px 24px; display: flex; justify-content: space-between; align-items: center; background: none; border: none; outline: none; cursor: pointer; text-align: left; font-size: 1.05rem; font-weight: 700; color: var(--color-black); gap: 16px; transition: all 0.2s ease;">
+                        <span>Can I cancel or reschedule my booking?</span>
+                        <span class="faq-icon"
+                            style="font-size: 1.2rem; transition: transform 0.3s ease; color: var(--color-primary);">+</span>
+                    </button>
+                    <div class="faq-content"
+                        style="max-height: 0; overflow: hidden; transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1); background: var(--color-white);">
+                        <p
+                            style="padding: 0 24px 22px; margin: 0; font-size: 0.92rem; color: var(--color-text-secondary); line-height: 1.6; font-weight: 500;">
+                            Yes, you can manage your bookings directly from your Dashboard. You can reschedule or cancel
+                            a booking up until the vehicle status has been toggled to "Delivered" by the admin, which
+                            freezes any further changes.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- FAQ Item 4 -->
+                <div class="faq-item"
+                    style="border: 1px solid var(--color-border-light); border-radius: 12px; overflow: hidden; background: var(--color-bg); transition: all 0.3s ease;">
+                    <button class="faq-toggle" onclick="toggleFaq(this)"
+                        style="width: 100%; padding: 22px 24px; display: flex; justify-content: space-between; align-items: center; background: none; border: none; outline: none; cursor: pointer; text-align: left; font-size: 1.05rem; font-weight: 700; color: var(--color-black); gap: 16px; transition: all 0.2s ease;">
+                        <span>What is covered under the rental rate?</span>
+                        <span class="faq-icon"
+                            style="font-size: 1.2rem; transition: transform 0.3s ease; color: var(--color-primary);">+</span>
+                    </button>
+                    <div class="faq-content"
+                        style="max-height: 0; overflow: hidden; transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1); background: var(--color-white);">
+                        <p
+                            style="padding: 0 24px 22px; margin: 0; font-size: 0.92rem; color: var(--color-text-secondary); line-height: 1.6; font-weight: 500;">
+                            The rental price shown includes the vehicle daily rate, 18% GST, and a flat ₹250 service
+                            fee. Fuel costs are typically borne by the renter unless stated otherwise in the vehicle
+                            specific rules.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===================== FOOTER ===================== -->
+    <footer class="footer" id="footer">
+        <div class="footer__inner">
+            <div class="footer__top">
+                <!-- Brand column -->
+                <div class="footer__brand">
+                    <a href="{% url 'carzo_core:index' %}" class="footer__logo">
+                        <span>Carzo</span>
+                    </a>
+                    <p class="footer__tagline">
+                        Discover the best rental cars and experience premium driving effortlessly.
+                    </p>
+                    <div class="footer__socials">
+                        <a href="https://wa.me/919999999999"
+                            class="footer__social" aria-label="WhatsApp" target="_blank" rel="noopener noreferrer">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.746.953 3.71 1.455 5.703 1.458h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" fill="currentColor"/>
+                            </svg>
+                        </a>
+                        <a href="https://www.instagram.com/carzorentals?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw=="
+                            class="footer__social" aria-label="Instagram" target="_blank" rel="noopener noreferrer">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Links columns -->
+                <div class="footer__links-group">
+                    <!-- Column 1: Shop -->
+                    <div class="footer__col">
+                        <h3 class="footer__col-title">Shop</h3>
+                        <ul class="footer__col-list">
+                            <li><a href="{% url 'carzo_core:index' %}">Home</a></li>
+                            <li><a href="{% url 'carzo_core:cars' %}">Rent Luxury Cars</a></li>
+                            <li><a href="{% url 'carzo_core:list-car' %}">List Your Car</a></li>
+                            <li><a href="{% url 'carzo_core:contact' %}">Contact Us</a></li>
+                        </ul>
+                    </div>
+                    <!-- Column 2: Help -->
+                    <div class="footer__col">
+                        <h3 class="footer__col-title">Help</h3>
+                        <ul class="footer__col-list">
+                            <li><a href="{% url 'carzo_core:index' %}#faq-section">FAQ</a></li>
+                            <li><a href="{% url 'carzo_core:about' %}">About Us</a></li>
+                            <li><a href="{% url 'carzo_core:contact' %}">Contact</a></li>
+                        </ul>
+                    </div>
+                    <!-- Column 3: Legal -->
+                    <div class="footer__col">
+                        <h3 class="footer__col-title">Legal</h3>
+                        <ul class="footer__col-list">
+                            <li><a href="#">Privacy Policy</a></li>
+                            <li><a href="#">Terms & Conditions</a></li>
+                            <li><a href="{% url 'useradmin:admin-panel' %}">Admin</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="footer__bottom">
+                <p>&copy; 2026 Carzo. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script id="cars-data" type="application/json">
+        [
+            {% for car in cars %}
+            {
+                "id": "{{ car.car_id }}",
+                "name": "{{ car.brand }} {{ car.model }}",
+                "carName": "{{ car.brand }}",
+                "priceDay": {{ car.price_day }},
+                "priceMonth": {% if car.price_month %}{{ car.price_month }}{% else %}0{% endif %},
+                "passengers": {{ car.passengers }},
+                "fuelType": "{{ car.fuel_type }}",
+                "category": "{{ car.category.name }}",
+                "subcategory": "{{ car.subcategory.name|default:'Standard' }}",
+                "ownerName": "{{ car.owner.name }}",
+                "ownerPhone": "{{ car.owner.phone }}",
+                "available": {% if car.available %}true{% else %}false{% endif %},
+                "image": "{% if '/' in car.image.name %}{{ car.image.url }}{% else %}{% static 'assets/' %}{{ car.image.name }}{% endif %}",
+                "isPlaceholder": {% if car.is_placeholder %}true{% else %}false{% endif %},
+                "colorCode": "{{ car.color_code }}"
+            }{% if not forloop.last %},{% endif %}
+            {% endfor %}
+        ]
+    </script>
+    <script id="categories-data" type="application/json">
+        [
+            {% for cat in categories %}
+            {
+                "name": "{{ cat.name }}",
+                "subcategories": [
+                    {% for sub in cat.subcategories.all %}
+                    "{{ sub.name }}"{% if not forloop.last %},{% endif %}
+                    {% endfor %}
+                ]
+            }{% if not forloop.last %},{% endif %}
+            {% endfor %}
+        ]
+    </script>
+
+    <script src="{% static 'assets/script.js' %}?v=1.1"></script>
+    <script>
+        let carsDb = JSON.parse(document.getElementById('cars-data').textContent);
+        let categoriesList = JSON.parse(document.getElementById('categories-data').textContent);
+        let selectedCategory = '';
+        let selectedSubcategory = '';
+        let searchQuery = '';
+
+        window.addEventListener('DOMContentLoaded', () => {
+            renderCategories();
+            renderCarGrid();
+        });
+
+        function renderCategories() {
+            const parentRow = document.getElementById('parent-categories-row');
+            if (!parentRow) return;
+
+            let parentHtml = `
+                <button onclick="filterParent('')" class="hero__pill ${selectedCategory === '' ? 'hero__pill--active' : ''}" style="margin-bottom: 8px;">
+                    All Classifications
+                </button>
+            `;
+
+            categoriesList.forEach(cat => {
+                parentHtml += `
+                    <button onclick="filterParent('${cat.name}')" class="hero__pill ${selectedCategory === cat.name ? 'hero__pill--active' : ''}" style="margin-bottom: 8px;">
+                        ${cat.name}
+                    </button>
+                `;
+            });
+            parentRow.innerHTML = parentHtml;
+
+            const subRow = document.getElementById('subcategory-filters-row');
+            if (!subRow) return;
+
+            if (selectedCategory === '') {
+                subRow.innerHTML = '';
+                subRow.style.minHeight = '0px';
+                return;
+            }
+
+            subRow.style.minHeight = '40px';
+            const activeCat = categoriesList.find(c => c.name === selectedCategory);
+            let subHtml = '';
+
+            if (activeCat && activeCat.subcategories) {
+                subHtml += `
+                    <button onclick="filterSub('')" class="hero__pill ${selectedSubcategory === '' ? 'hero__pill--active' : ''}" style="padding: 6px 16px; font-size: 0.78rem;">
+                        All ${selectedCategory}
+                    </button>
+                `;
+                activeCat.subcategories.forEach(sub => {
+                    subHtml += `
+                        <button onclick="filterSub('${sub}')" class="hero__pill ${selectedSubcategory === sub ? 'hero__pill--active' : ''}" style="padding: 6px 16px; font-size: 0.78rem;">
+                            ${sub}
+                        </button>
+                    `;
+                });
+            }
+            subRow.innerHTML = subHtml;
+        }
+
+        function filterParent(catName) {
+            selectedCategory = catName;
+            selectedSubcategory = '';
+            renderCategories();
+            renderCarGrid();
+        }
+
+        function filterSub(subName) {
+            selectedSubcategory = subName;
+            renderCategories();
+            renderCarGrid();
+        }
+
+        function handleSearchFilter() {
+            const searchInput = document.getElementById('global-search-input');
+            if (searchInput) {
+                searchQuery = searchInput.value.toLowerCase().trim();
+                renderCarGrid();
+            }
+        }
+
+        function renderCarGrid() {
+            const grid = document.getElementById('cars-grid-container');
+            if (!grid) return;
+
+            const filtered = carsDb.filter(car => {
+                if (selectedCategory !== '' && car.category !== selectedCategory) return false;
+                if (selectedSubcategory !== '' && car.subcategory !== selectedSubcategory) return false;
+
+                if (searchQuery !== '') {
+                    const nameMatch = car.name.toLowerCase().includes(searchQuery);
+                    const modelMatch = car.carName.toLowerCase().includes(searchQuery);
+                    const fuelMatch = car.fuelType.toLowerCase().includes(searchQuery);
+                    const catMatch = car.category.toLowerCase().includes(searchQuery);
+                    return nameMatch || modelMatch || fuelMatch || catMatch;
+                }
+                return true;
+            });
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 48px; background: var(--color-white); border-radius: var(--radius-xl); border: 1px solid var(--color-border-light);">
+                        <div style="font-size: 2.5rem; margin-bottom: 12px;">📂</div>
+                        <p style="color: var(--color-text-secondary); font-weight: 500;">No available vehicles match your search or filters.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            filtered.forEach(car => {
+                let imgTag = '';
+                if (car.isPlaceholder) {
+                    imgTag = `<div class="detail__image-placeholder" style="background:${car.colorCode || '#2c3e50'}; width: 100%; height: 100%; border-radius: var(--radius-xl);"></div>`;
+                } else {
+                    imgTag = `<img src="${car.image}" alt="${car.name}" class="car-card__img">`;
+                }
+
+                let badgeClass = 'car-card__badge--petrol';
+                if (car.fuelType.toLowerCase() === 'electric') badgeClass = 'car-card__badge--electric';
+                if (car.fuelType.toLowerCase() === 'cng') badgeClass = 'car-card__badge--cng';
+                if (car.fuelType.toLowerCase() === 'diesel') badgeClass = 'car-card__badge--diesel';
+
+                html += `
+                    <article class="car-card" id="${car.id}">
+                        <a href="/cars/${car.id}/" class="car-card__link-overlay" aria-label="View details for ${car.name}"></a>
+                        <div class="car-card__image-container" style="position: relative;">
+                            <span class="car-card__badge ${badgeClass}">${car.fuelType}</span>
+                            ${!car.available ? `
+                            <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 1.1rem; z-index: 10; letter-spacing: 0.05em; backdrop-filter: blur(2px);">
+                                NOT AVAILABLE
+                            </div>
+                            ` : ''}
+                            <div class="car-card__image">
+                                ${imgTag}
+                            </div>
+                        </div>
+                        <div class="car-card__body">
+                            <h2 class="car-card__name">${car.name}</h2>
+
+                            <div class="car-card__specs-row">
+                                <div class="car-card__spec-item">
+                                    <svg class="car-card__spec-icon" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+                                        <circle cx="12" cy="7" r="4" />
+                                    </svg>
+                                    <span>${car.passengers} Seater</span>
+                                </div>
+                                <div class="car-card__spec-item">
+                                    <svg class="car-card__spec-icon" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <circle cx="12" cy="12" r="10" />
+                                        <line x1="12" y1="2" x2="12" y2="22" />
+                                        <line x1="2" y1="12" x2="22" y2="12" />
+                                        <path d="m16.2 7.8-8.4 8.4" />
+                                    </svg>
+                                    <span>${car.fuelType === 'Electric' ? 'Automatic' : 'Manual'}</span>
+                                </div>
+                            </div>
+
+                            <div class="car-card__price-tag">Starting at ₹${car.priceDay.toLocaleString('en-IN')}/Day</div>
+
+                            <div class="car-card__actions">
+                                <a href="/cars/${car.id}/" class="car-btn car-btn--details">Details</a>
+                                ${car.available ? `
+                                    <a href="/booking/${car.id}/" class="car-btn car-btn--book">Book Now</a>
+                                ` : `
+                                    <button class="car-btn" style="background: #e2e8f0; color: #949eb5; cursor: not-allowed;" disabled>Unavailable</button>
+                                `}
+                            </div>
+                        </div>
+                    </article>
+                `;
+            });
+            grid.innerHTML = html;
+            setupTiltAnimation();
+        }
+
+        function setupTiltAnimation() {
+            const cards = document.querySelectorAll('.car-card');
+            cards.forEach(card => {
+                card.addEventListener('mousemove', (e) => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    const centerX = rect.width / 2;
+                    const centerY = rect.height / 2;
+                    const rotateX = ((y - centerY) / centerY) * -1.5;
+                    const rotateY = ((x - centerX) / centerX) * 1.5;
+                    card.style.transform = `translateY(-4px) perspective(800px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+                });
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = 'translateY(0) perspective(800px) rotateX(0) rotateY(0)';
+                    card.style.transition = 'transform 0.4s ease';
+                });
+                card.addEventListener('mouseenter', () => {
+                    card.style.transition = 'transform 0.15s ease';
+                });
+            });
+        }
+
+        function toggleFaq(button) {
+            const faqItem = button.parentElement;
+            const content = faqItem.querySelector('.faq-content');
+            const icon = button.querySelector('.faq-icon');
+
+            // Toggle active state on item
+            const isActive = faqItem.classList.contains('faq-item--active');
+
+            // Close all items first (accordion style)
+            document.querySelectorAll('.faq-item').forEach(item => {
+                item.classList.remove('faq-item--active');
+                item.style.borderColor = 'var(--color-border-light)';
+                item.style.background = 'var(--color-bg)';
+                const itemContent = item.querySelector('.faq-content');
+                if (itemContent) itemContent.style.maxHeight = '0px';
+                const itemIcon = item.querySelector('.faq-icon');
+                if (itemIcon) {
+                    itemIcon.textContent = '+';
+                    itemIcon.style.transform = 'rotate(0deg)';
+                }
+            });
+
+            if (!isActive) {
+                faqItem.classList.add('faq-item--active');
+                faqItem.style.borderColor = 'var(--color-primary)';
+                faqItem.style.background = 'var(--color-white)';
+                content.style.maxHeight = content.scrollHeight + 'px';
+                icon.textContent = '−';
+                icon.style.transform = 'rotate(180deg)';
+            }
+        }
+    </script>
+</body>
+
+</html>

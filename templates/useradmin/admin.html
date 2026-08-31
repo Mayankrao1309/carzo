@@ -1,0 +1,2381 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Carzo Admin Control Panel. Fleet management, customer details, and system statistics.">
+    <title>Carzo Control Panel — Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'assets/styles.css' %}">
+    <style>
+        /* Admin specific styles overriding/complementing styles.css */
+        :root {
+            --color-admin-sidebar: #0f172a;
+            --color-admin-sidebar-active: #eb670e;
+            --color-success-bg: #d1fae5;
+            --color-success-text: #065f46;
+            --color-danger-bg: #fee2e2;
+            --color-danger-text: #991b1b;
+        }
+
+        .text-success-custom {
+            color: var(--color-success-text) !important;
+        }
+
+        .text-secondary-custom {
+            color: var(--color-text-secondary) !important;
+        }
+
+        .text-danger-custom {
+            color: var(--color-danger-text) !important;
+        }
+
+        body {
+            background-color: #f8fafc;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .admin-layout {
+            display: flex;
+            flex: 1;
+            padding-top: var(--navbar-height);
+        }
+
+        /* Fixed Sidebar Navigation */
+        .admin-sidebar {
+            width: 260px;
+            background: var(--color-admin-sidebar);
+            color: #94a3b8;
+            position: fixed;
+            top: var(--navbar-height);
+            bottom: 0;
+            left: 0;
+            padding: 24px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            z-index: 99;
+            transition: transform var(--transition-base);
+        }
+
+        .admin-sidebar-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.15);
+        }
+
+        .admin-avatar {
+            width: 44px;
+            height: 44px;
+            background: var(--color-primary);
+            color: var(--color-white);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1rem;
+            box-shadow: 0 4px 10px rgba(235, 103, 14, 0.2);
+        }
+
+        .admin-profile-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .admin-profile-name {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--color-white);
+        }
+
+        .admin-profile-role {
+            font-size: 0.72rem;
+            color: #64748b;
+            font-weight: 600;
+        }
+
+        .admin-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            flex: 1;
+        }
+
+        .admin-menu-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: var(--radius-sm);
+            font-size: 0.88rem;
+            font-weight: 500;
+            color: #94a3b8;
+            transition: all var(--transition-fast);
+            cursor: pointer;
+        }
+
+        .admin-menu-link:hover {
+            color: var(--color-white);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .admin-menu-link--active {
+            color: var(--color-white) !important;
+            background: var(--color-primary) !important;
+            box-shadow: 0 4px 12px rgba(235, 103, 14, 0.25);
+        }
+
+        /* Main Workspace Container */
+        .admin-workspace {
+            flex: 1;
+            margin-left: 260px;
+            padding: 32px 40px;
+            transition: margin var(--transition-base);
+            min-width: 0;
+        }
+
+        .admin-section {
+            display: none;
+            animation: fadeIn 0.4s ease forwards;
+        }
+
+        .admin-section--active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Sub-view Headers */
+        .admin-header {
+            margin-bottom: 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .admin-title {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: var(--color-black);
+            letter-spacing: -0.02em;
+        }
+
+        .admin-subtitle {
+            font-size: 0.88rem;
+            color: var(--color-text-secondary);
+            margin-top: 4px;
+        }
+
+        /* Metric Cards Grid */
+        .admin-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .admin-stat-card {
+            background: var(--color-white);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+            border: 1px solid var(--color-border-light);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .admin-stat-val {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--color-black);
+            line-height: 1;
+        }
+
+        .admin-stat-label {
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--color-text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* Data Tables Styling */
+        .admin-table-card {
+            background: var(--color-white);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--color-border-light);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+            overflow: hidden;
+            margin-bottom: 24px;
+        }
+
+        .admin-table-container {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        .admin-table th {
+            background: #f8fafc;
+            padding: 16px 24px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #64748b;
+            letter-spacing: 0.05em;
+            border-bottom: 1px solid var(--color-border-light);
+        }
+
+        .admin-table td {
+            padding: 16px 24px;
+            font-size: 0.88rem;
+            color: var(--color-text);
+            border-bottom: 1px solid var(--color-border-light);
+            vertical-align: middle;
+        }
+
+        .admin-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .admin-table tr:hover td {
+            background-color: #fafbfc;
+        }
+
+        /* Indicator Badges */
+
+        .status-badge {
+            display: inline-flex;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: capitalize;
+        }
+
+        .status-badge--confirmed {
+            background: #eff6ff;
+            color: #1d4ed8;
+        }
+
+        .status-badge--delivered {
+            background: var(--color-success-bg);
+            color: var(--color-success-text);
+        }
+
+        .status-badge--cancelled {
+            background: var(--color-danger-bg);
+            color: var(--color-danger-text);
+        }
+
+        /* Action Buttons */
+        .admin-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            transition: all var(--transition-fast);
+            cursor: pointer;
+        }
+
+        .admin-btn--primary {
+            background: var(--color-primary);
+            color: var(--color-white);
+            box-shadow: 0 4px 12px rgba(235, 103, 14, 0.2);
+        }
+
+        .admin-btn--primary:hover {
+            background: #c75608;
+            transform: translateY(-1px);
+        }
+
+        .admin-btn--secondary {
+            background: #f1f5f9;
+            color: #334155;
+            border: 1px solid #e2e8f0;
+        }
+
+        .admin-btn--secondary:hover {
+            background: #e2e8f0;
+        }
+
+        .admin-btn--danger {
+            background: var(--color-danger-bg);
+            color: var(--color-danger-text);
+            border: 1px solid #fca5a5;
+        }
+
+        .admin-btn--danger:hover {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        .admin-btn--success {
+            background: var(--color-success-bg);
+            color: var(--color-success-text);
+            border: 1px solid #6ee7b7;
+        }
+
+        .admin-btn--success:hover {
+            background: #a7f3d0;
+        }
+
+        .admin-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        /* Forms Layout */
+        .admin-form-card {
+            background: var(--color-white);
+            border-radius: var(--radius-lg);
+            padding: 32px;
+            border: 1px solid var(--color-border-light);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+            margin-bottom: 24px;
+        }
+
+        .form-grid-three {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-grid-two {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-block {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-block--full {
+            grid-column: 1 / -1;
+        }
+
+        .form-radio-group {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            height: 42px;
+        }
+
+        .form-radio-label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.88rem;
+            cursor: pointer;
+        }
+
+        /* Availability Interactive Toggle Switch */
+        .switch-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .switch-label {
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: var(--color-text);
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 26px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #cbd5e1;
+            transition: .3s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .3s;
+            border-radius: 50%;
+        }
+
+        input:checked+.slider {
+            background-color: var(--color-success-text);
+        }
+
+        input:checked+.slider:before {
+            transform: translateX(24px);
+        }
+
+        /* Category Configuration panel */
+        .category-config-panel {
+            background: #f8fafc;
+            border: 1px dashed #cbd5e1;
+            padding: 24px;
+            border-radius: var(--radius-md);
+            margin-top: 32px;
+        }
+
+        /* Mobile Hamburger & Header elements for Admin */
+        .admin-hamburger {
+            display: none;
+            color: var(--color-black);
+        }
+
+        /* Modal Overrides */
+        .modal-overlay {
+            z-index: 2000;
+            align-items: flex-start;
+        }
+
+        /* Ensure tall modals (car/owner forms) scroll properly */
+        #admin-car-modal .modal-card,
+        #admin-owner-modal .modal-card {
+            max-height: calc(100vh - 80px);
+            overflow-y: auto;
+            margin: 0 auto;
+        }
+
+        /* Interactive list thumbnails */
+        .car-thumb-cell {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .car-thumb-img {
+            width: 60px;
+            height: 40px;
+            object-fit: contain;
+            background: #f8fafc;
+            border-radius: 6px;
+            padding: 4px;
+            border: 1px solid #e2e8f0;
+        }
+
+        /* Responsive Breakpoints */
+        @media (max-width: 1024px) {
+            .admin-sidebar {
+                transform: translateX(-100%);
+            }
+
+            .admin-sidebar--open {
+                transform: translateX(0);
+            }
+
+            .admin-workspace {
+                margin-left: 0;
+                padding: 24px 16px;
+                width: 100%;
+            }
+
+            .admin-hamburger {
+                display: flex;
+            }
+        }
+
+        @media (max-width: 768px) {
+
+            .form-grid-three,
+            .form-grid-two {
+                grid-template-columns: 1fr;
+            }
+
+            .admin-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .admin-header .admin-btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .admin-topbar {
+                padding: 0 16px;
+            }
+
+            .admin-topbar-center {
+                display: none;
+            }
+
+            .modal-card {
+                width: 90% !important;
+                padding: 24px 16px !important;
+            }
+
+            .admin-workspace {
+                padding: 16px 12px !important;
+            }
+
+            .admin-form-card {
+                padding: 20px 16px !important;
+            }
+
+            .admin-table th,
+            .admin-table td {
+                padding: 12px 10px !important;
+                font-size: 0.8rem !important;
+            }
+
+            .admin-table-container {
+                -webkit-overflow-scrolling: touch;
+            }
+
+            #view-dashboard .admin-table {
+                min-width: 500px;
+            }
+
+            #view-admins .admin-table {
+                min-width: 800px;
+            }
+
+            #view-customers .admin-table {
+                min-width: 800px;
+            }
+
+            #view-bookings .admin-table {
+                min-width: 1000px;
+            }
+
+            #view-cars .admin-table {
+                min-width: 900px;
+            }
+
+            #view-owners .admin-table {
+                min-width: 800px;
+            }
+
+            .admin-form-card form button[type="submit"] {
+                width: 100% !important;
+                justify-content: center !important;
+            }
+
+            .admin-form-card form div[style*="display:flex"] {
+                display: block !important;
+            }
+
+            .admin-topbar-left .navbar__logo span {
+                font-size: 1.1rem !important;
+            }
+
+            .admin-topbar-left .navbar__logo span span {
+                font-size: 0.65rem !important;
+                padding: 1px 6px !important;
+            }
+        }
+
+        /* Specialized Admin Topbar */
+        .admin-topbar {
+            height: 70px;
+            background: #ffffff;
+            border-bottom: 1px solid #e2e8f0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 10px;
+            z-index: 1000;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
+        }
+
+        .admin-topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .admin-topbar-center {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--color-black);
+            letter-spacing: -0.01em;
+        }
+
+        .admin-topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .admin-topbar-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: 3.5px solid #eb670e;
+            /* Orange border highlight! */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            background: var(--color-primary);
+            color: var(--color-white);
+            overflow: hidden;
+            font-size: 0.95rem;
+            box-shadow: 0 2px 8px rgba(235, 103, 14, 0.15);
+        }
+
+        /* Adjust Layout and Sidebar for 70px top topbar height */
+        .admin-layout {
+            padding-top: 70px;
+        }
+
+        .admin-sidebar {
+            top: 70px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ===================== NAVBAR ===================== -->
+    <!-- ===================== ADMIN TOPBAR ===================== -->
+    <header class="admin-topbar">
+        <div class="admin-topbar-left">
+            <button class="navbar__icon-btn admin-hamburger" id="admin-hamburger-btn" aria-label="Toggle Sidebar Menu"
+                style="color:var(--color-black); margin-right: 8px;">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <line x1="3" x2="21" y1="6" y2="6" />
+                    <line x1="3" x2="21" y1="12" y2="12" />
+                    <line x1="3" x2="21" y1="18" y2="18" />
+                </svg>
+            </button>
+            <a href="{% url 'carzo_core:index' %}" class="navbar__logo" id="logo"
+                style="display: flex; align-items: center; gap: 8px; text-decoration: none;">
+                <div
+                    style="display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 8px; overflow: hidden; flex-shrink: 0;">
+                    <img src="{% static 'assets/logo.png' %}" alt="Carzo Logo"
+                        style="max-width: 100%; max-height: 100%; object-fit: contain;">
+                </div>
+                <span style="color: var(--color-black); font-weight: 800; font-size: 1.25rem;">Carzo <span
+                        style="font-size:0.72rem; font-weight:700; background:rgba(0,0,0,0.06); padding:2px 8px; border-radius:100px; margin-left:4px; vertical-align:middle; color:var(--color-primary)">Admin</span></span>
+            </a>
+        </div>
+
+        <div class="admin-topbar-center" id="admin-topbar-name">
+            {{ request.user.first_name|default:request.user.email }}
+        </div>
+
+        <div class="admin-topbar-right">
+            <div class="admin-topbar-avatar" id="admin-topbar-avatar">
+                {% if request.user.avatar %}
+                <img src="{{ request.user.avatar.url }}"
+                    style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" alt="Avatar">
+                {% else %}
+                {{ request.user.get_initials }}
+                {% endif %}
+            </div>
+        </div>
+    </header>
+
+    <!-- ===================== WORKSPACE LAYOUT ===================== -->
+    <div class="admin-layout">
+
+        <!-- Sidebar Navigation -->
+        <aside class="admin-sidebar" id="admin-sidebar">
+            <div class="admin-sidebar-profile">
+                <div class="admin-avatar" id="admin-sidebar-avatar">
+                    {% if request.user.avatar %}
+                    <img src="{{ request.user.avatar.url }}"
+                        style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" alt="Avatar">
+                    {% else %}
+                    {{ request.user.get_initials }}
+                    {% endif %}
+                </div>
+                <div class="admin-profile-info">
+                    <span class="admin-profile-name" id="admin-sidebar-name">{{ request.user.first_name|default:request.user.email }}</span>
+                    <span class="admin-profile-role">Super Administrator</span>
+                </div>
+            </div>
+
+            <nav class="admin-menu">
+                <div onclick="switchView('dashboard')" class="admin-menu-link admin-menu-link--active"
+                    id="menu-dashboard">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="3" width="7" height="9" rx="1" />
+                        <rect x="14" y="3" width="7" height="5" rx="1" />
+                        <rect x="14" y="12" width="7" height="9" rx="1" />
+                        <rect x="3" y="16" width="7" height="5" rx="1" />
+                    </svg>
+                    Dashboard View
+                </div>
+
+                <div onclick="switchView('admins')" class="admin-menu-link" id="menu-admins">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                        <circle cx="9" cy="7" r="4" />
+                        <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                    </svg>
+                    Admin Members List
+                </div>
+
+                <div onclick="switchView('owners')" class="admin-menu-link" id="menu-owners">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+                        <circle cx="12" cy="7" r="4" />
+                        <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                    </svg>
+                    Car Owners List
+                </div>
+
+                <div onclick="switchView('customers')" class="admin-menu-link" id="menu-customers">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                        <circle cx="9" cy="7" r="4" />
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                    </svg>
+                    Customer List View
+                </div>
+
+                <div onclick="switchView('bookings')" class="admin-menu-link" id="menu-bookings">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <rect width="18" height="18" x="3" y="4" rx="2" ry="2" />
+                        <line x1="16" x2="16" y1="2" y2="6" />
+                        <line x1="8" x2="8" y1="2" y2="6" />
+                        <line x1="3" x2="21" y1="10" y2="10" />
+                    </svg>
+                    All Bookings View
+                </div>
+
+                <div onclick="switchView('cars')" class="admin-menu-link" id="menu-cars">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path
+                            d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2" />
+                        <circle cx="7" cy="17" r="2" />
+                        <circle cx="17" cy="17" r="2" />
+                    </svg>
+                    Add / Remove / Update Car
+                </div>
+
+                <div onclick="switchView('categories')" class="admin-menu-link" id="menu-categories">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 19h16a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2z" />
+                        <path d="M12 5v14" />
+                    </svg>
+                    Category Config
+                </div>
+
+                <div style="margin-top: auto; padding-top: 16px; border-top: 1px solid rgba(148, 163, 184, 0.15);">
+                    <a href="{% url 'carzo_core:index' %}" class="admin-menu-link"
+                        style="color: #fca5a5; font-weight: 700; display: flex; align-items: center; gap: 12px;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                            <polyline points="16 17 21 12 16 7" />
+                            <line x1="21" x2="9" y1="12" y2="12" />
+                        </svg>
+                        Go back to Home
+                    </a>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main Workspace -->
+        <main class="admin-workspace">
+
+            <!-- ===================== VIEW 1: DASHBOARD ===================== -->
+            <section class="admin-section admin-section--active" id="view-dashboard">
+                <div class="admin-header">
+                    <div>
+                        <h1 class="admin-title">Analytics Dashboard</h1>
+                    </div>
+                </div>
+
+                <div class="admin-stats-grid">
+                    <div class="admin-stat-card">
+                        <span class="admin-stat-val" id="dash-total-bookings">{{ total_bookings }}</span>
+                        <span class="admin-stat-label">Total Bookings</span>
+                    </div>
+                    <div class="admin-stat-card">
+                        <span class="admin-stat-val" id="dash-total-revenue">₹{{ total_revenue }}</span>
+                        <span class="admin-stat-label">Total Revenue</span>
+                    </div>
+                    <div class="admin-stat-card">
+                        <span class="admin-stat-val" id="dash-total-customers">{{ total_customers }}</span>
+                        <span class="admin-stat-label">Registered Customers</span>
+                    </div>
+                </div>
+
+                <div class="form-grid-two">
+                    <!-- Recent Bookings (Left) -->
+                    <div class="admin-table-card" style="margin-bottom:0;">
+                        <div
+                            style="padding: 20px 24px; border-bottom: 1px solid var(--color-border-light); display: flex; justify-content: space-between; align-items: center;">
+                            <h2 style="font-size: 1.05rem; font-weight: 800; color: var(--color-black);">Recent Bookings
+                            </h2>
+                        </div>
+                        <div class="admin-table-container">
+                            <table class="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>Customer Name</th>
+                                        <th>Vehicle</th>
+                                        <th>Total Paid</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="dash-recent-bookings-list">
+                                    {% for b in recent_bookings %}
+                                    <tr>
+                                        <td><strong>{{ b.cust_name }}</strong></td>
+                                        <td>{{ b.car.name }}</td>
+                                        <td>₹{{ b.total_cost }}</td>
+                                        <td>
+                                            <span
+                                                class="status-badge {% if b.booking_status == 'Delivered' or b.booking_status == 'Completed' %}status-badge--delivered{% elif b.booking_status == 'Cancelled' %}status-badge--cancelled{% else %}status-badge--confirmed{% endif %}">
+                                                {{ b.booking_status }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="4" style="text-align:center; color:var(--color-text-muted);">No
+                                            bookings available.</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Recent Customers (Right) -->
+                    <div class="admin-table-card" style="margin-bottom:0;">
+                        <div
+                            style="padding: 20px 24px; border-bottom: 1px solid var(--color-border-light); display: flex; justify-content: space-between; align-items: center;">
+                            <h2 style="font-size: 1.05rem; font-weight: 800; color: var(--color-black);">Recent
+                                Customers</h2>
+                        </div>
+                        <div class="admin-table-container">
+                            <table class="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>Customer</th>
+                                        <th>First Login</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="dash-recent-customers-list">
+                                    {% for c in recent_customers %}
+                                    <tr>
+                                        <td><strong>{{ c.first_name|default:c.email }}</strong></td>
+                                        <td>
+                                            <span
+                                                style="font-size:0.75rem; background:rgba(59,130,246,0.1); color:#1d4ed8; padding:3px 8px; border-radius:100px; font-weight:600; font-family:monospace;">
+                                                {{ c.date_joined|date:"d M Y" }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="2" style="text-align:center; color:var(--color-text-muted);">No
+                                            customers registered.</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===================== VIEW 2: ADMIN MEMBERS LIST ===================== -->
+            <section class="admin-section" id="view-admins">
+                <div class="admin-header">
+                    <div>
+                        <h1 class="admin-title">Admin Members List</h1>
+                    </div>
+                    <button onclick="openAdminMemberModal()" class="admin-btn admin-btn--primary">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="12" y1="5" x2="12" y2="19" />
+                            <line x1="5" y1="12" x2="19" y2="12" />
+                        </svg>
+                        Add Admin Member
+                    </button>
+                </div>
+
+                <div class="admin-table-card">
+                    <div class="admin-table-container">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Admin Member</th>
+                                    <th>Email Address</th>
+                                    <th>Contact Number</th>
+                                    <th>Role Title</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-members-list">
+                                {% for adm in admins %}
+                                <tr>
+                                    <td>
+                                        <div style="display:flex; align-items:center; gap:10px;">
+                                            <div class="admin-avatar"
+                                                style="width:32px; height:32px; font-size:0.75rem; background:var(--color-secondary);">
+                                                {{ adm.get_initials }}
+                                            </div>
+                                            <strong>{{ adm.first_name|default:adm.email }}</strong>
+                                        </div>
+                                    </td>
+                                    <td>{{ adm.email }}</td>
+                                    <td>{{ adm.phone|default:"—" }}</td>
+                                    <td><span style="font-weight:600; color:#3b66f5;">{% if adm.last_name %}{{ adm.last_name }}{% elif adm.is_superuser %}Super Admin{% else %}Staff Admin{% endif %}</span></td>
+                                    <td>
+                                        <button class="admin-btn admin-btn--secondary"
+                                            style="padding:6px 12px; font-size:0.75rem; margin-right:4px;"
+                                            onclick="openEditAdminModal('{{ adm.id }}', '{{ adm.first_name|escapejs }}', '{% if adm.phone %}{{ adm.phone|escapejs }}{% endif %}', '{% if adm.last_name %}{{ adm.last_name|escapejs }}{% elif adm.is_superuser %}Super Admin{% else %}Staff Admin{% endif %}')">
+                                            Edit
+                                        </button>
+                                        {% if adm != request.user %}
+                                        <a href="{% url 'useradmin:admin-delete' adm.id %}"
+                                            onclick="return confirm('Remove {{ adm.first_name|default:adm.email }} from admin? They will be restored to the customer list.')"
+                                            class="admin-btn admin-btn--danger"
+                                            style="padding:6px 12px; font-size:0.75rem; text-decoration:none;">Remove</a>
+                                        {% else %}
+                                        <button class="admin-btn admin-btn--danger"
+                                            style="padding:6px 12px; font-size:0.75rem;" disabled>Delete</button>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="5" style="text-align:center; color:var(--color-text-muted);">No
+                                        administrators registered.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===================== VIEW 3: CUSTOMER LIST ===================== -->
+            <section class="admin-section" id="view-customers">
+                <div class="admin-header">
+                    <div>
+                        <h1 class="admin-title">Registered Customers</h1>
+                    </div>
+                </div>
+
+                <div class="admin-table-card">
+                    <div class="admin-table-container">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Customer Details</th>
+                                    <th>Mobile Number</th>
+                                    <th>Email Address</th>
+                                    <th>Total Bookings</th>
+                                    <th>First Login</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-customers-list">
+                                {% for cust in customers %}
+                                <tr>
+                                    <td>
+                                        <div class="car-thumb-cell" style="align-items: center; gap: 12px;">
+                                            <div class="car-thumb-img"
+                                                style="background: var(--color-primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; border-radius: 50%; width: 36px; height: 36px; font-size: 0.85rem;">
+                                                {{ cust.get_initials }}
+                                            </div>
+                                            <div style="font-weight:700; color:var(--color-black);">{{ cust.first_name|default:cust.email }}</div>
+                                        </div>
+                                    </td>
+                                    <td>{{ cust.phone|default:"—" }}</td>
+                                    <td>{{ cust.email }}</td>
+                                    <td>
+                                        <span
+                                            style="font-size:0.8rem; background:#eff6ff; color:#1e40af; padding:2px 8px; border-radius:100px; font-weight:600; display:block; width:fit-content;">
+                                            {{ cust.booking_set.count }} booking{{ cust.booking_set.count|pluralize }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span
+                                            style="font-size:0.75rem; background:rgba(59,130,246,0.1); color:#1d4ed8; padding:3px 8px; border-radius:100px; font-weight:600; font-family:monospace;">
+                                            {{ cust.date_joined|date:"d M Y" }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="5" style="text-align:center; color:var(--color-text-muted);">No
+                                        customers registered.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===================== VIEW 4: ALL BOOKINGS VIEW ===================== -->
+            <section class="admin-section" id="view-bookings">
+                <div class="admin-header">
+                    <div>
+                        <h1 class="admin-title">All System Bookings</h1>
+                    </div>
+                </div>
+
+                <div class="admin-table-card">
+                    <div class="admin-table-container">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Customer Name</th>
+                                    <th>Phone Number</th>
+                                    <th>Vehicle Name</th>
+                                    <th>Payment Amount</th>
+                                    <th>Vehicle Pick-up</th>
+                                    <th>Vehicle Return</th>
+                                    <th>Actions & Delivered Flag</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-bookings-list">
+                                {% for b in bookings %}
+                                <tr>
+                                    <td><strong>{{ b.cust_name }}</strong></td>
+                                    <td>{{ b.cust_phone }}</td>
+                                    <td>{{ b.car.name }}</td>
+                                    <td><strong>₹{{ b.total_cost }}</strong></td>
+                                    <td>{{ b.pickup_date }} ({{ b.pickup_time }})</td>
+                                    <td>{{ b.drop_date }} ({{ b.drop_time }})</td>
+                                    <td>
+                                        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                                            <button onclick="viewFullBookingDetails('{{ b.bid }}')"
+                                                class="admin-btn admin-btn--secondary"
+                                                style="padding:6px 12px; font-size:0.75rem;">Details</button>
+                                            {% if b.booking_status == 'Cancelled' %}
+                                            <span class="status-badge status-badge--cancelled"
+                                                title="This booking was cancelled by the customer and cannot be modified."
+                                                style="cursor:not-allowed; opacity:0.75; user-select:none;">
+                                                🔒 Cancelled
+                                            </span>
+                                            {% else %}
+                                            <div class="switch-container"
+                                                style="gap: 8px; margin-left: 8px; margin-right: 8px;">
+                                                <label class="switch"
+                                                    style="transform: scale(0.85); transform-origin: left center;">
+                                                    <input type="checkbox" {% if b.booking_status == 'Delivered' %}
+                                                        checked {% endif %}
+                                                        onchange="toggleDeliveryStatus('{{ b.bid }}', this.checked)">
+                                                    <span class="slider"></span>
+                                                </label>
+                                                <span
+                                                    class="toggle-label {% if b.booking_status == 'Delivered' %}text-success-custom{% else %}text-secondary-custom{% endif %}"
+                                                    style="font-size: 0.75rem; font-weight: 600; min-width: 85px;">
+                                                    {{ b.booking_status }}
+                                                </span>
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="7" style="text-align:center; color:var(--color-text-muted);">No
+                                        bookings listed in the system database.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===================== VIEW 5: ADD / REMOVE / UPDATE CARS ===================== -->
+            <section class="admin-section" id="view-cars">
+                <div class="admin-header">
+                    <div>
+                        <h1 class="admin-title">Fleet & Vehicle Management</h1>
+                    </div>
+                    <button onclick="openCarModal()" class="admin-btn admin-btn--primary">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="12" y1="5" x2="12" y2="19" />
+                            <line x1="5" y1="12" x2="19" y2="12" />
+                        </svg>
+                        Add New Car Listing
+                    </button>
+                </div>
+
+                <!-- Cars List Grid -->
+                <div class="admin-table-card">
+                    <div class="admin-table-container">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Vehicle Details</th>
+                                    <th>Category / Sub</th>
+                                    <th>Pricing (Day / Month)</th>
+                                    <th>Availability Switch</th>
+                                    <th>Owner Contact</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-cars-list">
+                                {% for car in cars %}
+                                <tr>
+                                    <td>
+                                        <div class="car-thumb-cell">
+                                            {% if car.image %}
+                                            <img src="{{ car.image.url }}" alt="{{ car.name }}" class="car-thumb-img">
+                                            {% else %}
+                                            <div class="car-thumb-img"
+                                                style="background:#4a5568; display:inline-block;"></div>
+                                            {% endif %}
+                                            <div>
+                                                <div style="font-weight:700; color:var(--color-black);">{{ car.name }}
+                                                </div>
+                                                <div
+                                                    style="font-size:0.75rem; color:var(--color-text-muted); font-weight:500;">
+                                                    {{ car.fuel_type }} · {{ car.passengers }} Seats</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span
+                                            style="font-size:0.8rem; background:#eff6ff; color:#1e40af; padding:2px 8px; border-radius:100px; font-weight:600; display:block; width:fit-content; margin-bottom:4px;">{{ car.category.name }}</span>
+                                        <span style="font-size:0.75rem; color:var(--color-text-secondary);">{{ car.subcategory.name|default:'Standard' }}</span>
+                                    </td>
+                                    <td>
+                                        <div>₹{{ car.price_per_day|floatformat:0 }}/Day</div>
+                                        <div style="font-size:0.78rem; color:var(--color-text-muted); font-weight:500;">
+                                            {% if car.price_per_month %}
+                                            ₹{{ car.price_per_month|floatformat:0 }}/Month
+                                            {% else %}
+                                            —
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="switch-container">
+                                            <label class="switch">
+                                                <input type="checkbox"
+                                                    onchange="toggleCarAvailability('{{ car.cid }}', this)" {% if car.is_available %} checked {% endif %}>
+                                                <span class="slider"></span>
+                                            </label>
+                                            <span
+                                                class="availability-status {% if car.is_available %}text-success-custom{% else %}text-danger-custom{% endif %}"
+                                                style="font-size:0.78rem; font-weight:700;">
+                                                {% if car.is_available %}Available{% else %}Unavailable{% endif %}
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div style="font-size:0.82rem; font-weight:500;">{{ car.owner.name|default:'Carzo Host' }}</div>
+                                        <div style="font-size:0.75rem; color:var(--color-text-muted);">{{ car.owner.phone|default:'—' }}</div>
+                                    </td>
+                                    <td>
+                                        <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+                                            <button class="admin-btn admin-btn--secondary edit-car-btn"
+                                                data-cid="{{ car.cid }}" data-brand="{{ car.brand }}"
+                                                data-model="{{ car.model }}"
+                                                data-price-day="{{ car.price_per_day|floatformat:0 }}"
+                                                data-price-month="{% if car.price_per_month %}{{ car.price_per_month|floatformat:0 }}{% endif %}"
+                                                data-price-weekend="{% if car.price_weekend %}{{ car.price_weekend|floatformat:0 }}{% endif %}"
+                                                data-passengers="{{ car.passengers }}" data-fuel="{{ car.fuel_type }}"
+                                                data-category="{{ car.category.name|default:'' }}"
+                                                data-subcategory="{{ car.subcategory.name|default:'' }}"
+                                                data-subcategory-ids="{% for sub in car.subcategories.all %}{{ sub.category.id }}:{{ sub.id }}{% if not forloop.last %},{% endif %}{% endfor %}"
+                                                data-owner="{{ car.owner.name|default:'' }}"
+                                                data-available="{% if car.is_available %}true{% else %}false{% endif %}">
+                                                Edit
+                                            </button>
+                                            <a href="{% url 'useradmin:car-delete' car.cid %}"
+                                                onclick="return confirm('Are you sure you want to remove this car listing from the active database?')"
+                                                class="admin-btn admin-btn--danger"
+                                                style="padding:6px 12px; font-size:0.75rem; text-decoration:none;">Delete</a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="6" style="text-align:center; color:var(--color-text-muted);">No
+                                        vehicles configured in fleet.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- ===================== VIEW 6: CAR OWNERS DIRECTORY ===================== -->
+            <section class="admin-section" id="view-owners">
+                <div class="admin-header">
+                    <div>
+                        <h1 class="admin-title">Car Owners Directory</h1>
+                    </div>
+                    <button onclick="openOwnerModal()" class="admin-btn admin-btn--primary">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="12" y1="5" x2="12" y2="19" />
+                            <line x1="5" y1="12" x2="19" y2="12" />
+                        </svg>
+                        Add New Owner
+                    </button>
+                </div>
+
+                <div class="admin-table-card">
+                    <div class="admin-table-container">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Owner Name</th>
+                                    <th>Phone Number</th>
+                                    <th>Email Address</th>
+                                    <th>Hub Location</th>
+                                    <th>Listed Cars</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-owners-list">
+                                {% for owner in owners %}
+                                <tr>
+                                    <td>
+                                        <div style="font-weight:700; color:var(--color-black);">{{ owner.name }}</div>
+                                    </td>
+                                    <td>
+                                        <div>{{ owner.phone }}</div>
+                                    </td>
+                                    <td>
+                                        <div>{{ owner.email }}</div>
+                                    </td>
+                                    <td>
+                                        <div>{{ owner.location }}</div>
+                                    </td>
+                                    <td>
+                                        <span
+                                            style="font-size:0.8rem; background:#eff6ff; color:#1e40af; padding:2px 8px; border-radius:100px; font-weight:600; display:block; width:fit-content;">
+                                            {{ owner.car_set.count }} car{{ owner.car_set.count|pluralize }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+                                            <button class="admin-btn admin-btn--secondary edit-owner-btn"
+                                                data-id="{{ owner.id }}" data-name="{{ owner.name }}"
+                                                data-email="{{ owner.email }}" data-phone="{{ owner.phone }}"
+                                                data-location="{{ owner.location }}">
+                                                Edit
+                                            </button>
+                                            <a href="{% url 'useradmin:owner-delete' owner.id %}"
+                                                onclick="return confirm('Are you sure you want to remove owner &quot;{{ owner.name }}&quot;?')"
+                                                class="admin-btn admin-btn--danger"
+                                                style="padding:6px 12px; font-size:0.75rem; text-decoration:none;">Delete</a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="6" style="text-align:center; color:var(--color-text-muted);">No car
+                                        owners registered.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===================== VIEW 7: CATEGORY CONFIGURATION ===================== -->
+            <section class="admin-section" id="view-categories">
+                <div class="admin-header">
+                    <div>
+                        <h1 class="admin-title">Category & Subcategory Configuration</h1>
+                    </div>
+                    <div style="display:flex; gap:12px; flex-wrap:wrap;">
+                        <button onclick="openAdminModal('category-add-modal')" class="admin-btn admin-btn--primary">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2.5">
+                                <line x1="12" y1="5" x2="12" y2="19"></line>
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                            </svg>
+                            Add Category
+                        </button>
+                        <button onclick="openAdminModal('subcategory-add-modal')" class="admin-btn admin-btn--primary">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2.5">
+                                <line x1="12" y1="5" x2="12" y2="19"></line>
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                            </svg>
+                            Add Subcategory
+                        </button>
+                    </div>
+                </div>
+
+                <div style="margin-top: 24px; display: flex; flex-direction: column; gap: 32px;">
+                    <!-- Parent Categories List -->
+                    <div>
+                        <h2 style="font-size:1.15rem; font-weight:800; color:var(--color-black); margin-bottom: 16px;">
+                            Parent Categories</h2>
+                        <div class="admin-table-card" style="margin-bottom:0;">
+                            <div class="admin-table-container">
+                                <table class="admin-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Category Name</th>
+                                            <th>Mapped Subcategories</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for cat in categories %}
+                                        <tr>
+                                            <td>
+                                                <div style="font-weight:700; color:var(--color-black);">{{ cat.name }}
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                                                    {% for sub in cat.subcategories.all %}
+                                                    <span
+                                                        style="font-size:0.75rem; background:#f1f5f9; color:#475569; padding:2px 8px; border-radius:4px; font-weight:600;">{{ sub.name }}</span>
+                                                    {% empty %}
+                                                    <span style="font-size:0.75rem; color:var(--color-text-muted);">No
+                                                        subcategories</span>
+                                                    {% endfor %}
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <button class="admin-btn admin-btn--secondary"
+                                                    style="padding:6px 12px; font-size:0.75rem; margin-right:4px;"
+                                                    onclick="openCategoryEditModal('{{ cat.id }}', '{{ cat.name|escapejs }}')">Edit</button>
+                                                <a href="{% url 'useradmin:category-delete' cat.id %}"
+                                                    onclick="return confirm('Delete category &quot;{{ cat.name }}&quot; and ALL its subcategories?')"
+                                                    class="admin-btn admin-btn--danger"
+                                                    style="padding:6px 12px; font-size:0.75rem; text-decoration:none;">Delete</a>
+                                            </td>
+                                        </tr>
+                                        {% empty %}
+                                        <tr>
+                                            <td colspan="3" style="text-align:center; color:var(--color-text-muted);">No
+                                                categories registered.</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Subcategories List -->
+                    <div>
+                        <h2 style="font-size:1.15rem; font-weight:800; color:var(--color-black); margin-bottom: 16px;">
+                            Subcategories List</h2>
+                        <div class="admin-table-card" style="margin-bottom:0;">
+                            <div class="admin-table-container">
+                                <table class="admin-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Subcategory Name</th>
+                                            <th>Parent Category</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for sub in subcategories %}
+                                        <tr>
+                                            <td>
+                                                <div style="font-weight:700; color:var(--color-black);">{{ sub.name }}
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <span
+                                                    style="font-size:0.75rem; background:#eff6ff; color:#1e40af; padding:2px 8px; border-radius:4px; font-weight:600;">{{ sub.category.name }}</span>
+                                            </td>
+                                            <td>
+                                                <button class="admin-btn admin-btn--secondary"
+                                                    style="padding:6px 12px; font-size:0.75rem; margin-right:4px;"
+                                                    onclick="openSubcategoryEditModal('{{ sub.id }}', '{{ sub.name|escapejs }}', '{{ sub.category.name|escapejs }}')">Edit</button>
+                                                <a href="{% url 'useradmin:subcategory-delete' sub.id %}"
+                                                    onclick="return confirm('Delete subcategory &quot;{{ sub.name }}&quot;?')"
+                                                    class="admin-btn admin-btn--danger"
+                                                    style="padding:6px 12px; font-size:0.75rem; text-decoration:none;">Delete</a>
+                                            </td>
+                                        </tr>
+                                        {% empty %}
+                                        <tr>
+                                            <td colspan="3" style="text-align:center; color:var(--color-text-muted);">No
+                                                subcategories registered.</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- ===================== MODAL: ADD ADMIN MEMBER MODAL ===================== -->
+    <div class="modal-overlay" id="admin-member-modal">
+        <div class="modal-card" style="max-width:520px; text-align:left;">
+            <div
+                style="display:flex; justify-content:space-between; align-items:center; border-bottom:1.5px solid #f1f5f9; padding-bottom:16px; margin-bottom:20px;">
+                <h2 style="font-size:1.25rem; font-weight:800; color:var(--color-black);">Promote Customer to Admin</h2>
+                <button onclick="closeAdminModal('admin-member-modal')"
+                    style="font-size:1.25rem; font-weight:700; color:var(--color-text-secondary); cursor:pointer;">&times;</button>
+            </div>
+
+            <!-- Embed customers JSON for JS auto-fill -->
+            <script id="customers-data" type="application/json">
+                [
+                    {% for cust in customers %}
+                    {"id": {{ cust.id }}, "name": "{{ cust.first_name|default:'' }}", "email": "{{ cust.email }}", "phone": "{{ cust.phone|default:'' }}"}{% if not forloop.last %},{% endif %}
+                    {% endfor %}
+                ]
+            </script>
+
+            <form id="admin-member-form" method="POST" action="{% url 'useradmin:admin-add' %}">
+                {% csrf_token %}
+
+                <div class="form-block" style="margin-bottom:16px;">
+                    <label class="form-label" for="customer-select">Select Customer</label>
+                    <select name="customer_id" id="customer-select" class="form-input"
+                        style="height:42px; background:#ffffff;" required onchange="adminMemberAutoFill(this.value)">
+                        <option value="">— Choose a registered customer —</option>
+                        {% for cust in customers %}
+                        <option value="{{ cust.id }}">{{ cust.first_name|default:cust.email }} ({{ cust.email }})
+                        </option>
+                        {% empty %}
+                        <option disabled>No customers available</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Auto-filled read-only preview -->
+                <div id="admin-customer-preview"
+                    style="display:none; background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:14px 16px; margin-bottom:16px; font-size:0.875rem;">
+                    <div style="display:flex; align-items:center; gap:14px; margin-bottom:10px;">
+                        <div id="admin-preview-avatar"
+                            style="width:42px; height:42px; border-radius:50%; background:var(--color-primary); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:1rem; flex-shrink:0;">
+                            ?</div>
+                        <div>
+                            <div id="admin-preview-name" style="font-weight:700; color:var(--color-black);"></div>
+                            <div id="admin-preview-email" style="color:#64748b;"></div>
+                        </div>
+                    </div>
+                    <div style="display:flex; gap:8px; font-size:0.8rem; color:#64748b;">
+                        <span>📞</span><span id="admin-preview-phone"></span>
+                    </div>
+                </div>
+
+                <div class="form-block" style="margin-bottom:20px;">
+                    <label class="form-label" for="member-role">Assign Role</label>
+                    <select name="role" id="member-role" class="form-input" style="height:42px; background:#ffffff;">
+                        <option value="Fleet Manager">Fleet Manager</option>
+                        <option value="Support Admin">Support Admin</option>
+                        <option value="Operations Admin">Operations Admin</option>
+                        <option value="Super Admin">Super Admin</option>
+                    </select>
+                </div>
+
+                <div style="margin-top: 32px; display: flex; gap: 12px;">
+                    <button type="button" onclick="closeAdminModal('admin-member-modal')" class="btn-confirm"
+                        style="flex:1; background:#f1f5f9; color:#334155;">Cancel</button>
+                    <button type="submit" class="btn-confirm" style="flex:1; background:var(--color-primary);">Promote
+                        to Admin</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ===================== MODAL: EDIT ADMIN MEMBER MODAL ===================== -->
+    <div class="modal-overlay" id="edit-admin-member-modal">
+        <div class="modal-card" style="max-width:520px; text-align:left;">
+            <div
+                style="display:flex; justify-content:space-between; align-items:center; border-bottom:1.5px solid #f1f5f9; padding-bottom:16px; margin-bottom:20px;">
+                <h2 style="font-size:1.25rem; font-weight:800; color:var(--color-black);">Edit Admin Member</h2>
+                <button onclick="closeAdminModal('edit-admin-member-modal')"
+                    style="font-size:1.25rem; font-weight:700; color:var(--color-text-secondary); cursor:pointer;">&times;</button>
+            </div>
+
+            <form id="edit-admin-member-form" method="POST" action="">
+                {% csrf_token %}
+                <div class="form-block" style="margin-bottom:16px;">
+                    <label class="form-label" for="edit-member-name">Full Name</label>
+                    <input type="text" name="name" id="edit-member-name" class="form-input" required>
+                </div>
+
+                <div class="form-block" style="margin-bottom:16px;">
+                    <label class="form-label" for="edit-member-phone">Contact Number</label>
+                    <input type="text" name="phone" id="edit-member-phone" class="form-input" required>
+                </div>
+
+                <div class="form-block" style="margin-bottom:20px;">
+                    <label class="form-label" for="edit-member-role">Assign Role</label>
+                    <select name="role" id="edit-member-role" class="form-input"
+                        style="height:42px; background:#ffffff;">
+                        <option value="Fleet Manager">Fleet Manager</option>
+                        <option value="Support Admin">Support Admin</option>
+                        <option value="Operations Admin">Operations Admin</option>
+                        <option value="Super Admin">Super Admin</option>
+                    </select>
+                </div>
+
+                <div style="margin-top: 32px; display: flex; gap: 12px;">
+                    <button type="button" onclick="closeAdminModal('edit-admin-member-modal')" class="btn-confirm"
+                        style="flex:1; background:#f1f5f9; color:#334155;">Cancel</button>
+                    <button type="submit" class="btn-confirm" style="flex:1; background:var(--color-primary);">Save
+                        Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ===================== MODAL: BOOKING DETAIL MODAL ===================== -->
+    <div class="modal-overlay" id="admin-booking-detail-modal">
+        <div class="modal-card" style="max-width:550px; text-align:left;">
+            <div
+                style="display:flex; justify-content:space-between; align-items:center; border-bottom:1.5px solid #f1f5f9; padding-bottom:16px; margin-bottom:20px;">
+                <h2 style="font-size:1.25rem; font-weight:800; color:var(--color-black);">Full Booking Specifications
+                </h2>
+                <button onclick="closeAdminModal('admin-booking-detail-modal')"
+                    style="font-size:1.25rem; font-weight:700; color:var(--color-text-secondary); cursor:pointer;">&times;</button>
+            </div>
+
+            <div id="booking-modal-body-content">
+                <!-- Dynamic Content goes here -->
+            </div>
+
+            <div style="margin-top:28px; display:flex; gap:12px;">
+                <button onclick="closeAdminModal('admin-booking-detail-modal')" class="btn-confirm"
+                    style="flex:1; background:var(--color-black);">Close Details</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================== MODAL: ADD / EDIT CAR FORM MODAL ===================== -->
+    <div class="modal-overlay" id="admin-car-modal">
+        <div class="modal-card" style="max-width:650px; text-align:left;">
+            <div
+                style="display:flex; justify-content:space-between; align-items:center; border-bottom:1.5px solid #f1f5f9; padding-bottom:16px; margin-bottom:20px;">
+                <h2 style="font-size:1.25rem; font-weight:800; color:var(--color-black);" id="car-modal-title">List New
+                    Vehicle</h2>
+                <button onclick="closeAdminModal('admin-car-modal')"
+                    style="font-size:1.25rem; font-weight:700; color:var(--color-text-secondary); cursor:pointer;">&times;</button>
+            </div>
+
+            <form id="car-form" method="POST" action="{% url 'useradmin:car-save' %}" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="hidden" name="mode" id="car-form-mode" value="add">
+                <input type="hidden" name="car_id" id="car-form-id" value="">
+
+                <div class="form-grid-two">
+                    <div class="form-block">
+                        <label class="form-label" for="car-brand">Main Brand Name</label>
+                        <input type="text" name="brand" id="car-brand" class="form-input" placeholder="e.g. Mitsubishi"
+                            required>
+                    </div>
+
+                    <div class="form-block">
+                        <label class="form-label" for="car-model">Car Model Name</label>
+                        <input type="text" name="model" id="car-model" class="form-input"
+                            placeholder="e.g. Lancer Evolution" required>
+                    </div>
+                </div>
+
+                <div class="form-grid-three">
+                    <div class="form-block">
+                        <label class="form-label" for="car-price-day">Price Per-Day (₹)</label>
+                        <input type="number" name="price_day" id="car-price-day" class="form-input" placeholder="3500"
+                            required>
+                    </div>
+
+                    <div class="form-block">
+                        <label class="form-label" for="car-price-month">Price Per-Month (₹)</label>
+                        <input type="number" name="price_month" id="car-price-month" class="form-input"
+                            placeholder="90000" required>
+                    </div>
+
+                    <div class="form-block">
+                        <label class="form-label" for="car-passengers">Passengers Capacity</label>
+                        <select name="passengers" id="car-passengers" class="form-input"
+                            style="height:42px; background:#ffffff;">
+                            <option value="2">2 Seater</option>
+                            <option value="4" selected>4 Seater</option>
+                            <option value="5">5 Seater</option>
+                            <option value="7">7 Seater</option>
+                            <option value="8">8 Seater</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-grid-two" style="margin-top: 15px; margin-bottom: 15px;">
+                    <div class="form-block">
+                        <label class="form-label" for="car-price-weekend">Saturday and Sunday Price <span
+                                style="font-size:0.75rem; font-weight:normal; color:var(--color-text-muted);">(Weekend
+                                Price - optional)</span></label>
+                        <input type="number" name="price_weekend" id="car-price-weekend" class="form-input"
+                            placeholder="e.g. 4000">
+                    </div>
+                </div>
+
+                <div class="form-block" style="margin-top: 15px; margin-bottom: 15px;">
+                    <label class="form-label">Engine/Fuel Type</label>
+                    <div class="form-radio-group">
+                        <label class="form-radio-label">
+                            <input type="radio" name="fuel_type" value="Petrol" checked> Petrol
+                        </label>
+                        <label class="form-radio-label">
+                            <input type="radio" name="fuel_type" value="CNG"> CNG
+                        </label>
+                        <label class="form-radio-label">
+                            <input type="radio" name="fuel_type" value="Diesel"> Diesel
+                        </label>
+                        <label class="form-radio-label">
+                            <input type="radio" name="fuel_type" value="Electric"> Electric
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Dynamic per-category dropdowns -->
+                <div id="car-category-selects">
+                    {% for cat in categories %}
+                    <div class="form-block" style="margin-bottom:16px;">
+                        <label class="form-label" for="car-cat-{{ cat.id }}">{{ cat.name }}</label>
+                        <select name="cat_{{ cat.id }}" id="car-cat-{{ cat.id }}" class="form-input"
+                            style="height:42px; background:#ffffff;">
+                            <option value="">-- None --</option>
+                            {% for sub in cat.subcategories.all %}
+                            <option value="{{ sub.id }}">{{ sub.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    {% empty %}
+                    <p style="color:var(--color-text-muted); font-size:0.85rem;">No categories configured. <a href="#"
+                            onclick="closeAdminModal('admin-car-modal'); openAdminModal('category-add-modal');">Add a
+                            category first.</a></p>
+                    {% endfor %}
+                </div>
+
+                <div class="form-block" style="margin-bottom: 20px;">
+                    <label class="form-label" for="car-owner-select">Assign Car Owner</label>
+                    <select name="owner" id="car-owner-select" class="form-input"
+                        style="height: 42px; background: #ffffff;" required>
+                        <option value="" disabled selected>-- Select Car Owner --</option>
+                        {% for owner in owners %}
+                        <option value="{{ owner.name }}">{{ owner.name }} ({{ owner.location }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-grid-two" style="align-items: center;">
+                    <div class="form-block">
+                        <label class="form-label">Availability Status</label>
+                        <div class="switch-container">
+                            <span class="switch-label">Available</span>
+                            <label class="switch">
+                                <input type="checkbox" name="available" id="car-availability" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-block">
+                        <label class="form-label" for="car-image">Car Display Image (Primary Upload)</label>
+                        <input type="file" name="image" id="car-image" class="form-input" style="padding: 8px;">
+                    </div>
+                </div>
+
+                <div class="form-grid-three" style="margin-top: 15px;">
+                    <div class="form-block">
+                        <label class="form-label" for="car-image2">Car Image 2</label>
+                        <input type="file" name="image2" id="car-image2" class="form-input" style="padding: 8px;">
+                    </div>
+                    <div class="form-block">
+                        <label class="form-label" for="car-image3">Car Image 3</label>
+                        <input type="file" name="image3" id="car-image3" class="form-input" style="padding: 8px;">
+                    </div>
+                    <div class="form-block">
+                        <label class="form-label" for="car-image4">Car Image 4</label>
+                        <input type="file" name="image4" id="car-image4" class="form-input" style="padding: 8px;">
+                    </div>
+                </div>
+
+                <div style="margin-top: 32px; display: flex; gap: 12px;">
+                    <button type="button" onclick="closeAdminModal('admin-car-modal')" class="btn-confirm"
+                        style="flex:1; background:#f1f5f9; color:#334155;">Cancel</button>
+                    <button type="submit" class="btn-confirm" style="flex:1; background:var(--color-primary);">Save
+                        Vehicle</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ===================== MODAL: ADD/EDIT CAR OWNER MODAL ===================== -->
+    <div class="modal-overlay" id="admin-owner-modal">
+        <div class="modal-card" style="max-width:500px; text-align:left;">
+            <div
+                style="display:flex; justify-content:space-between; align-items:center; border-bottom:1.5px solid #f1f5f9; padding-bottom:16px; margin-bottom:20px;">
+                <h2 style="font-size:1.25rem; font-weight:800; color:var(--color-black);" id="owner-modal-title">Add New
+                    Car Owner</h2>
+                <button onclick="closeAdminModal('admin-owner-modal')"
+                    style="font-size:1.25rem; font-weight:700; color:var(--color-text-secondary); cursor:pointer;">&times;</button>
+            </div>
+
+            <form id="owner-form" method="POST" action="{% url 'useradmin:owner-save' %}">
+                {% csrf_token %}
+                <input type="hidden" name="mode" id="owner-form-mode" value="add">
+                <input type="hidden" name="owner_id" id="owner-form-id" value="">
+
+                <div class="form-block" style="margin-bottom:16px;">
+                    <label class="form-label" for="owner-name">Full Name</label>
+                    <input type="text" name="name" id="owner-name" class="form-input"
+                        placeholder="e.g. Rohan Pune-Owner" required>
+                </div>
+
+                <div class="form-block" style="margin-bottom:16px;">
+                    <label class="form-label" for="owner-email">Email Address</label>
+                    <input type="email" name="email" id="owner-email" class="form-input"
+                        placeholder="e.g. rohan@example.com" required>
+                </div>
+
+                <div class="form-block" style="margin-bottom:16px;">
+                    <label class="form-label" for="owner-phone">Contact Number</label>
+                    <input type="text" name="phone" id="owner-phone" class="form-input"
+                        placeholder="e.g. +91 90110 12345" required>
+                </div>
+
+                <div class="form-block" style="margin-bottom:20px;">
+                    <label class="form-label" for="owner-location">Hub Location</label>
+                    <input type="text" name="location" id="owner-location" class="form-input"
+                        placeholder="e.g. Koregaon Park, Pune" required>
+                </div>
+
+                <div style="margin-top: 32px; display: flex; gap: 12px;">
+                    <button type="button" onclick="closeAdminModal('admin-owner-modal')" class="btn-confirm"
+                        style="flex:1; background:#f1f5f9; color:#334155;">Cancel</button>
+                    <button type="submit" class="btn-confirm" style="flex:1; background:var(--color-primary);"
+                        id="owner-submit-btn">Add Owner</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+
+    <!-- Success Feedback Notification -->
+    <div id="admin-toast"
+        style="position: fixed; bottom: 24px; right: 24px; background: #15803d; color: white; padding: 12px 24px; border-radius: 8px; font-weight: 600; font-size: 0.9rem; display: flex; align-items: center; gap: 8px; transform: translateY(150%); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 9999; box-shadow: 0 4px 12px rgba(21,128,61,0.25);">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
+            stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12" />
+        </svg>
+        <span>Action executed successfully!</span>
+    </div>
+
+    <!-- ===================== FOOTER ===================== -->
+    <footer class="footer" id="footer" style="margin-top:80px;">
+        <div class="footer__inner">
+            <div class="footer__bottom" style="text-align:center; padding-top:0;">
+                <p>&copy; 2026 Carzo. Control Console. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Category to subcategories mapping JSON data block -->
+    <script id="category-submapping" type="application/json">
+    {
+        {% for cat in categories %}
+            "{{ cat.name|escapejs }}": [
+                {% for sub in cat.subcategories.all %}
+                    "{{ sub.name|escapejs }}"{% if not forloop.last %},{% endif %}
+                {% endfor %}
+            ]{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    }
+    </script>
+
+    <!-- ===================== MODAL: ADD CATEGORY ===================== -->
+    <div class="modal-overlay" id="category-add-modal">
+        <div class="modal-card" style="max-width:500px; text-align:left;">
+            <div
+                style="display:flex; justify-content:space-between; align-items:center; border-bottom:1.5px solid #f1f5f9; padding-bottom:16px; margin-bottom:20px;">
+                <h2 style="font-size:1.25rem; font-weight:800; color:var(--color-black);">Add Parent Category</h2>
+                <button onclick="closeAdminModal('category-add-modal')"
+                    style="font-size:1.25rem; font-weight:700; color:var(--color-text-secondary); cursor:pointer;">&times;</button>
+            </div>
+
+            <form id="category-add-form" method="POST" action="{% url 'useradmin:category-add' %}">
+                {% csrf_token %}
+                <p style="font-size:0.85rem; color:var(--color-text-secondary); margin-bottom: 20px;">Add a new
+                    top-level classification category (e.g., Hatchback, Luxury, Electric).</p>
+                <div class="form-block" style="margin-bottom:16px;">
+                    <label class="form-label" for="category-name">Category Name</label>
+                    <input type="text" name="name" id="category-name" class="form-input" placeholder="e.g. Convertible"
+                        required>
+                </div>
+
+                <div style="margin-top: 32px; display: flex; gap: 12px;">
+                    <button type="button" onclick="closeAdminModal('category-add-modal')" class="btn-confirm"
+                        style="flex:1; background:#f1f5f9; color:#334155;">Cancel</button>
+                    <button type="submit" class="btn-confirm" style="flex:1; background:var(--color-primary);">Create
+                        Category</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ===================== MODAL: ADD SUBCATEGORY ===================== -->
+    <div class="modal-overlay" id="subcategory-add-modal">
+        <div class="modal-card" style="max-width:500px; text-align:left;">
+            <div
+                style="display:flex; justify-content:space-between; align-items:center; border-bottom:1.5px solid #f1f5f9; padding-bottom:16px; margin-bottom:20px;">
+                <h2 style="font-size:1.25rem; font-weight:800; color:var(--color-black);">Add Subcategory</h2>
+                <button onclick="closeAdminModal('subcategory-add-modal')"
+                    style="font-size:1.25rem; font-weight:700; color:var(--color-text-secondary); cursor:pointer;">&times;</button>
+            </div>
+
+            <form id="subcategory-add-form" method="POST" action="{% url 'useradmin:subcategory-add' %}">
+                {% csrf_token %}
+                <p style="font-size:0.85rem; color:var(--color-text-secondary); margin-bottom: 20px;">Map a nested
+                    subcategory under an existing parent category.</p>
+
+                <div class="form-block" style="margin-bottom:16px;">
+                    <label class="form-label" for="subcat-parent">Select Parent Category</label>
+                    <select name="parent" id="subcat-parent" class="form-input" style="background:#ffffff; height:42px;"
+                        required>
+                        <option value="" disabled selected>Select a Parent Category</option>
+                        {% for cat in categories %}
+                        <option value="{{ cat.name }}">{{ cat.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-block" style="margin-bottom:16px;">
+                    <label class="form-label" for="subcategory-name">Subcategory Name</label>
+                    <input type="text" name="name" id="subcategory-name" class="form-input" placeholder="e.g. Roadster"
+                        required>
+                </div>
+
+                <div style="margin-top: 32px; display: flex; gap: 12px;">
+                    <button type="button" onclick="closeAdminModal('subcategory-add-modal')" class="btn-confirm"
+                        style="flex:1; background:#f1f5f9; color:#334155;">Cancel</button>
+                    <button type="submit" class="btn-confirm" style="flex:1; background:var(--color-primary);">Create
+                        Subcategory</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ===================== MODAL: EDIT CATEGORY ===================== -->
+    <div class="modal-overlay" id="category-edit-modal">
+        <div class="modal-card" style="max-width:500px; text-align:left;">
+            <div
+                style="display:flex; justify-content:space-between; align-items:center; border-bottom:1.5px solid #f1f5f9; padding-bottom:16px; margin-bottom:20px;">
+                <h2 style="font-size:1.25rem; font-weight:800; color:var(--color-black);">Edit Category</h2>
+                <button onclick="closeAdminModal('category-edit-modal')"
+                    style="font-size:1.25rem; font-weight:700; color:var(--color-text-secondary); cursor:pointer;">&times;</button>
+            </div>
+
+            <form id="category-edit-form" method="POST">
+                {% csrf_token %}
+                <p style="font-size:0.85rem; color:var(--color-text-secondary); margin-bottom: 20px;">Rename this
+                    parent category.</p>
+                <div class="form-block" style="margin-bottom:16px;">
+                    <label class="form-label" for="category-edit-name">Category Name</label>
+                    <input type="text" name="name" id="category-edit-name" class="form-input" required>
+                </div>
+
+                <div style="margin-top: 32px; display: flex; gap: 12px;">
+                    <button type="button" onclick="closeAdminModal('category-edit-modal')" class="btn-confirm"
+                        style="flex:1; background:#f1f5f9; color:#334155;">Cancel</button>
+                    <button type="submit" class="btn-confirm" style="flex:1; background:var(--color-primary);">Save
+                        Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ===================== MODAL: EDIT SUBCATEGORY ===================== -->
+    <div class="modal-overlay" id="subcategory-edit-modal">
+        <div class="modal-card" style="max-width:500px; text-align:left;">
+            <div
+                style="display:flex; justify-content:space-between; align-items:center; border-bottom:1.5px solid #f1f5f9; padding-bottom:16px; margin-bottom:20px;">
+                <h2 style="font-size:1.25rem; font-weight:800; color:var(--color-black);">Edit Subcategory</h2>
+                <button onclick="closeAdminModal('subcategory-edit-modal')"
+                    style="font-size:1.25rem; font-weight:700; color:var(--color-text-secondary); cursor:pointer;">&times;</button>
+            </div>
+
+            <form id="subcategory-edit-form" method="POST">
+                {% csrf_token %}
+                <p style="font-size:0.85rem; color:var(--color-text-secondary); margin-bottom: 20px;">Update
+                    subcategory name or reassign its parent category.</p>
+                <div class="form-block" style="margin-bottom:16px;">
+                    <label class="form-label" for="subcat-edit-parent">Parent Category</label>
+                    <select name="parent" id="subcat-edit-parent" class="form-input"
+                        style="background:#ffffff; height:42px;" required>
+                        {% for cat in categories %}
+                        <option value="{{ cat.name }}">{{ cat.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-block" style="margin-bottom:16px;">
+                    <label class="form-label" for="subcategory-edit-name">Subcategory Name</label>
+                    <input type="text" name="name" id="subcategory-edit-name" class="form-input" required>
+                </div>
+
+                <div style="margin-top: 32px; display: flex; gap: 12px;">
+                    <button type="button" onclick="closeAdminModal('subcategory-edit-modal')" class="btn-confirm"
+                        style="flex:1; background:#f1f5f9; color:#334155;">Cancel</button>
+                    <button type="submit" class="btn-confirm" style="flex:1; background:var(--color-primary);">Save
+                        Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="{% static 'assets/script.js' %}"></script>
+    <script>
+        function openCategoryEditModal(catId, catName) {
+            document.getElementById('category-edit-name').value = catName;
+            document.getElementById('category-edit-form').action = '/admin-panel/categories/edit/' + catId + '/';
+            openAdminModal('category-edit-modal');
+        }
+
+        function openSubcategoryEditModal(subId, subName, parentName) {
+            document.getElementById('subcategory-edit-name').value = subName;
+            document.getElementById('subcategory-edit-form').action = '/admin-panel/subcategories/edit/' + subId + '/';
+            const parentSelect = document.getElementById('subcat-edit-parent');
+            for (let i = 0; i < parentSelect.options.length; i++) {
+                if (parentSelect.options[i].value === parentName) {
+                    parentSelect.selectedIndex = i;
+                    break;
+                }
+            }
+            openAdminModal('subcategory-edit-modal');
+        }
+        let activeAdminView = 'dashboard';
+
+        // Static mapping object read from the HTML JSON block
+        const categorySubmapping = JSON.parse(document.getElementById('category-submapping').textContent);
+
+        // No longer needed: old single-dropdown approach replaced with per-category selects
+
+        window.addEventListener('DOMContentLoaded', () => {
+            // Read ?tab=... parameter on load
+            const urlParams = new URLSearchParams(window.location.search);
+            const tabParam = urlParams.get('tab');
+            if (tabParam) {
+                switchView(tabParam);
+            } else {
+                const serverActiveTab = "{{ active_tab }}";
+                if (serverActiveTab && serverActiveTab !== "None") {
+                    switchView(serverActiveTab);
+                } else {
+                    switchView('dashboard');
+                }
+            }
+
+            // Setup hamburger click for responsive drawer sidebar
+            const adminHam = document.getElementById('admin-hamburger-btn');
+            const adminSidebar = document.getElementById('admin-sidebar');
+            if (adminHam && adminSidebar) {
+                adminHam.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    adminSidebar.classList.toggle('admin-sidebar--open');
+                });
+                document.addEventListener('click', (e) => {
+                    if (!adminSidebar.contains(e.target) && !adminHam.contains(e.target)) {
+                        adminSidebar.classList.remove('admin-sidebar--open');
+                    }
+                });
+            }
+
+            // Hook up Edit Owner buttons
+            document.querySelectorAll('.edit-owner-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const id = btn.getAttribute('data-id');
+                    const name = btn.getAttribute('data-name');
+                    const email = btn.getAttribute('data-email');
+                    const phone = btn.getAttribute('data-phone');
+                    const location = btn.getAttribute('data-location');
+
+                    document.getElementById('owner-form-mode').value = 'edit';
+                    document.getElementById('owner-form-id').value = id;
+                    document.getElementById('owner-modal-title').textContent = "Modify Owner Details";
+                    document.getElementById('owner-submit-btn').textContent = "Save Changes";
+
+                    document.getElementById('owner-name').value = name;
+                    document.getElementById('owner-email').value = email;
+                    document.getElementById('owner-phone').value = phone;
+                    document.getElementById('owner-location').value = location;
+
+                    openAdminModal('admin-owner-modal');
+                });
+            });
+
+            // Hook up Edit Car buttons
+            document.querySelectorAll('.edit-car-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const cid = btn.getAttribute('data-cid');
+                    const brand = btn.getAttribute('data-brand');
+                    const model = btn.getAttribute('data-model');
+                    const priceDay = btn.getAttribute('data-price-day');
+                    const priceMonth = btn.getAttribute('data-price-month');
+                    const priceWeekend = btn.getAttribute('data-price-weekend');
+                    const passengers = btn.getAttribute('data-passengers');
+                    const fuel = btn.getAttribute('data-fuel');
+                    const subcategoryIds = btn.getAttribute('data-subcategory-ids') || '';
+                    const owner = btn.getAttribute('data-owner');
+                    const available = btn.getAttribute('data-available') === 'true';
+
+                    document.getElementById('car-form-mode').value = 'edit';
+                    document.getElementById('car-form-id').value = cid;
+                    document.getElementById('car-modal-title').textContent = "Modify Vehicle Details";
+
+                    document.getElementById('car-brand').value = brand;
+                    document.getElementById('car-model').value = model;
+                    document.getElementById('car-price-day').value = priceDay;
+                    document.getElementById('car-price-month').value = priceMonth;
+                    document.getElementById('car-price-weekend').value = priceWeekend;
+                    document.getElementById('car-passengers').value = passengers;
+
+                    // Fuel radio selects
+                    document.getElementsByName('fuel_type').forEach(r => {
+                        r.checked = (r.value.toLowerCase() === fuel.toLowerCase());
+                    });
+
+                    // Reset all per-category selects to "None"
+                    document.querySelectorAll('#car-category-selects select').forEach(sel => sel.value = '');
+
+                    // Apply subcategory selections: format "catId:subId,catId:subId"
+                    if (subcategoryIds) {
+                        subcategoryIds.split(',').forEach(pair => {
+                            const [catId, subId] = pair.split(':');
+                            const sel = document.getElementById(`car-cat-${catId}`);
+                            if (sel) sel.value = subId;
+                        });
+                    }
+
+                    if (owner) {
+                        document.getElementById('car-owner-select').value = owner;
+                    }
+
+                    document.getElementById('car-availability').checked = available;
+
+                    openAdminModal('admin-car-modal');
+                });
+            });
+        });
+
+        // View Toggling logic
+        function switchView(viewId) {
+            activeAdminView = viewId;
+            document.querySelectorAll('.admin-section').forEach(sec => sec.classList.remove('admin-section--active'));
+            const targetSec = document.getElementById(`view-${viewId}`);
+            if (targetSec) {
+                targetSec.classList.add('admin-section--active');
+            }
+
+            document.querySelectorAll('.admin-menu-link').forEach(link => link.classList.remove('admin-menu-link--active'));
+            const targetLink = document.getElementById(`menu-${viewId}`);
+            if (targetLink) {
+                targetLink.classList.add('admin-menu-link--active');
+            }
+
+            // Close mobile sidebar if open
+            const sidebar = document.getElementById('admin-sidebar');
+            if (sidebar) {
+                sidebar.classList.remove('admin-sidebar--open');
+            }
+        }
+
+        // Reset forms when opening modals for addition
+        function openCarModal() {
+            document.getElementById('car-form').reset();
+            document.getElementById('car-form-mode').value = 'add';
+            document.getElementById('car-form-id').value = '';
+            document.getElementById('car-modal-title').textContent = "List New Vehicle";
+            // Reset all per-category selects to "None"
+            document.querySelectorAll('#car-category-selects select').forEach(sel => sel.value = '');
+            openAdminModal('admin-car-modal');
+        }
+
+        function openOwnerModal() {
+            document.getElementById('owner-form').reset();
+            document.getElementById('owner-form-mode').value = 'add';
+            document.getElementById('owner-form-id').value = '';
+            document.getElementById('owner-modal-title').textContent = "Add New Car Owner";
+            document.getElementById('owner-submit-btn').textContent = "Add Owner";
+            openAdminModal('admin-owner-modal');
+        }
+
+        function openAdminMemberModal() {
+            document.getElementById('admin-member-form').reset();
+            document.getElementById('admin-customer-preview').style.display = 'none';
+            openAdminModal('admin-member-modal');
+        }
+
+        function adminMemberAutoFill(customerId) {
+            const preview = document.getElementById('admin-customer-preview');
+            if (!customerId) {
+                preview.style.display = 'none';
+                return;
+            }
+            try {
+                const raw = document.getElementById('customers-data').textContent;
+                const customers = JSON.parse(raw);
+                const cust = customers.find(c => String(c.id) === String(customerId));
+                if (!cust) { preview.style.display = 'none'; return; }
+
+                const name = cust.name || cust.email;
+                const initials = name.trim().split(/\s+/).map(p => p[0]).join('').toUpperCase().substring(0, 2) || '?';
+
+                document.getElementById('admin-preview-avatar').textContent = initials;
+                document.getElementById('admin-preview-name').textContent = name;
+                document.getElementById('admin-preview-email').textContent = cust.email;
+                document.getElementById('admin-preview-phone').textContent = cust.phone || '—';
+                preview.style.display = 'block';
+            } catch (e) {
+                preview.style.display = 'none';
+            }
+        }
+
+        function openEditAdminModal(id, name, phone, role) {
+            const form = document.getElementById('edit-admin-member-form');
+            form.action = `/admin-panel/admins/edit/${id}/`;
+            document.getElementById('edit-member-name').value = name;
+            document.getElementById('edit-member-phone').value = phone;
+            document.getElementById('edit-member-role').value = role;
+            openAdminModal('edit-admin-member-modal');
+        }
+
+        // Fetch booking details via JSON endpoint
+        function viewFullBookingDetails(bid) {
+            fetch(`/admin-panel/bookings/${bid}/json/`)
+                .then(res => {
+                    if (!res.ok) throw new Error("Network response was not ok");
+                    return res.json();
+                })
+                .then(booking => {
+                    const body = document.getElementById('booking-modal-body-content');
+                    body.innerHTML = `
+                        <div style="background:#f8fafc; border:1px solid #e2e8f0; padding:20px; border-radius:12px; margin-bottom:20px;">
+                            <div style="display:flex; justify-content:space-between; margin-bottom:8px; font-size:0.85rem;">
+                                <span style="color:var(--color-text-secondary); font-weight:600;">BOOKING ID:</span>
+                                <strong style="color:var(--color-black);">${booking.id}</strong>
+                            </div>
+                            <div style="display:flex; justify-content:space-between; margin-bottom:8px; font-size:0.85rem;">
+                                <span style="color:var(--color-text-secondary); font-weight:600;">STATUS:</span>
+                                <strong style="text-transform:uppercase; color:var(--color-primary);">${booking.status}</strong>
+                            </div>
+                            <div style="display:flex; justify-content:space-between; font-size:0.85rem;">
+                                <span style="color:var(--color-text-secondary); font-weight:600;">BOOKING TIME:</span>
+                                <strong style="color:var(--color-black);">${booking.dateCreated}</strong>
+                            </div>
+                        </div>
+
+                        <div style="margin-bottom:20px;">
+                            <h3 style="font-size:0.9rem; font-weight:800; text-transform:uppercase; border-bottom:1px solid #edf2f7; padding-bottom:8px; margin-bottom:10px; color:var(--color-black);">Customer Specifications</h3>
+                            <div style="font-size:0.88rem; line-height:1.6; color:var(--color-text);">
+                                <div>Name: <strong>${booking.custName}</strong></div>
+                                <div>Email: <strong>${booking.custEmail || '—'}</strong></div>
+                                <div>Mobile Number: <strong>${booking.custPhone}</strong></div>
+                                <div>Delivery Area (Pune): <strong>${booking.pickupLoc}</strong></div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h3 style="font-size:0.9rem; font-weight:800; text-transform:uppercase; border-bottom:1px solid #edf2f7; padding-bottom:8px; margin-bottom:10px; color:var(--color-black);">Vehicle Specifications</h3>
+                            <div style="font-size:0.88rem; line-height:1.6; color:var(--color-text);">
+                                <div>Vehicle Brand & Model: <strong>${booking.carName}</strong></div>
+                                <div>Dates: <strong>${booking.pickupDate} (${booking.pickupTime})</strong> to <strong>${booking.dropDate} (${booking.dropTime})</strong></div>
+                                <div>Duration: <strong>${booking.totalDays} Days</strong></div>
+                                <div style="margin-top:10px; border-top:1.5px dashed #e2e8f0; padding-top:10px; display:flex; justify-content:space-between; font-weight:800; font-size:1.05rem;">
+                                    <span>Total Price Paid:</span>
+                                    <span style="color:var(--color-primary);">₹${booking.totalCost.toLocaleString('en-IN')}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    openAdminModal('admin-booking-detail-modal');
+                })
+                .catch(err => {
+                    console.error('Error fetching booking details:', err);
+                    alert('Could not fetch booking details.');
+                });
+        }
+
+        // Toggle booking delivery flag
+        function toggleDeliveryStatus(bid, isChecked) {
+            fetch(`/admin-panel/bookings/toggle-delivery/${bid}/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({ delivered: isChecked })
+            })
+                .then(res => res.json().then(data => ({ ok: res.ok, data })))
+                .then(({ ok, data }) => {
+                    if (ok && data.success) {
+                        showAdminToast(`Booking status updated to: ${data.status}`);
+                        setTimeout(() => {
+                            window.location.href = window.location.pathname + '?tab=bookings';
+                        }, 1000);
+                    } else {
+                        // Revert the checkbox visually
+                        const checkbox = document.querySelector(`input[onchange*="${bid}"]`);
+                        if (checkbox) checkbox.checked = !isChecked;
+                        showAdminToast(data.message || 'Failed to update booking status.', true);
+                    }
+                })
+                .catch(err => {
+                    console.error('Error toggling delivery status:', err);
+                    const checkbox = document.querySelector(`input[onchange*="${bid}"]`);
+                    if (checkbox) checkbox.checked = !isChecked;
+                    showAdminToast('Failed to update booking status.', true);
+                });
+        }
+
+        // Toggle vehicle availability status
+        function toggleCarAvailability(cid, inputEl) {
+            fetch(`/admin-panel/cars/toggle-availability/${cid}/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({ available: inputEl.checked })
+            })
+                .then(res => {
+                    if (!res.ok) throw new Error("Toggle availability failed");
+                    return res.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        showAdminToast(`Availability status updated.`);
+                        const statusLabel = inputEl.closest('.switch-container').querySelector('.availability-status');
+                        if (statusLabel) {
+                            statusLabel.textContent = data.is_available ? 'Available' : 'Unavailable';
+                            statusLabel.style.color = data.is_available ? 'var(--color-success-text)' : 'var(--color-danger-text)';
+                        }
+                    }
+                })
+                .catch(err => {
+                    console.error('Error toggling car availability:', err);
+                    alert('Failed to toggle vehicle availability.');
+                });
+        }
+
+        // Modal helper actions
+        function openAdminModal(id) {
+            document.getElementById(id).classList.add('modal-overlay--show');
+        }
+
+        // Close details modal
+        function closeAdminModal(id) {
+            document.getElementById(id).classList.remove('modal-overlay--show');
+        }
+
+        function showAdminToast(msg, isError = false) {
+            const toast = document.getElementById('admin-toast');
+            if (toast) {
+                toast.querySelector('span').textContent = msg;
+                toast.style.background = isError ? '#ef4444' : '';
+                toast.style.transform = 'translateY(0)';
+                setTimeout(() => {
+                    toast.style.transform = 'translateY(150%)';
+                    toast.style.background = '';
+                }, 3500);
+            }
+        }
+    </script>
+    {% if messages %}
+    <div id="django-messages" style="display: none;">
+        {% for message in messages %}
+        <span class="django-message" data-message="{{ message|escapejs }}"></span>
+        {% endfor %}
+    </div>
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('#django-messages .django-message').forEach(el => {
+                showAdminToast(el.getAttribute('data-message'));
+            });
+        });
+    </script>
+    {% endif %}
+</body>
+
+</html>

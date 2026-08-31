@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Carzo - Payment Status.">
+    <title>Payment Status — Carzo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'assets/styles.css' %}">
+    <style>
+        @keyframes pulseSuccess {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(46, 204, 113, .4);
+            }
+
+            70% {
+                transform: scale(1.05);
+                box-shadow: 0 0 0 15px rgba(46, 204, 113, 0);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        @keyframes shakeError {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            10%,
+            30%,
+            50%,
+            70%,
+            90% {
+                transform: translateX(-6px);
+            }
+
+            20%,
+            40%,
+            60%,
+            80% {
+                transform: translateX(6px);
+            }
+        }
+    </style>
+</head>
+
+<body style="background:var(--color-bg);">
+
+    <!-- ===================== NAVBAR ===================== -->
+    <header class="navbar navbar--scrolled navbar--always-white" id="navbar">
+        <div class="navbar__inner">
+            <a href="{% url 'carzo_core:index' %}" class="navbar__logo" id="logo">
+                <img src="{% static 'assets/logo.png' %}" alt="Carzo Logo" class="navbar__logo-img">
+                <span>Carzo</span>
+            </a>
+            <nav class="navbar__links" id="nav-links">
+                <a href="{% url 'carzo_core:index' %}" class="navbar__link">Home</a>
+                <a href="{% url 'carzo_core:cars' %}" class="navbar__link">All Cars</a>
+                <a href="{% url 'carzo_core:list-car' %}" class="navbar__link">List Your Car</a>
+                <a href="{% url 'carzo_core:about' %}" class="navbar__link">About Us</a>
+                <a href="{% url 'carzo_core:contact' %}" class="navbar__link">Contact Us</a>
+            </nav>
+            <div class="navbar__actions">
+                {% if request.user.is_authenticated %}
+                <div class="navbar__profile-dropdown" id="profile-dropdown">
+                    <button class="navbar__profile-btn" id="profile-btn" aria-label="Profile Menu">
+                        <div class="navbar__profile-avatar" id="navbar-avatar">
+                            {% if request.user.avatar %}
+                                <img src="{{ request.user.avatar.url }}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" alt="Avatar">
+                            {% else %}
+                                {% if request.user.first_name or request.user.last_name %}{{ request.user.first_name|slice:":1"|upper }}{{ request.user.last_name|slice:":1"|upper }}{% else %}{{ request.user.username|slice:":2"|upper }}{% endif %}
+                            {% endif %}
+                        </div>
+                    </button>
+                    <div class="navbar__profile-menu" id="profile-menu">
+                        <div class="navbar__profile-header">
+                            <span class="navbar__profile-name">{{ request.user.first_name }} {{ request.user.last_name }}</span>
+                            <span class="navbar__profile-email">{{ request.user.email }}</span>
+                        </div>
+                        <div class="navbar__profile-divider"></div>
+                        {% if request.user.is_staff %}
+                        <a href="{% url 'useradmin:admin-panel' %}" class="navbar__profile-item"
+                            style="color:var(--color-primary); font-weight:700;">Admin Panel</a>
+                        {% endif %}
+                        <a href="{% url 'carzo_core:dashboard' %}" class="navbar__profile-item">Profile</a>
+                        <a href="{% url 'carzo_core:booking-management' %}" class="navbar__profile-item">My Bookings</a>
+                        <a href="{% url 'userauths:logout' %}" class="navbar__profile-item">Logout</a>
+                    </div>
+                </div>
+                {% else %}
+                <div class="navbar__auth" id="navbar-auth">
+                    <a href="{% url 'userauths:login' %}" class="btn-auth btn-auth--login">Log In</a>
+                    <a href="{% url 'userauths:signup' %}" class="btn-auth btn-auth--signup">Sign Up</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </header>
+
+    <!-- ===================== MAIN CONTENT ===================== -->
+    <main class="booking-page" style="padding-top: 130px; min-height: 70vh;">
+
+        {% if status == 'success' %}
+        <!-- Success State -->
+        <div style="max-width:650px; margin:0 auto 80px; padding:0 16px;">
+            <div
+                style="background:var(--color-white); border-radius:var(--radius-xl); border:1px solid var(--color-border-light); padding:48px 32px; text-align:center; box-shadow:var(--shadow-card);">
+                <div
+                    style="width:72px; height:72px; border-radius:50%; background:rgba(46,204,113,.08); border:3px solid #2ecc71; color:#2ecc71; display:flex; align-items:center; justify-content:center; margin:0 auto 24px; font-size:2.2rem; font-weight:800; animation:pulseSuccess 2s infinite;">
+                    ✓</div>
+                <h2 style="font-size:1.85rem; font-weight:800; color:var(--color-black); margin-bottom:8px;">Your
+                    Payment is Successful</h2>
+                <p style="font-size:0.95rem; color:var(--color-text-secondary); margin-bottom:32px; font-weight:500;">
+                    Your rental has been successfully confirmed. You will receive a verification call shortly.</p>
+
+                <div
+                    style="background:var(--color-bg); border-radius:16px; padding:24px; border:1px solid var(--color-border-light); text-align:left; margin-bottom:32px;">
+                    <div
+                        style="display:flex; justify-content:space-between; margin-bottom:16px; border-bottom:1.5px dashed var(--color-border); padding-bottom:12px;">
+                        <span
+                            style="font-size:0.78rem; font-weight:800; color:var(--color-text-secondary); text-transform:uppercase; letter-spacing:0.05em;">Booking
+                            Reference</span>
+                        <span style="font-size:0.92rem; font-weight:800; color:var(--color-primary);">{{ booking.booking_id }}</span>
+                    </div>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:20px;">
+                        <div>
+                            <span
+                                style="font-size:0.75rem; color:var(--color-text-secondary); display:block; font-weight:600; text-transform:uppercase;">Vehicle
+                                Model</span>
+                            <span style="font-size:0.9rem; font-weight:700; color:var(--color-black);">{{ booking.car.name }}</span>
+                        </div>
+                        <div>
+                            <span
+                                style="font-size:0.75rem; color:var(--color-text-secondary); display:block; font-weight:600; text-transform:uppercase;">Total
+                                Cost Paid</span>
+                            <span style="font-size:0.9rem; font-weight:700; color:var(--color-black);">₹{{ booking.total_cost }}</span>
+                        </div>
+                        <div>
+                            <span
+                                style="font-size:0.75rem; color:var(--color-text-secondary); display:block; font-weight:600; text-transform:uppercase;">Pickup
+                                Date</span>
+                            <span style="font-size:0.88rem; font-weight:700; color:var(--color-black);">{{ booking.pickup_date }}</span>
+                        </div>
+                        <div>
+                            <span
+                                style="font-size:0.75rem; color:var(--color-text-secondary); display:block; font-weight:600; text-transform:uppercase;">Delivery
+                                Location</span>
+                            <span style="font-size:0.88rem; font-weight:700; color:var(--color-black);">{{ booking.pickup_loc }}</span>
+                        </div>
+                    </div>
+
+                    {% if booking.car.owner %}
+                    <!-- Owner Host Details -->
+                    <div
+                        style="background:rgba(108,92,231,.04); border:1.5px solid rgba(108,92,231,.12); border-radius:12px; padding:18px; display:flex; flex-direction:column; gap:8px;">
+                        <div style="display:flex; align-items:center; gap:12px;">
+                            <div
+                                style="font-size:1.8rem; background:rgba(108,92,231,.1); width:44px; height:44px; display:flex; align-items:center; justify-content:center; border-radius:50%;">
+                                👨‍✈️</div>
+                            <div>
+                                <span
+                                    style="font-size:0.7rem; text-transform:uppercase; color:var(--color-text-secondary); font-weight:800; display:block; letter-spacing:0.04em;">Vehicle
+                                    Host</span>
+                                <span style="font-size:0.95rem; font-weight:800; color:var(--color-black);">{{ booking.car.owner.name }}</span>
+                            </div>
+                        </div>
+                        <p
+                            style="font-size:0.8rem; color:var(--color-text-secondary); margin:4px 0 10px; line-height:1.55; font-weight:500;">
+                            Contact the vehicle owner to schedule drop-off parameters and receive key handover.</p>
+                        <a href="tel:{{ booking.car.owner.phone }}" class="btn-confirm"
+                            style="padding:10px 18px; font-size:0.82rem; font-weight:700; background:var(--color-secondary); width:auto; display:inline-flex; align-items:center; gap:6px;">
+                            📞 Call Host ({{ booking.car.owner.phone }})
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div
+                    style="background:rgba(235,103,14,.08); border:2px solid var(--color-primary); border-radius:12px; padding:18px; margin-bottom:32px; display:flex; align-items:flex-start; gap:12px; text-align:left;">
+                    <span style="font-size:1.5rem; line-height:1;">⚠️</span>
+                    <div>
+                        <h4 style="margin:0 0 4px; font-size:0.95rem; font-weight:800; color:var(--color-black);">
+                            Mandatory Document Reminder</h4>
+                        <p
+                            style="margin:0; font-size:0.86rem; color:var(--color-text-secondary); font-weight:600; line-height:1.5;">
+                            Bring original <strong>Aadhaar Card</strong> &amp; <strong>driving license</strong> when
+                            collecting the car.</p>
+                    </div>
+                </div>
+
+                <a href="{% url 'carzo_core:booking-management' %}" class="btn-confirm"
+                    style="background:var(--color-black); box-shadow:0 4px 12px rgba(0,0,0,.15); font-weight:700; padding:14px 28px; border-radius:100px; width:auto; font-size:0.88rem; display:inline-flex; align-items:center; gap:8px;">
+                    Go to My Bookings Dashboard
+                </a>
+            </div>
+        </div>
+
+        {% else %}
+        <!-- Failure/Error State -->
+        <div style="max-width:650px; margin:0 auto 80px; padding:0 16px;">
+            <div
+                style="background:var(--color-white); border-radius:var(--radius-xl); border:1px solid var(--color-border-light); padding:48px 32px; text-align:center; box-shadow:var(--shadow-card);">
+                <div
+                    style="width:72px; height:72px; border-radius:50%; background:rgba(231,76,60,.08); border:3px solid #e74c3c; color:#e74c3c; display:flex; align-items:center; justify-content:center; margin:0 auto 24px; font-size:2.2rem; font-weight:bold; animation:shakeError 0.5s ease;">
+                    ✕</div>
+                <h2 style="font-size:1.85rem; font-weight:800; color:var(--color-black); margin-bottom:8px;">
+                    {% if status == 'failed' %}Payment Authorization Failed{% else %}An Error Occurred{% endif %}
+                </h2>
+                <p style="font-size:0.95rem; color:var(--color-text-secondary); margin-bottom:32px; font-weight:500;">
+                    {% if status == 'failed' %}
+                    The payment transaction was not successful. Please try booking again.
+                    {% else %}
+                    {{ message|default:"An unexpected error occurred during processing." }}
+                    {% endif %}
+                </p>
+
+                <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
+                    <a href="{% url 'carzo_core:index' %}" class="btn-confirm"
+                        style="background:var(--color-black); font-weight:700; text-decoration:none; display:flex; align-items:center; justify-content:center; padding:14px 28px; border-radius:100px; width:auto; font-size:0.88rem; color:white;">Go
+                        back to Home</a>
+                    <a href="{% url 'carzo_core:cars' %}" class="btn-confirm"
+                        style="background:transparent; border:1.5px solid var(--color-border); color:var(--color-black); font-weight:700; text-decoration:none; display:flex; align-items:center; justify-content:center; padding:14px 28px; border-radius:100px; width:auto; font-size:0.88rem;">Browse
+                        Fleet</a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+    </main>
+
+    <!-- ===================== FOOTER ===================== -->
+    <footer class="footer" id="footer">
+        <div class="footer__inner">
+            <div class="footer__top">
+                <!-- Brand column -->
+                <div class="footer__brand">
+                    <a href="{% url 'carzo_core:index' %}" class="footer__logo">
+                        <span>Carzo</span>
+                    </a>
+                    <p class="footer__tagline">
+                        Discover the best rental cars and experience premium driving effortlessly.
+                    </p>
+                    <div class="footer__socials">
+                        <a href="https://wa.me/919999999999"
+                            class="footer__social" aria-label="WhatsApp" target="_blank" rel="noopener noreferrer">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.746.953 3.71 1.455 5.703 1.458h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" fill="currentColor"/>
+                            </svg>
+                        </a>
+                        <a href="https://www.instagram.com/carzorentals?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw=="
+                            class="footer__social" aria-label="Instagram" target="_blank" rel="noopener noreferrer">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Links columns -->
+                <div class="footer__links-group">
+                    <!-- Column 1: Shop -->
+                    <div class="footer__col">
+                        <h3 class="footer__col-title">Shop</h3>
+                        <ul class="footer__col-list">
+                            <li><a href="{% url 'carzo_core:index' %}">Home</a></li>
+                            <li><a href="{% url 'carzo_core:cars' %}">Rent Luxury Cars</a></li>
+                            <li><a href="{% url 'carzo_core:list-car' %}">List Your Car</a></li>
+                            <li><a href="{% url 'carzo_core:contact' %}">Contact Us</a></li>
+                        </ul>
+                    </div>
+                    <!-- Column 2: Help -->
+                    <div class="footer__col">
+                        <h3 class="footer__col-title">Help</h3>
+                        <ul class="footer__col-list">
+                            <li><a href="{% url 'carzo_core:index' %}#faq-section">FAQ</a></li>
+                            <li><a href="{% url 'carzo_core:about' %}">About Us</a></li>
+                            <li><a href="{% url 'carzo_core:contact' %}">Contact</a></li>
+                        </ul>
+                    </div>
+                    <!-- Column 3: Legal -->
+                    <div class="footer__col">
+                        <h3 class="footer__col-title">Legal</h3>
+                        <ul class="footer__col-list">
+                            <li><a href="#">Privacy Policy</a></li>
+                            <li><a href="#">Terms & Conditions</a></li>
+                            <li><a href="{% url 'useradmin:admin-panel' %}">Admin</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="footer__bottom">
+                <p>&copy; 2026 Carzo. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+</body>
+
+</html>

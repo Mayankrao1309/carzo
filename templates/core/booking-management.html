@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Carzo - Manage your car rentals. Modify booking dates, cancel rentals, and view detailed receipts.">
+    <title>Carzo — Manage Bookings</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'assets/styles.css' %}">
+</head>
+
+<body style="background:var(--color-bg);">
+
+    <!-- ===================== NAVBAR ===================== -->
+    <header class="navbar navbar--scrolled navbar--always-white" id="navbar">
+        <div class="navbar__inner">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <button class="navbar__icon-btn dashboard-hamburger" id="dashboard-hamburger-btn"
+                    aria-label="Toggle Sidebar Menu">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2.5">
+                        <line x1="3" x2="21" y1="6" y2="6" />
+                        <line x1="3" x2="21" y1="12" y2="12" />
+                        <line x1="3" x2="21" y1="18" y2="18" />
+                    </svg>
+                </button>
+                <a href="{% url 'carzo_core:index' %}" class="navbar__logo" id="logo">
+                <img src="{% static 'assets/logo.png' %}" alt="Carzo Logo" class="navbar__logo-img">
+                <span>Carzo</span>
+            </a>
+            </div>
+            <nav class="navbar__links" id="nav-links">
+                <a href="{% url 'carzo_core:index' %}" class="navbar__link">Home</a>
+                <a href="{% url 'carzo_core:cars' %}" class="navbar__link">All Cars</a>
+                <a href="{% url 'carzo_core:list-car' %}" class="navbar__link">List Your Car</a>
+                <a href="{% url 'carzo_core:about' %}" class="navbar__link">About Us</a>
+                <a href="{% url 'carzo_core:contact' %}" class="navbar__link">Contact Us</a>
+            </nav>
+            <div class="navbar__actions">
+                {% if request.user.is_authenticated %}
+                <div class="navbar__profile-dropdown" id="profile-dropdown">
+                    <button class="navbar__profile-btn" id="profile-btn" aria-label="Profile Menu">
+                        <div class="navbar__profile-avatar" id="navbar-avatar">
+                            {% if request.user.avatar %}
+                                <img src="{{ request.user.avatar.url }}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" alt="Avatar">
+                            {% else %}
+                                {% if request.user.first_name or request.user.last_name %}{{ request.user.first_name|slice:":1"|upper }}{{ request.user.last_name|slice:":1"|upper }}{% else %}{{ request.user.username|slice:":2"|upper }}{% endif %}
+                            {% endif %}
+                        </div>
+                    </button>
+                    <div class="navbar__profile-menu" id="profile-menu">
+                        <div class="navbar__profile-header">
+                            <span class="navbar__profile-name" id="navbar-profile-name">{{ request.user.first_name }} {{ request.user.last_name }}</span>
+                            <span class="navbar__profile-email" id="navbar-profile-email">{{ request.user.email }}</span>
+                        </div>
+                        <div class="navbar__profile-divider"></div>
+                        {% if request.user.is_staff %}
+                        <a href="{% url 'useradmin:admin-panel' %}" class="navbar__profile-item"
+                            style="color:var(--color-primary); font-weight:700;">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="3" />
+                                <path
+                                    d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+                            </svg>
+                            Admin Panel
+                        </a>
+                        {% endif %}
+                        <a href="{% url 'carzo_core:dashboard' %}" class="navbar__profile-item">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+                                <circle cx="12" cy="7" r="4" />
+                            </svg>
+                            Profile
+                        </a>
+                        <a href="{% url 'carzo_core:booking-management' %}" class="navbar__profile-item">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect width="18" height="18" x="3" y="4" rx="2" ry="2" />
+                                <line x1="16" x2="16" y1="2" y2="6" />
+                                <line x1="8" x2="8" y1="2" y2="6" />
+                                <line x1="3" x2="21" y1="10" y2="10" />
+                            </svg>
+                            My Bookings
+                        </a>
+                        <a href="{% url 'userauths:logout' %}" class="navbar__profile-item">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                                <polyline points="16 17 21 12 16 7" />
+                                <line x1="21" x2="9" y1="12" y2="12" />
+                            </svg>
+                            Logout
+                        </a>
+                    </div>
+                </div>
+                {% else %}
+                <div class="navbar__auth" id="navbar-auth">
+                    <a href="{% url 'userauths:login' %}" class="btn-auth btn-auth--login">Log In</a>
+                    <a href="{% url 'userauths:signup' %}" class="btn-auth btn-auth--signup">Sign Up</a>
+                </div>
+                {% endif %}
+                <button class="navbar__icon-btn navbar__hamburger" id="hamburger" aria-label="Menu">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="3" y1="6" x2="21" y2="6" />
+                        <line x1="3" y1="12" x2="21" y2="12" />
+                        <line x1="3" y1="18" x2="21" y2="18" />
+                    </svg>
+                </button>
+            </div>
+    </header>
+
+    <!-- ===================== MAIN CONTENT ===================== -->
+    <main class="dashboard">
+        <div class="dashboard-container">
+
+            <!-- Sidebar Navigation -->
+            <aside class="dashboard-sidebar">
+                <div class="user-profile-summary">
+                    <div class="user-avatar" id="nav-avatar">
+                        {% if request.user.avatar %}
+                            <img src="{{ request.user.avatar.url }}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" alt="Avatar">
+                        {% else %}
+                            {% if request.user.first_name %}
+                            {{ request.user.first_name|slice:":1"|upper }}{{ request.user.last_name|slice:":1"|upper }}
+                            {% else %}
+                            {{ request.user.username|slice:":2"|upper }}
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                    <div class="user-profile-info">
+                        <h2 class="user-name" id="nav-name">{{ request.user.first_name }} {{ request.user.last_name }}
+                        </h2>
+                        <span class="user-role">Premium Member</span>
+                    </div>
+                </div>
+                <nav class="sidebar-menu">
+                    <a href="{% url 'carzo_core:dashboard' %}" class="sidebar-link">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:2px;">
+                            <rect width="7" height="9" x="3" y="3" rx="1" />
+                            <rect width="7" height="5" x="14" y="3" rx="1" />
+                            <rect width="7" height="9" x="14" y="12" rx="1" />
+                            <rect width="7" height="5" x="3" y="16" rx="1" />
+                        </svg>
+                        Dashboard
+                    </a>
+                    <a href="{% url 'carzo_core:booking-management' %}" class="sidebar-link sidebar-link--active">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:2px;">
+                            <rect width="18" height="18" x="3" y="4" rx="2" ry="2" />
+                            <line x1="16" x2="16" y1="2" y2="6" />
+                            <line x1="8" x2="8" y1="2" y2="6" />
+                            <line x1="3" x2="21" y1="10" y2="10" />
+                        </svg>
+                        Manage Bookings
+                    </a>
+                    <a href="{% url 'carzo_core:profile' %}" class="sidebar-link">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:2px;">
+                            <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+                            <circle cx="12" cy="7" r="4" />
+                        </svg>
+                        Edit Profile
+                    </a>
+
+                    <a href="{% url 'carzo_core:cars' %}" class="sidebar-link">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:2px;">
+                            <path
+                                d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2" />
+                            <circle cx="7" cy="17" r="2" />
+                            <circle cx="17" cy="17" r="2" />
+                        </svg>
+                        Browse Fleet
+                    </a>
+                </nav>
+            </aside>
+
+            <!-- Main Panel Content -->
+            <section class="dashboard-main">
+                <div class="dashboard-header">
+                    <div>
+                        <h1 class="dashboard-title">Manage Your Bookings</h1>
+                        <p style="font-size:0.875rem;color:var(--color-text-secondary);margin-top:4px;">View or cancel
+                            your active bookings.</p>
+                    </div>
+                </div>
+
+                <!-- Tabs Filter Row -->
+                <div class="tab-row">
+                    <a href="?filter=all"
+                        class="tab-btn {% if filter_type == 'all' or not filter_type %}tab-btn--active{% endif %}"
+                        id="tab-all">All Bookings</a>
+                    <a href="?filter=active" class="tab-btn {% if filter_type == 'active' %}tab-btn--active{% endif %}"
+                        id="tab-active">Confirmed & Active</a>
+                    <a href="?filter=completed"
+                        class="tab-btn {% if filter_type == 'completed' %}tab-btn--active{% endif %}"
+                        id="tab-completed">Completed</a>
+                    <a href="?filter=cancelled"
+                        class="tab-btn {% if filter_type == 'cancelled' %}tab-btn--active{% endif %}"
+                        id="tab-cancelled">Cancelled</a>
+                </div>
+
+                <!-- Bookings Cards Container -->
+                <div id="bookings-management-list">
+                    {% for booking in bookings %}
+                    <div class="booking-item-card"
+                        style="background:#ffffff; padding:24px; border:1px solid var(--color-border-light); border-radius:var(--radius-xl); margin-bottom:20px;">
+                        <div class="booking-item-details">
+                            <div class="booking-item-car-thumb" style="width:120px; height:80px; padding:8px;">
+                                {% if booking.car.image %}
+                                <img src="{% if '/' in booking.car.image.name %}{{ booking.car.image.url }}{% else %}{% static 'assets/' %}{{ booking.car.image.name }}{% endif %}"
+                                    alt="{{ booking.car.brand }} {{ booking.car.model }}" class="booking-item-car-img">
+                                {% else %}
+                                <div class="detail__image-placeholder"
+                                    style="background:#4a5568; width: 100%; height: 100%; border-radius: 6px;"></div>
+                                {% endif %}
+                            </div>
+                            <div class="booking-item-meta" style="gap:6px;">
+                                <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                                    <span class="booking-item-name" style="font-size:1.1rem;">{{ booking.car.brand }} {{ booking.car.model }}</span>
+                                    <span
+                                        class="badge {% if booking.status == 'Confirmed' %}badge--confirmed{% elif booking.status == 'Active' or booking.status == 'Delivered' %}badge--active{% elif booking.status == 'Completed' %}badge--completed{% else %}badge--cancelled{% endif %}">{{ booking.status }}</span>
+                                </div>
+                                <span class="booking-item-details-desktop" style="font-size:0.78rem; color:var(--color-text-muted); font-weight:600;">Booking ID: {{ booking.booking_id }}</span>
+                                <span class="booking-item-dates booking-item-details-desktop" style="font-size:0.85rem;">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2.5" style="margin-right:2px;">
+                                        <rect width="18" height="18" x="3" y="4" rx="2" ry="2" />
+                                        <line x1="16" x2="16" y1="2" y2="6" />
+                                        <line x1="8" x2="8" y1="2" y2="6" />
+                                        <line x1="3" x2="21" y1="10" y2="10" />
+                                    </svg>
+                                    Pickup: <strong>{{ booking.pickup_loc }}</strong> on {{ booking.pickup_date }} ({{ booking.pickup_time|time:"H:i" }})
+                                </span>
+                                <span class="booking-item-dates booking-item-details-desktop" style="font-size:0.85rem;">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2.5" style="margin-right:2px;">
+                                        <rect width="18" height="18" x="3" y="4" rx="2" ry="2" />
+                                        <line x1="16" x2="16" y1="2" y2="6" />
+                                        <line x1="8" x2="8" y1="2" y2="6" />
+                                        <line x1="3" x2="21" y1="10" y2="10" />
+                                    </svg>
+                                    Drop-off: on {{ booking.drop_date }} ({{ booking.drop_time|time:"H:i" }})
+                                </span>
+                            </div>
+                        </div>
+
+                        <div
+                            style="display:flex; flex-direction:column; align-items:flex-end; gap:14px; min-width:180px;">
+                            <div style="text-align:right;">
+                                <span style="font-size:1.25rem; font-weight:800; color:var(--color-black);">₹{{ booking.total_cost }}</span>
+                                <div style="font-size:0.8rem; color:var(--color-text-secondary); font-weight:500;">{{ booking.total_days }} Days rental</div>
+                            </div>
+                            <div class="booking-item-actions" style="display:flex; gap:8px; flex-wrap:wrap;">
+                                <button class="btn-dashboard-action btn-dashboard-action--secondary view-receipt-btn"
+                                    data-id="{{ booking.booking_id }}"
+                                    data-car="{{ booking.car.brand }} {{ booking.car.model }}"
+                                    data-rate="{{ booking.car.price_day }}" data-pickup-loc="{{ booking.pickup_loc }}"
+                                    data-pickup-date="{{ booking.pickup_date|date:'Y-m-d' }}"
+                                    data-drop-date="{{ booking.drop_date|date:'Y-m-d' }}"
+                                    data-days="{{ booking.total_days }}" data-cost="{{ booking.total_cost }}"
+                                    data-status="{{ booking.status }}"
+                                    data-created="{{ booking.date_created|date:'Y-m-d' }}"
+                                    data-gst="{{ booking.gst }}"
+                                    data-fee="{{ booking.service_fee }}">
+                                    Receipt
+                                </button>
+                                <a href="{% url 'carzo_core:booking-detail' booking.booking_id %}"
+                                    class="btn-dashboard-action btn-dashboard-action--secondary"
+                                    style="text-decoration:none; display:inline-flex; align-items:center; justify-content:center;">
+                                    Details
+                                </a>
+                                {% if booking.status == 'Confirmed' or booking.status == 'Active' %}
+                                <button class="btn-dashboard-action btn-dashboard-action--secondary modify-dates-btn"
+                                    data-id="{{ booking.booking_id }}"
+                                    data-car="{{ booking.car.brand }} {{ booking.car.model }}"
+                                    data-rate="{{ booking.car.price_day }}"
+                                    data-pickup-date="{{ booking.pickup_date|date:'Y-m-d' }}"
+                                    data-drop-date="{{ booking.drop_date|date:'Y-m-d' }}">
+                                    Modify Dates
+                                </button>
+                                <button onclick="cancelBooking('{{ booking.booking_id }}')"
+                                    class="btn-dashboard-action btn-dashboard-action--danger">Cancel</button>
+                                {% elif booking.status == 'Delivered' %}
+                                <span
+                                    style="font-size:0.75rem; color:#15803d; font-weight:700; display:inline-flex; align-items:center; gap:4px; border: 1.5px solid rgba(21,128,61,0.2); padding:6px 12px; border-radius:6px; background:#f0fdf4;">
+                                    Delivered
+                                </span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="empty-state"
+                        style="background:#ffffff; border-radius:var(--radius-xl); border:1px solid var(--color-border-light);">
+                        <p class="empty-state-text">No bookings found under this filter.</p>
+                        <a href="{% url 'carzo_core:cars' %}" class="btn-dashboard-action btn-dashboard-action--primary"
+                            style="display:inline-block;padding:10px 24px;">Browse Cars</a>
+                    </div>
+                    {% endfor %}
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- ===================== RECEIPT MODAL ===================== -->
+    <div class="modal-overlay" id="receipt-modal">
+        <div class="modal-card" style="max-width:550px; text-align:left;">
+            <div
+                style="display:flex; justify-content:space-between; align-items:center; border-bottom:1.5px solid #f1f5f9; padding-bottom:16px; margin-bottom:20px;">
+                <h2 style="font-size:1.25rem; font-weight:800; color:var(--color-black);">Rental Receipt</h2>
+                <button onclick="closeModal('receipt-modal')"
+                    style="font-size:1.25rem; font-weight:700; color:var(--color-text-secondary); cursor:pointer;">&times;</button>
+            </div>
+
+            <div id="receipt-modal-content">
+                <!-- Populated dynamically -->
+            </div>
+
+            <div style="margin-top:28px; display:flex; gap:12px;">
+                <button onclick="window.print()" class="btn-dashboard-action btn-dashboard-action--secondary"
+                    style="flex:1;">Print Receipt</button>
+                <button onclick="closeModal('receipt-modal')" class="btn-dashboard-action btn-dashboard-action--primary"
+                    style="flex:1;">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================== MODIFY DATES MODAL ===================== -->
+    <div class="modal-overlay" id="modify-modal">
+        <div class="modal-card" style="max-width:500px; text-align:left;">
+            <div
+                style="display:flex; justify-content:space-between; align-items:center; border-bottom:1.5px solid #f1f5f9; padding-bottom:16px; margin-bottom:20px;">
+                <h2 style="font-size:1.25rem; font-weight:800; color:var(--color-black);">Modify Rental Dates</h2>
+                <button onclick="closeModal('modify-modal')"
+                    style="font-size:1.25rem; font-weight:700; color:var(--color-text-secondary); cursor:pointer;">&times;</button>
+            </div>
+
+            <form id="modify-form" method="POST" action="">
+                {% csrf_token %}
+                <input type="hidden" name="total_days" id="mod-total-days-input">
+                <input type="hidden" name="total_cost" id="mod-total-cost-input">
+                <div class="form-grid" style="grid-template-columns: 1fr;">
+
+                    <div class="form-group">
+                        <label class="form-label" for="mod-pickup-date">New Pickup Date</label>
+                        <input type="date" id="mod-pickup-date" name="pickup_date" class="form-input" required
+                            onchange="calculateModifiedPrice()">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="mod-drop-date">New Drop-off Date</label>
+                        <input type="date" id="mod-drop-date" name="drop_date" class="form-input" required
+                            onchange="calculateModifiedPrice()">
+                    </div>
+
+                    <div
+                        style="background:#f8fafc; border:1px solid #f0f0f0; padding:16px; border-radius:8px; margin-top:8px;">
+                        <div
+                            style="display:flex; justify-content:space-between; font-size:0.88rem; color:var(--color-text-secondary); margin-bottom:6px;">
+                            <span>New Duration:</span>
+                            <span id="mod-days-display" style="font-weight:700; color:var(--color-black);">1 Day</span>
+                        </div>
+                        <div
+                            style="display:flex; justify-content:space-between; font-size:1.05rem; font-weight:800; color:var(--color-black);">
+                            <span>New Grand Total:</span>
+                            <span id="mod-price-display" style="color:var(--color-primary);">₹4,000</span>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div style="margin-top:28px; display:flex; gap:12px;">
+                    <button type="button" onclick="closeModal('modify-modal')"
+                        class="btn-dashboard-action btn-dashboard-action--secondary" style="flex:1;">Cancel</button>
+                    <button type="submit" class="btn-dashboard-action btn-dashboard-action--primary"
+                        style="flex:1;">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ===================== FOOTER ===================== -->
+    <footer class="footer" id="footer" style="margin-top:80px;">
+        <div class="footer__inner">
+            <div class="footer__top">
+                <!-- Brand column -->
+                <div class="footer__brand">
+                    <a href="{% url 'carzo_core:index' %}" class="footer__logo">
+                        <span>Carzo</span>
+                    </a>
+                    <p class="footer__tagline">
+                        Discover the best rental cars and experience premium driving effortlessly.
+                    </p>
+                    <div class="footer__socials">
+                        <a href="https://wa.me/919999999999"
+                            class="footer__social" aria-label="WhatsApp" target="_blank" rel="noopener noreferrer">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.746.953 3.71 1.455 5.703 1.458h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" fill="currentColor"/>
+                            </svg>
+                        </a>
+                        <a href="https://www.instagram.com/carzorentals?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw=="
+                            class="footer__social" aria-label="Instagram" target="_blank" rel="noopener noreferrer">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Links columns -->
+                <div class="footer__links-group">
+                    <!-- Column 1: Shop -->
+                    <div class="footer__col">
+                        <h3 class="footer__col-title">Shop</h3>
+                        <ul class="footer__col-list">
+                            <li><a href="{% url 'carzo_core:index' %}">Home</a></li>
+                            <li><a href="{% url 'carzo_core:cars' %}">Rent Luxury Cars</a></li>
+                            <li><a href="{% url 'carzo_core:list-car' %}">List Your Car</a></li>
+                            <li><a href="{% url 'carzo_core:contact' %}">Contact Us</a></li>
+                        </ul>
+                    </div>
+                    <!-- Column 2: Help -->
+                    <div class="footer__col">
+                        <h3 class="footer__col-title">Help</h3>
+                        <ul class="footer__col-list">
+                            <li><a href="{% url 'carzo_core:index' %}#faq-section">FAQ</a></li>
+                            <li><a href="{% url 'carzo_core:about' %}">About Us</a></li>
+                            <li><a href="{% url 'carzo_core:contact' %}">Contact</a></li>
+                        </ul>
+                    </div>
+                    <!-- Column 3: Legal -->
+                    <div class="footer__col">
+                        <h3 class="footer__col-title">Legal</h3>
+                        <ul class="footer__col-list">
+                            <li><a href="#">Privacy Policy</a></li>
+                            <li><a href="#">Terms & Conditions</a></li>
+                            <li><a href="{% url 'useradmin:admin-panel' %}">Admin</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="footer__bottom">
+                <p>&copy; 2026 Carzo. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ===================== JAVASCRIPT LOGIC ===================== -->
+    <script>
+        let modifyBaseRate = 4000;
+
+        window.addEventListener('DOMContentLoaded', () => {
+            // Click listeners for Receipt buttons
+            document.querySelectorAll('.view-receipt-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const id = btn.getAttribute('data-id');
+                    const car = btn.getAttribute('data-car');
+                    const rate = parseInt(btn.getAttribute('data-rate'));
+                    const pickupLoc = btn.getAttribute('data-pickup-loc');
+                    const pickupDate = btn.getAttribute('data-pickup-date');
+                    const dropDate = btn.getAttribute('data-drop-date');
+                    const days = parseInt(btn.getAttribute('data-days'));
+                    const cost = parseInt(btn.getAttribute('data-cost'));
+                    const status = btn.getAttribute('data-status');
+                    const created = btn.getAttribute('data-created');
+                    const gst = parseInt(btn.getAttribute('data-gst') || '0');
+                    const fee = parseInt(btn.getAttribute('data-fee') || '0');
+
+                    viewReceipt(id, car, rate, pickupLoc, pickupDate, dropDate, days, cost, status, created, gst, fee);
+                });
+            });
+
+            // Click listeners for Modify Dates buttons
+            document.querySelectorAll('.modify-dates-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const id = btn.getAttribute('data-id');
+                    const car = btn.getAttribute('data-car');
+                    const rate = parseInt(btn.getAttribute('data-rate'));
+                    const pickupDate = btn.getAttribute('data-pickup-date');
+                    const dropDate = btn.getAttribute('data-drop-date');
+
+                    modifyDates(id, car, rate, pickupDate, dropDate);
+                });
+            });
+
+            // Check if there is an ID query parameter to automatically open a receipt
+            const urlParams = new URLSearchParams(window.location.search);
+            const targetId = urlParams.get('id');
+
+            if (targetId) {
+                const btn = document.querySelector(`.view-receipt-btn[data-id="${targetId}"]`);
+                if (btn) btn.click();
+            }
+        });
+
+        // Action: Cancel booking
+        function cancelBooking(bookingId) {
+            if (confirm("Are you sure you want to cancel this booking? This action cannot be undone.")) {
+                window.location.href = `/booking-management/cancel/${bookingId}/`;
+            }
+        }
+
+        // Action: View detailed printable receipt
+        function viewReceipt(bookingId, carName, baseRate, pickupLoc, pickupDate, dropDate, totalDays, totalCost, status, dateCreated, gst, fee) {
+            const subtotal = baseRate * totalDays;
+
+            const content = `
+                <div style="background:#f8fafc; border:1px solid #f1f5f9; padding:20px; border-radius:8px; margin-bottom:20px;">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:12px;">
+                        <span style="font-size:0.82rem; color:var(--color-text-secondary); font-weight:600;">BOOKING ID</span>
+                        <strong style="color:var(--color-black);">${bookingId}</strong>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; margin-bottom:12px;">
+                        <span style="font-size:0.82rem; color:var(--color-text-secondary); font-weight:600;">DATE ISSUED</span>
+                        <strong style="color:var(--color-black);">${new Date(dateCreated).toLocaleDateString()}</strong>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; margin-bottom:12px;">
+                        <span style="font-size:0.82rem; color:var(--color-text-secondary); font-weight:600;">STATUS</span>
+                        <strong style="text-transform:uppercase; font-size:0.75rem; color:var(--color-primary);">${status}</strong>
+                    </div>
+                </div>
+
+                <h3 style="font-size:0.95rem; font-weight:800; text-transform:uppercase; margin-bottom:12px; border-bottom:1px solid #f1f5f9; padding-bottom:6px; color:var(--color-black);">Customer & Vehicle Details</h3>
+                <div style="margin-bottom:20px; font-size:0.875rem; line-height:1.6; color:var(--color-text);">
+                    <div>Customer Name: <strong>{{ request.user.first_name }} {{ request.user.last_name }}</strong></div>
+                    <div>Email: <strong>{{ request.user.email }}</strong></div>
+                    <div>Phone: <strong>{{ request.user.phone|default:"+91 98765 43210" }}</strong></div>
+                    <div style="margin-top:8px;">Car Rented: <strong>${carName}</strong></div>
+                    <div>Location: <strong>${pickupLoc}</strong></div>
+                    <div>Rental Dates: <strong>${pickupDate}</strong> to <strong>${dropDate}</strong></div>
+                </div>
+
+                <h3 style="font-size:0.95rem; font-weight:800; text-transform:uppercase; margin-bottom:12px; border-bottom:1px solid #f1f5f9; padding-bottom:6px; color:var(--color-black);">Charges Breakdown</h3>
+                <div style="font-size:0.875rem; display:flex; flex-direction:column; gap:10px;">
+                    <div style="display:flex; justify-content:space-between;">
+                        <span>Rental Cost (${totalDays} Days @ ₹${baseRate.toLocaleString('en-IN')}/day)</span>
+                        <span>₹${subtotal.toLocaleString('en-IN')}</span>
+                    </div>
+                    ${gst > 0 ? `
+                    <div style="display:flex; justify-content:space-between;">
+                        <span>GST (18%)</span>
+                        <span>₹${gst.toLocaleString('en-IN')}</span>
+                    </div>
+                    ` : ''}
+                    ${fee > 0 ? `
+                    <div style="display:flex; justify-content:space-between;">
+                        <span>Service & Booking Fee</span>
+                        <span>₹${fee.toLocaleString('en-IN')}</span>
+                    </div>
+                    ` : ''}
+                    <div style="display:flex; justify-content:space-between; font-weight:800; border-top:1.5px dashed #cbd5e1; padding-top:10px; font-size:1.1rem; color:var(--color-black); margin-top:4px;">
+                        <span>Total Paid</span>
+                        <span>₹${totalCost.toLocaleString('en-IN')}</span>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('receipt-modal-content').innerHTML = content;
+            openModal('receipt-modal');
+        }
+
+        // Action: Modify dates modal trigger
+        function modifyDates(bookingId, carName, baseRate, pickupDate, dropDate) {
+            modifyBaseRate = baseRate;
+
+            document.getElementById('modify-form').action = `/booking-management/modify/${bookingId}/`;
+            document.getElementById('mod-pickup-date').value = pickupDate;
+            document.getElementById('mod-drop-date').value = dropDate;
+
+            // Min limits to avoid reserving in past
+            document.getElementById('mod-pickup-date').min = pickupDate;
+            document.getElementById('mod-drop-date').min = pickupDate;
+
+            calculateModifiedPrice();
+            openModal('modify-modal');
+        }
+
+        function formatDate(date) {
+            const y = date.getFullYear();
+            const m = String(date.getMonth() + 1).padStart(2, '0');
+            const d = String(date.getDate()).padStart(2, '0');
+            return `${y}-${m}-${d}`;
+        }
+
+        function calculateModifiedPrice() {
+            const pickupInput = document.getElementById('mod-pickup-date');
+            const dropInput = document.getElementById('mod-drop-date');
+
+            const pickupD = new Date(pickupInput.value);
+            if (isNaN(pickupD.getTime())) return;
+
+            // Set min drop date to 1 day after pickup date
+            const minDropDate = new Date(pickupD);
+            minDropDate.setDate(minDropDate.getDate() + 1);
+            dropInput.min = formatDate(minDropDate);
+
+            let dropD = new Date(dropInput.value);
+            if (isNaN(dropD.getTime()) || dropD <= pickupD) {
+                dropInput.value = formatDate(minDropDate);
+                dropD = minDropDate;
+            }
+
+            const timeDiff = dropD.getTime() - pickupD.getTime();
+            let days = Math.ceil(timeDiff / (1000 * 3600 * 24));
+
+            if (isNaN(days) || days < 1) {
+                days = 1;
+            }
+
+            const subtotal = modifyBaseRate * days;
+            const gst = 0;
+            const fee = 0;
+            const total = subtotal;
+
+            document.getElementById('mod-days-display').textContent = `${days} ${days === 1 ? 'Day' : 'Days'}`;
+            document.getElementById('mod-price-display').textContent = `₹${total.toLocaleString('en-IN')}`;
+
+            document.getElementById('mod-total-days-input').value = days;
+            document.getElementById('mod-total-cost-input').value = total;
+        }
+
+        // Modal Helpers
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('modal-overlay--show');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('modal-overlay--show');
+        }
+    </script>
+    <script src="{% static 'assets/script.js' %}"></script>
+</body>
+
+</html>

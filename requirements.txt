@@ -1,0 +1,9 @@
+django>=4.2
+pillow
+shortuuid
+python-decouple
+razorpay
+gunicorn
+whitenoise
+dj-database-url
+psycopg2-binary
