@@ -72,7 +72,7 @@ class Car(models.Model):
     Core car listing.
     Maps to Carzo frontend: cars.html, car-detail.html, booking.html
     """
-    cid = ShortUUIDField(unique=True, length=10, alphabet='1234567890abcdef')
+    cid = ShortUUIDField(unique=True, length=50, alphabet='1234567890abcdef')
     name = models.CharField(max_length=200)          # Display name e.g. "Tesla Model Y"
     brand = models.CharField(max_length=100)         # Brand only e.g. "Tesla"
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)
